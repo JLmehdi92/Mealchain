@@ -46,3 +46,4 @@ example
 .env.*
 !.env.example
 coverage/
+.taste-skill/
