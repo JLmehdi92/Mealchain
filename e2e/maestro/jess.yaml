@@ -113,8 +113,13 @@ onFlowComplete:
     id: plan-week
 - extendedWaitUntil:
     visible:
-      id: meal-4
+      id: meal-0
     timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: meal-4
+    direction: DOWN
+    visibilityPercentage: 50
 - waitForAnimationToEnd
 - takeScreenshot: jess-09-week-5-dinners
 

@@ -96,7 +96,7 @@ onFlowComplete:
 - takeScreenshot: marcus-14-week-planned
 
 - tapOn:
-    id: meal-0
+    id: meal-0-title
 - waitForAnimationToEnd
 - takeScreenshot: marcus-15-meal-detail
 - scrollUntilVisible:
