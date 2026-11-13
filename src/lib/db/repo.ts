@@ -7,7 +7,14 @@ import { db } from './client';
 import { household, plans, recipes, settings, shoppingChecks } from './schema';
 import { decode, householdSchema, planSchema, recipeSchema } from './schemas';
 
-export type SettingKey = 'ai_consent' | 'onboarded' | 'first_plan_seen';
+export type SettingKey =
+  | 'ai_consent'
+  | 'onboarded'
+  | 'first_plan_seen'
+  | 'first_list_seen'
+  | 'paywall_offered'
+  | 'installed'
+  | 'remote_household';
 
 export async function getHousehold(): Promise<Household | null> {
   const [row] = await db.select().from(household).where(eq(household.id, 1));

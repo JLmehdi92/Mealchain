@@ -5,13 +5,18 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 
 import migrations from '../../drizzle/migrations';
+import { initPurchases } from '@/features/subscription/purchase';
+import { trackFirstLaunch } from '@/lib/analytics';
 import { db } from '@/lib/db/client';
+import { initMonitoring, report } from '@/lib/monitoring';
 import { load, useHousehold, useReady } from '@/lib/store';
 import { useTheme } from '@/ui/theme';
 
 export { ErrorBoundary } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+initMonitoring();
+initPurchases();
 
 export default function RootLayout() {
   const migrated = useMigrations(db, migrations);
@@ -26,7 +31,7 @@ export default function RootLayout() {
   const [loadError, setLoadError] = useState<unknown>(null);
 
   useEffect(() => {
-    if (migrated.success) load().catch(setLoadError);
+    if (migrated.success) load().then(() => trackFirstLaunch().catch(report), setLoadError);
   }, [migrated.success]);
 
   useEffect(() => {

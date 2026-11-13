@@ -16,7 +16,8 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Demidemi reads the recipe screenshots you choose so you can import them.",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "usesAppleSignIn": true
     },
     "plugins": [
       "expo-router",
@@ -46,7 +47,9 @@
       ],
       "expo-secure-store",
       "@sentry/react-native",
-      "expo-asset"
+      "expo-asset",
+      "expo-apple-authentication",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,
