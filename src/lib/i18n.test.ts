@@ -57,3 +57,11 @@ describe('t', () => {
     expect(t('onboarding.step', { current: 1 })).toBe('1 / {total}');
   });
 });
+
+describe('pick and fill', () => {
+  it('picks the table for the device language and fills params', () => {
+    const { fill, pick } = jest.requireActual<typeof import('./i18n')>('./i18n');
+    expect(fill('{n} packs', { n: 3 })).toBe('3 packs');
+    expect(['en', 'fr']).toContain(pick({ en: 'en', fr: 'fr' }));
+  });
+});

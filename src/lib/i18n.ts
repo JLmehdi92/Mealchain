@@ -19,7 +19,9 @@ export function market(): Market {
   return (region && FR_REGIONS.has(region)) || language() === 'fr' ? 'fr' : 'us';
 }
 
-export function t(key: StringKey, params?: Record<string, string | number>): string {
-  const text = (language() === 'fr' ? fr : en)[key];
-  return params ? text.replace(/\{(\w+)\}/g, (match, name: string) => String(params[name] ?? match)) : text;
-}
+export const fill = (text: string, params?: Record<string, string | number>) =>
+  params ? text.replace(/\{(\w+)\}/g, (match, name: string) => String(params[name] ?? match)) : text;
+
+export const pick = <T>(table: { en: T; fr: T }): T => (language() === 'fr' ? table.fr : table.en);
+
+export const t = (key: StringKey, params?: Record<string, string | number>): string => fill(pick({ en, fr })[key], params);
