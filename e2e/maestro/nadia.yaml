@@ -94,7 +94,7 @@ onFlowComplete:
     point: "9%,10%"
 - waitForAnimationToEnd
 - scrollUntilVisible:
-    element: ".*Écartée : fruits à coque.*"
+    element: ".*Écartée.*fruits à coque.*"
     direction: DOWN
     visibilityPercentage: 50
 - assertVisible: ".*Poulet sauté aux noix de cajou.*"
