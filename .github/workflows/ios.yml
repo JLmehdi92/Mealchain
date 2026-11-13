@@ -52,7 +52,7 @@ jobs:
           key: pods-${{ runner.os }}-${{ hashFiles('package-lock.json', 'app.json') }}
           restore-keys: pods-${{ runner.os }}-
 
-      - run: pod install
+      - run: pod install || (sleep 30 && pod install)
         working-directory: ios
 
       - name: Build Release simulator app
@@ -122,7 +122,7 @@ jobs:
 
       - name: Maestro flows
         run: |
-          curl -fsSL -o "$RUNNER_TEMP/maestro.zip" \
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 15 -o "$RUNNER_TEMP/maestro.zip" \
             "https://github.com/mobile-dev-inc/maestro/releases/download/cli-$MAESTRO_VERSION/maestro.zip"
           shasum -a 256 "$RUNNER_TEMP/maestro.zip"
           unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP"
