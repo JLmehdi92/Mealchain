@@ -8529,11 +8529,13 @@
   "synonyms": {
    "en": [
     "chopped tomatoes",
-    "canned tomatoes"
+    "canned tomatoes",
+    "diced tomatoes"
    ],
    "fr": [
     "tomates en dés",
-    "tomates pelées concassées"
+    "tomates pelées concassées",
+    "tomates concassées"
    ]
   },
   "aisle": "pantry",
@@ -9260,11 +9262,13 @@
   "synonyms": {
    "en": [
     "strained tomatoes",
-    "tomato purée"
+    "tomato purée",
+    "tomato sauce"
    ],
    "fr": [
     "coulis de tomate",
-    "purée de tomate"
+    "purée de tomate",
+    "coulis de tomates"
    ]
   },
   "aisle": "pantry",
