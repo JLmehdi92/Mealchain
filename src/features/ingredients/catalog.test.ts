@@ -80,3 +80,17 @@ describe('ingredient catalog', () => {
     expect(offenders((i) => i.baseUnit === 'piece' && i.gramsPerPiece === undefined)).toEqual([]);
   });
 });
+
+describe('pack sizes', () => {
+  it('never offers a pack under a tenth of a typical one unless it is sold loose', () => {
+    const crumbs = catalog.flatMap((ingredient) =>
+      (['us', 'fr'] as const).flatMap((market) => {
+        const packs = packsFor(ingredient, market);
+        const sizes = packs.map((pack) => pack.amount).sort((a, b) => a - b);
+        const typical = sizes[Math.floor((sizes.length - 1) / 2)] ?? 0;
+        return packs.filter((pack) => pack.amount * 10 < typical && pack.container !== 'loose').map(() => `${ingredient.id}/${market}`);
+      }),
+    );
+    expect(crumbs).toEqual([]);
+  });
+});

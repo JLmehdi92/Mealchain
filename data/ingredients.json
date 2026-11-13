@@ -11413,11 +11413,6 @@
      "size": 1,
      "unit": "lb",
      "container": "pack"
-    },
-    {
-     "size": 1,
-     "unit": "piece",
-     "container": "pack"
     }
    ],
    "fr": [

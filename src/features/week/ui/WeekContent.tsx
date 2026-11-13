@@ -7,6 +7,7 @@ import { BoxScene } from '@/features/recipes/ui/illustrations';
 import { fill, language, pick } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { useHousehold, usePlan, useRecipes, useWeekStart } from '@/lib/store';
+import { Banner } from '@/ui/Banner';
 import { Button } from '@/ui/Button';
 import { Empty } from '@/ui/Empty';
 import { Secondary, Title } from '@/ui/Text';
@@ -14,6 +15,7 @@ import { space } from '@/ui/theme';
 
 import { chainsOf, rangeLabel } from '../chains';
 import { weekCopy } from '../copy';
+import { weekNotes } from '../notes';
 import { PlanLoading } from './PlanLoading';
 import { PlanView } from './PlanView';
 
@@ -44,10 +46,13 @@ export function WeekContent({ planning, composed, onPlan, onSwap }: Props) {
   if (!household) return null;
   if (planning) return <PlanLoading household={household} weekStart={weekStart} />;
   if (plan && plan.slots.length > 0) {
+    const notes = weekNotes(plan, recipes, household);
     return (
       <>
         <Title>{s.title}</Title>
         <Secondary muted>{summary(plan, weekStart, household.lunches)}</Secondary>
+        {notes.allergyLeftOut.length > 0 ? <Banner icon="exclamationmark.triangle" tone="allergy">{fill(s.allergyLeftOut, { list: notes.allergyLeftOut.join(', ') })}</Banner> : null}
+        {notes.repeats ? <Secondary muted>{s.repeats}</Secondary> : null}
         <PlanView plan={plan} recipes={recipes} household={household} weekStart={weekStart} animate={composed} onSwap={onSwap} onOpen={(id) => router.push({ pathname: '/recipe/[id]', params: { id } })} />
       </>
     );
