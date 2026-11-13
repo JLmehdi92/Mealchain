@@ -21,6 +21,7 @@ export default function Week() {
   const s = pick(weekCopy);
   const plan = usePlan();
   const pro = useIsPro();
+  const [busy, setBusy] = useState(false);
   const [planning, setPlanning] = useState(false);
   const [composed, setComposed] = useState(false);
   const shown = !planning && !!plan && plan.slots.length > 0;
@@ -30,6 +31,9 @@ export default function Week() {
   }, [shown]);
 
   const makePlan = async () => {
+    if (busy) return;
+    setBusy(true);
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
     setPlanning(true);
     const result = await startPlan(pro).catch((error: unknown) => {
       report(error);
@@ -39,6 +43,7 @@ export default function Week() {
     if (result === 'planned') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setComposed(result === 'planned');
     setPlanning(false);
+    setBusy(false);
     if (result === 'paywall') router.push('/paywall');
   };
 
@@ -46,7 +51,7 @@ export default function Week() {
     <SafeAreaView edges={['top', 'left', 'right']} style={[styles.fill, { backgroundColor: c.paper }]}>
       <NavBar right={<IconButton testID="open-settings" name="gearshape" label={s.settings} onPress={() => router.push('/settings')} />} />
       <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
-        <WeekContent planning={planning} composed={composed} onPlan={makePlan} onSwap={openSwap} />
+        <WeekContent busy={busy} planning={planning} composed={composed} onPlan={makePlan} onSwap={openSwap} />
       </ScrollView>
     </SafeAreaView>
   );

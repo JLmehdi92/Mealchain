@@ -1,21 +1,42 @@
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import type { Household } from '@/features/recipes/types';
 import { Skeleton } from '@/features/recipes/ui/parts';
 import { fill, language, pick } from '@/lib/i18n';
 import { Caption, Secondary, Title } from '@/ui/Text';
+import { EASE_OUT } from '@/ui/motion';
 import { radius, space, useTheme } from '@/ui/theme';
 
 import { dateOf, dayLabel } from '../chains';
 import { weekCopy } from '../copy';
 
-export function PlanLoading({ household, weekStart }: { household: Household; weekStart: string }) {
+const APPEAR = FadeIn.duration(150).reduceMotion(ReduceMotion.Never);
+
+function MealSkeleton({ day, glow }: { day: number; glow: SharedValue<number> }) {
   const c = useTheme();
+  const base = Math.max(0.3, 1 - day * 0.15);
+  const style = useAnimatedStyle(() => ({ opacity: base * glow.get() }));
+  return (
+    <Animated.View style={[styles.meal, { backgroundColor: c.sheet, borderColor: c.rule }, style]}>
+      <Skeleton width={`${[70, 60, 75][day % 3]}%`} height={18} />
+      <Skeleton width="40%" />
+    </Animated.View>
+  );
+}
+
+export function PlanLoading({ household, weekStart }: { household: Household; weekStart: string }) {
+  const reduced = useReducedMotion();
+  const glow = useSharedValue(1);
+  useEffect(() => {
+    if (!reduced) glow.set(withRepeat(withTiming(0.55, { duration: 900, easing: EASE_OUT }), -1, true));
+  }, [glow, reduced]);
   const s = pick(weekCopy);
   const days = Math.max(household.dinners, household.lunches);
   const title = household.lunches > 0 ? fill(s.planningMeals, { count: household.dinners + household.lunches }) : fill(s.planningDinners, { count: household.dinners });
   return (
-    <View accessible accessibilityLabel={title} accessibilityState={{ busy: true }}>
+    <Animated.View entering={APPEAR} accessible accessibilityLabel={title} accessibilityState={{ busy: true }}>
       <Title>{title}</Title>
       <Secondary muted>{s.planningSub}</Secondary>
       {Array.from({ length: days }, (_, day) => (
@@ -24,13 +45,10 @@ export function PlanLoading({ household, weekStart }: { household: Household; we
             <Caption muted>{dayLabel(weekStart, day, language(), 'short')}</Caption>
             <Caption muted>{dateOf(weekStart, day).getDate()}</Caption>
           </View>
-          <View style={[styles.meal, { backgroundColor: c.sheet, borderColor: c.rule, opacity: Math.max(0.3, 1 - day * 0.15) }]}>
-            <Skeleton width={`${[70, 60, 75][day % 3]}%`} height={18} />
-            <Skeleton width="40%" />
-          </View>
+          <MealSkeleton day={day} glow={glow} />
         </View>
       ))}
-    </View>
+    </Animated.View>
   );
 }
 
