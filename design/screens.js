@@ -44,14 +44,14 @@ const SCREENS = {
         <text x="58" y="186" text-anchor="middle" font-size="13" fill="var(--ink-2)" font-family="var(--sf)">${L('8 fl oz', '20 cl')}</text>
       </svg>
       <h1 class="title" style="margin-top:36px">${L('Your recipes, planned so every pack gets finished', 'Vos recettes, organisées pour finir chaque paquet')}</h1>
-      <p class="subtitle" style="margin-top:12px;font-size:17px">${L("The cream you open for Monday's orzo goes into Wednesday's gratin. Nextover plans the week around what you'll actually buy.", "La crème ouverte pour l'orzo de lundi finit dans le gratin de mercredi. Nextover compose la semaine autour de ce que vous achetez vraiment.")}</p>
+      <p class="subtitle" style="margin-top:12px;font-size:17px">${L("The cream you open for Monday's orzo goes into Wednesday's gratin. Demidemi plans the week around what you'll actually buy.", "La crème ouverte pour l'orzo de lundi finit dans le gratin de mercredi. Demidemi compose la semaine autour de ce que vous achetez vraiment.")}</p>
     </div>
     <div class="bottom"><button class="btn primary">${L('Set up my household', 'Configurer mon foyer')}</button><button class="btn quiet">${L('I already have an account', "J'ai déjà un compte")}</button></div>`,
 
   how: (L) => `
     <div class="nav"><button class="btn-icon">${icon('chevL')}</button><span></span></div>
     <div class="scroll">
-      <h1 class="title">${L('How Nextover works', 'Comment marche Nextover')}</h1>
+      <h1 class="title">${L('How Demidemi works', 'Comment marche Demidemi')}</h1>
       <ol style="list-style:none;margin-top:28px;display:grid;gap:28px">
         ${[
           ['recipes', L('Bring the recipes you already save', 'Apportez les recettes que vous gardez déjà'), L('A link, a caption you copied, a screenshot. Every word stays as written; anything unclear is flagged for you to check.', "Un lien, une légende copiée, une capture. Chaque mot reste tel quel ; ce qui n'est pas clair vous est signalé.")],
@@ -119,7 +119,7 @@ const SCREENS = {
       <div class="empty">
         <svg width="132" height="104" viewBox="0 0 132 104" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="22" width="64" height="76" rx="8" transform="rotate(-6 16 22)"/><rect x="36" y="10" width="64" height="80" rx="8" fill="var(--paper)"/><path d="M48 30h40M48 40h28M48 50h34"/><path d="M100 64 C 116 64 118 84 126 90" stroke="var(--strand)" stroke-width="2.4"/></svg>
         <h2 class="h2">${L('Your recipes, in one place', 'Toutes vos recettes, au même endroit')}</h2>
-        <p>${L('Paste a link, a caption or a screenshot. Nextover keeps every word as written.', 'Collez un lien, une légende ou une capture. Nextover garde chaque mot tel quel.')}</p>
+        <p>${L('Paste a link, a caption or a screenshot. Demidemi keeps every word as written.', 'Collez un lien, une légende ou une capture. Demidemi garde chaque mot tel quel.')}</p>
         <button class="btn primary" style="width:auto;padding:0 24px;margin-top:8px">${icon('plus', 20)}${L('Import a recipe', 'Importer une recette')}</button>
       </div>
     </div>${tabbar(L, 'recipes')}`,
@@ -171,13 +171,13 @@ const SCREENS = {
       <div class="field-label">${L('Name', 'Nom')}</div><div class="field">${L('Gochujang noodles', 'Nouilles au gochujang')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div><div class="field-label">${L('Serves', 'Personnes')}</div><div class="field num">2</div></div>
-        <div><div class="field-label"><span>${L('Time', 'Temps')}</span><span class="strand-ink">${L('Not in caption', 'Absent')}</span></div><div class="field flag muted">${L('Add time', 'Ajouter')}</div></div>
+        <div><div class="field-label"><span>${L('Time', 'Temps')}</span><span class="muted">${L('Not in caption', 'Absent')}</span></div><div class="field flag muted">${L('Add time', 'Ajouter')}</div></div>
       </div>
       <div class="field-label">${L('Ingredients · 7', 'Ingrédients · 7')}</div>
       <div class="group">${L(
         [['200 g wheat noodles', 'Wheat noodles', ''], ['2 tbsp gochujang', 'Gochujang', ''], ['1 tbsp soy sauce', 'Soy sauce', ''], ['2 spring onions', 'Spring onions', ''], ['1 knob of "secret butter"', '', 'unmatched']],
         [['200 g de nouilles de blé', 'Nouilles de blé', ''], ['2 c. à s. de gochujang', 'Gochujang', ''], ['1 c. à s. de sauce soja', 'Sauce soja', ''], ['2 oignons nouveaux', 'Oignons nouveaux', ''], ['1 noix de « beurre secret »', '', 'unmatched']]
-      ).map(([raw, m, f]) => `<div class="row" style="align-items:flex-start"><div class="grow"><div class="label" style="font-size:16px">${raw}</div><div class="small ${f ? 'strand-ink' : 'muted'}">${f ? L('Not in our ingredient list · tap to choose', 'Inconnu de notre liste · touchez pour choisir') : '→ ' + m}</div></div>${f ? `<span class="tag review">${L('Check', 'Vérifier')}</span>` : ''}</div>`).join('')}</div>
+      ).map(([raw, m, f]) => `<div class="row" style="align-items:flex-start"><div class="grow"><div class="label" style="font-size:16px">${raw}</div><div class="small ${f ? '' : 'muted'}">${f ? L('Not in our ingredient list · tap to choose', 'Inconnu de notre liste · touchez pour choisir') : '→ ' + m}</div></div>${f ? `<span class="tag review">${L('Check', 'Vérifier')}</span>` : ''}</div>`).join('')}</div>
       <p class="small muted" style="margin-top:12px">${L('Allergens found: wheat (gluten), soy.', 'Allergènes repérés : blé (gluten), soja.')}</p>
     </div>`,
 
@@ -275,7 +275,7 @@ const SCREENS = {
     <div class="nav"><button class="btn-icon" style="background:var(--surface);width:32px;height:32px;border-radius:16px;margin-left:6px">${icon('x', 16, 2)}</button><button class="text-btn small" style="font-size:15px;color:var(--ink-2)">${L('Restore', 'Restaurer')}</button></div>
     <div class="scroll" style="padding-bottom:0">
       <h1 class="title">${L('Keep planning after this week', 'Continuez après cette semaine')}</h1>
-      <p class="subtitle" style="font-size:16px;margin-top:8px">${L('Your first plan and list stay yours. Nextover Pro plans every week from here.', 'Votre premier plan et sa liste restent à vous. Nextover Pro compose toutes les semaines suivantes.')}</p>
+      <p class="subtitle" style="font-size:16px;margin-top:8px">${L('Your first plan and list stay yours. Demidemi Pro plans every week from here.', 'Votre premier plan et sa liste restent à vous. Demidemi Pro compose toutes les semaines suivantes.')}</p>
       <ul style="list-style:none;margin:20px 0;display:grid;gap:12px;font-size:16px">${L(
         ['Unlimited recipes (free: 15)', 'A new plan and list every week', 'One shared list for the household', 'Family Sharing: up to 6 people, one subscription'],
         ['Recettes illimitées (gratuit : 15)', 'Un nouveau plan et sa liste chaque semaine', 'Une liste partagée pour tout le foyer', "Partage familial : jusqu'à 6 personnes, un seul abonnement"]
@@ -304,7 +304,7 @@ const SCREENS = {
       </div>
       <div class="section-label">${L('Subscription', 'Abonnement')}</div>
       <div class="group">
-        <div class="row"><div class="grow"><div class="label">Nextover Pro</div><div class="detail num">${L('Yearly · renews Nov 21, 2027', 'Annuel · renouvelé le 21 nov. 2027')}</div></div><span class="chev">${icon('chevR', 18)}</span></div>
+        <div class="row"><div class="grow"><div class="label">Demidemi Pro</div><div class="detail num">${L('Yearly · renews Nov 21, 2027', 'Annuel · renouvelé le 21 nov. 2027')}</div></div><span class="chev">${icon('chevR', 18)}</span></div>
         <div class="row"><span class="grow label">${L('Restore purchases', 'Restaurer les achats')}</span></div>
       </div>
       <div class="section-label">${L('Privacy', 'Confidentialité')}</div>
