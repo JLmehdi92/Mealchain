@@ -1,4 +1,4 @@
-import { ingredientById } from '@/features/ingredients/catalog';
+import { ingredientById, packsFor } from '@/features/ingredients/catalog';
 import type { Market } from '@/features/ingredients/schema';
 import type { WeekPlan } from '@/features/planner/plan';
 import { amountLabel } from '@/features/list/format';
@@ -16,7 +16,10 @@ export const chainThumb = (ingredientId: string, market: Market): Thumb | null =
 
 export function amountOf(ingredientId: string, amount: number, market: Market): string {
   const ingredient = ingredientById.get(ingredientId);
-  return ingredient ? amountLabel(amount, ingredient, market, language()) : '';
+  if (!ingredient) return '';
+  const sizes = packsFor(ingredient, market).map((pack) => pack.amount).sort((a, b) => a - b);
+  const typical = sizes[Math.floor((sizes.length - 1) / 2)] ?? 0;
+  return amount < typical / 10 ? '' : amountLabel(amount, ingredient, market, language());
 }
 
 export const finishLabel = (chain: Chain, finishes: boolean) =>

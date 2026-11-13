@@ -8,6 +8,7 @@ import { reviewCount } from '@/features/recipes/meta';
 import type { Recipe, RecipeIngredient } from '@/features/recipes/types';
 import { TextButton } from '@/features/recipes/ui/parts';
 import { fill, language, pick, t } from '@/lib/i18n';
+import { useHousehold } from '@/lib/store';
 import { Banner } from '@/ui/Banner';
 import { Group } from '@/ui/Card';
 import { NavBar } from '@/ui/NavBar';
@@ -17,7 +18,7 @@ import { Body, Caption, Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
 import { reviewCopy } from '../copy';
-import { confirmIngredient, finalize, recipeAllergens, uncheckedCount } from '../review';
+import { confirmIngredient, finalize, recipeAllergens, reviewList, uncheckedCount } from '../review';
 import { IngredientPicker } from './IngredientPicker';
 import { ReviewFields, type Texts } from './ReviewFields';
 
@@ -76,6 +77,8 @@ export function Review({ initial, onCancel, onSave }: Props) {
   const [picking, setPicking] = useState<number | null>(null);
   const [nameMissing, setNameMissing] = useState(false);
   const count = reviewCount(finalize(draft));
+  const household = useHousehold();
+  const clashes = recipeAllergens(draft).filter((a) => household?.allergens.includes(a)).map((a) => pick(ALLERGEN_LABELS)[a].toLocaleLowerCase());
 
   const save = () => (draft.title.trim() === '' ? setNameMissing(true) : onSave(finalize(draft)));
 
@@ -88,7 +91,15 @@ export function Review({ initial, onCancel, onSave }: Props) {
       />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Title>{s.title}</Title>
-        {count > 0 ? <Banner icon="info.circle">{count === 1 ? s.oneToCheck : fill(s.toCheck, { count })}</Banner> : null}
+        {clashes.length > 0 ? <Banner icon="exclamationmark.triangle" tone="allergy">{fill(s.householdAllergy, { list: clashes.join(', ') })}</Banner> : null}
+        {count > 0 ? (
+          <Banner icon="info.circle">
+            {fill(count === 1 ? s.oneToCheck : s.toCheck, {
+              count,
+              list: reviewList(finalize(draft), { title: s.name, servings: s.serves, totalMinutes: s.time, lines: (n) => (n === 1 ? s.oneLine : fill(s.lines, { count: n })) }),
+            })}
+          </Banner>
+        ) : null}
         <ReviewFields draft={draft} texts={texts} onChange={(next, patch) => { setTexts(next); setDraft({ ...draft, ...patch }); setNameMissing(false); }} />
         {nameMissing ? <Caption style={{ color: c.chili }}>{s.nameRequired}</Caption> : null}
         <ReviewIngredients draft={draft} onPick={setPicking} />

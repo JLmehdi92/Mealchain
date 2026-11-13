@@ -34,3 +34,12 @@ export function parseCount(text: string, max: number): number | null {
 }
 
 export const uncheckedCount = (recipe: Recipe): number => recipe.ingredients.filter((line) => line.status !== 'matched').length;
+
+type ReviewNames = { title: string; servings: string; totalMinutes: string; lines: (count: number) => string };
+const HEADER: ('title' | 'servings' | 'totalMinutes')[] = ['title', 'servings', 'totalMinutes'];
+
+export function reviewList(recipe: Recipe, names: ReviewNames): string {
+  const fields = HEADER.filter((field) => recipe.needsReview.includes(field)).map((field) => names[field]);
+  const lines = uncheckedCount(recipe);
+  return [...fields, ...(lines > 0 ? [names.lines(lines)] : [])].join(', ');
+}

@@ -1,5 +1,5 @@
 import { line, recipe } from '../planner/fixtures';
-import { confirmIngredient, finalize, parseCount, recipeAllergens, uncheckedCount } from './review';
+import { confirmIngredient, finalize, parseCount, recipeAllergens, reviewList, uncheckedCount } from './review';
 
 const unmatched = { raw: '1 knob secret butter', qty: 1, unit: 'piece' as const, ingredientId: null, status: 'unmatched' as const };
 
@@ -57,5 +57,16 @@ describe('parseCount', () => {
     ['101', null],
   ])('reads %p as %p', (text, value) => {
     expect(parseCount(text, 100)).toBe(value);
+  });
+});
+
+describe('reviewList', () => {
+  const names = { title: 'Name', servings: 'Serves', totalMinutes: 'Time', lines: (n: number) => `${n} ingredients` };
+  it('names the flagged header fields, then counts the lines to check', () => {
+    const draft = recipe('a', [line('egg', 2, 'piece'), unmatched, unmatched], { needsReview: ['servings', 'totalMinutes', 'steps'] });
+    expect(reviewList(draft, names)).toBe('Serves, Time, 2 ingredients');
+  });
+  it('leaves out lines when every ingredient is matched', () => {
+    expect(reviewList(recipe('a', [line('egg', 2, 'piece')], { needsReview: ['title'] }), names)).toBe('Name');
   });
 });
