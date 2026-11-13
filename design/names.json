@@ -2,19 +2,157 @@
   "date": "2026-11-13",
   "method": "3 brainstorm agents (mechanism, bilingual kitchen words, short brand), 75 candidates; shortlist checked with iTunes Search (software, US and FR), web search with the trade, and DNS for .com/.app",
   "finalists": [
-    { "name": "DemiDemi", "meaning": "half the pack now, half later (FR/EN demi)", "itunes_us": 0, "itunes_fr": 0, "web": "no exact match; 'Demi AI' calorie app is a different name", "com": "registered", "app": "free", "searched": true },
-    { "name": "Zerest", "meaning": "zéro reste / zero + rest: nothing left at the end of the week", "itunes_us": 0, "itunes_fr": 0, "web": "no exact match; 'Zorest' calorie app is close in spelling", "com": "registered", "app": "free", "searched": true },
-    { "name": "Finipack", "meaning": "fini + pack: every pack finished", "itunes_us": 0, "itunes_fr": 0, "web": "no match", "com": "registered", "app": "free", "searched": true },
-    { "name": "Restover", "meaning": "reste + leftover: the leftover that rolls into the next meal", "itunes_us": 0, "itunes_fr": 0, "web": "no match", "com": "registered", "app": "free", "searched": true }
+    {
+      "name": "DemiDemi",
+      "meaning": "half the pack now, half later (FR/EN demi)",
+      "itunes_us": 0,
+      "itunes_fr": 0,
+      "web": "no exact match; 'Demi AI' calorie app is a different name",
+      "com": "registered",
+      "app": "free",
+      "searched": true
+    },
+    {
+      "name": "Zerest",
+      "meaning": "zéro reste / zero + rest: nothing left at the end of the week",
+      "itunes_us": 0,
+      "itunes_fr": 0,
+      "web": "no exact match; 'Zorest' calorie app is close in spelling",
+      "com": "registered",
+      "app": "free",
+      "searched": true
+    },
+    {
+      "name": "Finipack",
+      "meaning": "fini + pack: every pack finished",
+      "itunes_us": 0,
+      "itunes_fr": 0,
+      "web": "no match",
+      "com": "registered",
+      "app": "free",
+      "searched": true
+    },
+    {
+      "name": "Restover",
+      "meaning": "reste + leftover: the leftover that rolls into the next meal",
+      "itunes_us": 0,
+      "itunes_fr": 0,
+      "web": "no match",
+      "com": "registered",
+      "app": "free",
+      "searched": true
+    }
   ],
   "rejected": [
-    { "name": "Mealoop", "why": "'MealLoop AI' meal app exists" },
-    { "name": "Lefto", "why": "'Lefto: Payday Budget Planner' on the App Store" },
-    { "name": "Remeal", "why": "too close to 'Remeli', an anti-waste meal planning tool" },
-    { "name": "Pakt", "why": "several 'Pakt' apps on the App Store" },
-    { "name": "Fridgo", "why": "promises fridge inventory, which V1 does not do" },
-    { "name": "Tandish", "why": "close to 'Pandish' calorie app" },
-    { "name": "Nextover", "why": "free, but its meaning (leftover to next) is not obvious in French" },
-    { "name": "Brin", "why": "rejected by the user: not tied enough to what the app does" }
-  ]
+    {
+      "name": "Mealoop",
+      "why": "'MealLoop AI' meal app exists"
+    },
+    {
+      "name": "Lefto",
+      "why": "'Lefto: Payday Budget Planner' on the App Store"
+    },
+    {
+      "name": "Remeal",
+      "why": "too close to 'Remeli', an anti-waste meal planning tool"
+    },
+    {
+      "name": "Pakt",
+      "why": "several 'Pakt' apps on the App Store"
+    },
+    {
+      "name": "Fridgo",
+      "why": "promises fridge inventory, which V1 does not do"
+    },
+    {
+      "name": "Tandish",
+      "why": "close to 'Pandish' calorie app"
+    },
+    {
+      "name": "Nextover",
+      "why": "free, but its meaning (leftover to next) is not obvious in French"
+    },
+    {
+      "name": "Brin",
+      "why": "rejected by the user: not tied enough to what the app does"
+    }
+  ],
+  "round2_mealoop_variants": {
+    "context": "user likes Mealoop; 'MealLoop AI' (meal photo logging) exists and mealoop.com/.app are registered, so 2 agents produced 40 variants",
+    "checked": [
+      {
+        "name": "Loopot",
+        "meaning": "loop + pot: the open pack keeps cooking, pot after pot",
+        "itunes_us": 0,
+        "itunes_fr": "rate-limited",
+        "web": "no match",
+        "com": "registered",
+        "app": "free"
+      },
+      {
+        "name": "Mealring",
+        "meaning": "a closed ring of meals sharing packs",
+        "itunes_us": 0,
+        "itunes_fr": 0,
+        "web": "no match",
+        "com": "registered",
+        "app": "free"
+      },
+      {
+        "name": "Packloop",
+        "meaning": "the pack loops through the week until finished",
+        "itunes_us": 0,
+        "itunes_fr": 0,
+        "web": "no match",
+        "com": "registered",
+        "app": "registered"
+      },
+      {
+        "name": "Loopan",
+        "meaning": "loop + pan",
+        "itunes_us": 0,
+        "itunes_fr": 0,
+        "web": "no match",
+        "com": "registered",
+        "app": "free"
+      },
+      {
+        "name": "Boucla",
+        "meaning": "French boucle (loop), softened",
+        "itunes_us": 0,
+        "itunes_fr": 0,
+        "web": "no match",
+        "com": "registered",
+        "app": "free"
+      },
+      {
+        "name": "Platour",
+        "meaning": "plat + tour: dishes take turns with the same packs",
+        "itunes_us": 0,
+        "itunes_fr": 0,
+        "web": "no match",
+        "com": "registered",
+        "app": "registered"
+      },
+      {
+        "name": "Mealspin",
+        "meaning": "the week spins",
+        "itunes_us": 0,
+        "itunes_fr": "rate-limited",
+        "web": "no match",
+        "com": "registered",
+        "app": "registered"
+      }
+    ],
+    "rejected": [
+      {
+        "name": "Oomi",
+        "why": "'OOMI: Food Delivery' on the App Store"
+      },
+      {
+        "name": "Mealoop",
+        "why": "'MealLoop AI' exists; confusingly similar; mealoop.com and .app registered"
+      }
+    ]
+  }
 }
