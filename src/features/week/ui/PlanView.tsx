@@ -77,7 +77,7 @@ export function PlanView({ plan, recipes, household, weekStart, animate, onOpen,
   return (
     <View ref={body} style={styles.body}>
       {daysOf(plan).map(({ day, slots }, i) => (
-        <Animated.View key={day} entering={animate ? enterDown(reduced, i * 40) : undefined} style={styles.day}>
+        <Animated.View key={day} entering={animate ? enterDown(reduced, i * 90) : undefined} style={styles.day}>
           <View style={styles.dayName}>
             <Caption muted>{dayLabel(weekStart, day, language(), 'short')}</Caption>
             <H2>{dateOf(weekStart, day).getDate()}</H2>

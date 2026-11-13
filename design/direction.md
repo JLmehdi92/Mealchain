@@ -131,7 +131,7 @@ contour, une ombre portée unique décalée vers le bas. Aucune image générée
 | Boîte vide | Lien, légende, capture apparaissent tour à tour ; les fiches sortent de la boîte | Dire les trois façons d'importer |
 | Import | La revue se ferme vers le bas, la nouvelle fiche prend sa place en tête et pousse les autres | La recette rejoint la boîte |
 | Lecture d'une page | Chaque étape se coche au fil de la lecture | Un chargement qui dit ce qu'il fait |
-| Plan | Les jours entrent avec 40 ms d'écart, chaque fil se dessine du paquet vers le repas | Le plan se compose sous les yeux |
+| Plan | Les jours entrent avec 90 ms d’écart, chaque fil se dessine du paquet vers le repas | Le plan se compose sous les yeux |
 | Reste réutilisé | Le pictogramme du paquet voyage le long du fil et se pose sur le repas qui le finit | Le moment fort du produit |
 | Changer un repas | Feuille qui suit le doigt, interruptible ; le plan se recompose | Agir sans perdre le fil |
 | Liste | La coche se remplit, un trait barre l'article, la ligne rejoint « Dans le panier » | Satisfaction du cochage |
