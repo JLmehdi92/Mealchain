@@ -9,9 +9,11 @@ import { plainHeader } from '@/features/household/header';
 import { HouseholdSection } from '@/features/household/HouseholdSection';
 import { SETTINGS_COPY } from '@/features/household/settingsCopy';
 import { SharingSection } from '@/features/household/SharingSection';
+import { loadSamples } from '@/features/recipes/loadSamples';
 import { SubscriptionSection } from '@/features/subscription/SubscriptionSection';
+import { useIsPro } from '@/features/subscription/useIsPro';
 import { getSetting, setSetting } from '@/lib/db/repo';
-import { fill, pick, t } from '@/lib/i18n';
+import { fill, language, pick, t } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { Button } from '@/ui/Button';
 import { Group } from '@/ui/Card';
@@ -21,6 +23,29 @@ import { Screen } from '@/ui/Screen';
 import { SectionLabel } from '@/ui/SectionLabel';
 import { Caption } from '@/ui/Text';
 import { useTheme } from '@/ui/theme';
+
+function SamplesSection() {
+  const copy = pick(SETTINGS_COPY);
+  const pro = useIsPro();
+  const load = async () => {
+    try {
+      const result = await loadSamples(language(), Date.now(), pro);
+      if (result === 'paywall') return router.push('/paywall');
+      Alert.alert(result.added > 0 ? fill(copy.samplesAdded, { count: result.added }) : copy.samplesPresent);
+    } catch (error) {
+      report(error);
+      Alert.alert(copy.error);
+    }
+  };
+  return (
+    <>
+      <SectionLabel>{copy.recipes}</SectionLabel>
+      <Group>
+        <Row testID="load-samples" label={copy.loadSamples} detail={copy.loadSamplesDetail} onPress={load} />
+      </Group>
+    </>
+  );
+}
 
 function PrivacySection() {
   const copy = pick(SETTINGS_COPY);
@@ -41,8 +66,8 @@ function PrivacySection() {
       <Group>
         <ToggleRow label={copy.askAi} detail={copy.askAiDetail} value={ask} onChange={change} />
         <Row label={copy.terms} trailing={chevron} onPress={() => router.push('/legal/terms')} />
-        <Row label={copy.privacyPolicy} trailing={chevron} onPress={() => router.push('/legal/privacy')} />
-        <Row label={copy.allergyNotice} trailing={chevron} onPress={() => router.push('/legal/allergies')} />
+        <Row testID="privacy-policy" label={copy.privacyPolicy} trailing={chevron} onPress={() => router.push('/legal/privacy')} />
+        <Row testID="allergy-notice" label={copy.allergyNotice} trailing={chevron} onPress={() => router.push('/legal/allergies')} />
       </Group>
     </>
   );
@@ -73,6 +98,7 @@ export default function Settings() {
       <Screen title={t('settings.title')}>
         <HouseholdSection />
         <SharingSection />
+        <SamplesSection />
         <SubscriptionSection />
         <PrivacySection />
         <Button kind="danger" label={copy.delete} onPress={confirmDelete} />

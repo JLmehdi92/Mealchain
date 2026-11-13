@@ -5,12 +5,13 @@ import { Press } from './Press';
 import { Body, Secondary } from './Text';
 import { space, useTheme } from './theme';
 
-type Props = { label: string; detail?: string; trailing?: ReactNode; onPress?: () => void };
+type Props = { label: string; detail?: string; trailing?: ReactNode; onPress?: () => void; testID?: string };
 
-export function Row({ label, detail, trailing, onPress }: Props) {
+export function Row({ label, detail, trailing, onPress, testID }: Props) {
   const c = useTheme();
   return (
     <Press
+      testID={testID}
       accessibilityRole={onPress ? 'button' : undefined}
       disabled={!onPress}
       onPress={onPress}

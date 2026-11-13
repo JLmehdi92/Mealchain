@@ -23,7 +23,7 @@ export default function RecipeDetail() {
   const plan = usePlan();
   const slot = plan?.slots.findIndex((entry) => entry.recipeId === id) ?? -1;
   const source = recipe?.sourceUrl ? isAllowedUrl(recipe.sourceUrl) : null;
-  const back = <IconButton name="chevron.left" label={t('common.back')} onPress={router.back} />;
+  const back = <IconButton testID="recipe-back" name="chevron.left" label={t('common.back')} onPress={router.back} />;
 
   return (
     <SafeAreaView style={[styles.fill, { backgroundColor: c.paper }]}>

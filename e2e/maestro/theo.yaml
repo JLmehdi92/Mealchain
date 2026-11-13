@@ -1,0 +1,145 @@
+appId: app.demidemi.ios
+name: Théo - couple, légende TikTok et capture d'écran
+tags:
+  - persona
+  - fr
+---
+- launchApp:
+    clearState: true
+    arguments:
+      AppleLanguages: "(fr)"
+      AppleLocale: fr_FR
+- startRecording: theo
+- extendedWaitUntil:
+    visible:
+      id: welcome-start
+    timeout: 20000
+- takeScreenshot: theo-01-bienvenue
+- tapOn:
+    id: welcome-start
+- tapOn:
+    id: how-continue
+- tapOn:
+    id: stepper-dinners-minus
+- assertVisible: "4"
+- takeScreenshot: theo-02-foyer-2-personnes-4-diners
+- tapOn:
+    id: household-next
+- tapOn:
+    id: allergies-next
+- tapOn:
+    id: diets-save
+- extendedWaitUntil:
+    visible: "Recettes"
+    timeout: 10000
+- tapOn: "Recettes"
+- takeScreenshot: theo-03-boite-vide
+
+- tapOn:
+    id: add-recipe
+- takeScreenshot: theo-04-choix-source
+- tapOn:
+    id: import-text
+- tapOn:
+    id: import-input
+- inputText: |-
+    Pâtes crémeuses citron parmesan 🍋
+    Le dîner qui sauve la semaine 😍 prêt en 15 min #recette #pasta #dinerfacile
+    Ingrédients :
+    - 250 g de spaghetti
+    - 1 citron
+    - 20 cl de crème liquide entière
+    - 50 g de parmesan râpé
+    - 1 gousse d'ail
+    - 1 c. à soupe d'huile d'olive
+    Étapes :
+    1. Faites cuire les spaghetti 9 minutes dans une casserole d'eau salée.
+    2. Faites revenir l'ail dans l'huile, ajoutez la crème et le zeste du citron.
+    3. Mélangez avec les pâtes et le parmesan, ajoutez un filet de jus de citron 🔥
+    #foodtok #cuisinefacile #pourtoi
+- takeScreenshot: theo-05-legende-tiktok-collee
+- tapOn:
+    id: import-submit
+- extendedWaitUntil:
+    visible:
+      id: review-save
+    timeout: 30000
+- assertVisible: "Pâtes crémeuses citron parmesan.*"
+- takeScreenshot: theo-06-verification-legende
+- tapOn:
+    id: review-save
+- waitForAnimationToEnd
+
+- tapOn:
+    id: add-recipe
+- tapOn:
+    id: import-screenshot
+- extendedWaitUntil:
+    visible: "Photos"
+    timeout: 15000
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: theo-07-selecteur-photos
+# The system photo picker runs out of process and its cells carry dates, not file names.
+# CI adds many copies of e2e/assets/recipe-screenshot.png, so the middle of the grid is one of them.
+- tapOn:
+    point: "50%,55%"
+- extendedWaitUntil:
+    visible:
+      id: review-save
+    timeout: 45000
+- assertVisible: "Gratin de courgettes à la feta"
+- takeScreenshot: theo-08-verification-capture
+- tapOn:
+    id: review-save
+- waitForAnimationToEnd
+- takeScreenshot: theo-09-boite-2-recettes
+
+- tapOn: "Semaine"
+- tapOn:
+    id: plan-week
+- extendedWaitUntil:
+    visible:
+      id: meal-3
+    timeout: 30000
+- waitForAnimationToEnd
+- takeScreenshot: theo-10-semaine-4-diners
+
+- tapOn: "Courses"
+- extendedWaitUntil:
+    visible:
+      id: paywall-close
+    timeout: 6000
+    optional: true
+- runFlow:
+    when:
+      visible:
+        id: paywall-close
+    commands:
+      - takeScreenshot: theo-11-paywall-propose
+      - tapOn:
+          id: paywall-close
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: share-list
+    timeout: 10000
+- takeScreenshot: theo-12-liste
+- tapOn:
+    id: share-list
+- extendedWaitUntil:
+    visible: "Le partage demande un compte"
+    timeout: 10000
+- takeScreenshot: theo-13-partage-demande-un-compte
+- runFlow:
+    when:
+      visible: "OK"
+    commands:
+      - tapOn: "OK"
+- runFlow:
+    when:
+      visible: "Annuler"
+    commands:
+      - tapOn: "Annuler"
+- takeScreenshot: theo-14-liste-apres-partage
+- stopRecording

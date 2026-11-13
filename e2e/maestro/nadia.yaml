@@ -1,0 +1,164 @@
+appId: app.demidemi.ios
+name: Nadia - allergies arachides et fruits à coque, en français
+tags:
+  - persona
+  - fr
+---
+- launchApp:
+    clearState: true
+    arguments:
+      AppleLanguages: "(fr)"
+      AppleLocale: fr_FR
+- startRecording: nadia
+- extendedWaitUntil:
+    visible:
+      id: welcome-start
+    timeout: 20000
+- assertVisible: "Vos recettes, organisées pour finir chaque paquet"
+- takeScreenshot: nadia-01-bienvenue
+- tapOn:
+    id: welcome-start
+- tapOn:
+    id: how-continue
+- takeScreenshot: nadia-02-foyer
+- tapOn:
+    id: household-next
+- tapOn:
+    id: allergen-peanuts
+- tapOn:
+    id: allergen-nuts
+- takeScreenshot: nadia-03-allergies-arachides-fruits-a-coque
+- tapOn:
+    id: allergies-next
+- takeScreenshot: nadia-04-aucun-regime
+- tapOn:
+    id: diets-save
+- extendedWaitUntil:
+    visible: "Recettes"
+    timeout: 10000
+- tapOn: "Recettes"
+
+- tapOn:
+    id: add-recipe
+- tapOn:
+    id: import-text
+- tapOn:
+    id: import-input
+- inputText: |-
+    Poulet sauté aux noix de cajou
+    Ingrédients :
+    - 600 g de blancs de poulet
+    - 100 g de noix de cajou
+    - 1 poivron rouge
+    - 1 oignon jaune
+    - 2 gousses d'ail
+    - 3 c. à soupe de sauce soja
+    - 1 c. à soupe d'huile de tournesol
+    - 300 g de riz basmati
+    Préparation :
+    1. Coupez le poulet en dés et faites-le dorer 6 minutes dans l'huile, dans une poêle bien chaude.
+    2. Ajoutez l'oignon, le poivron et l'ail émincés, puis les noix de cajou. Faites sauter 4 minutes.
+    3. Versez la sauce soja, laissez réduire 2 minutes et servez avec le riz.
+- takeScreenshot: nadia-05-legende-collee
+- tapOn:
+    id: import-submit
+- extendedWaitUntil:
+    visible:
+      id: review-save
+    timeout: 30000
+- assertVisible: "Poulet sauté aux noix de cajou"
+- takeScreenshot: nadia-06-verification-noix-de-cajou
+- scrollUntilVisible:
+    element: ".*fruits à coque.*"
+    direction: DOWN
+- takeScreenshot: nadia-07-allergenes-detectes
+- tapOn:
+    id: review-save
+- waitForAnimationToEnd
+
+- tapOn:
+    id: open-settings
+- scrollUntilVisible:
+    element:
+      id: load-samples
+    direction: DOWN
+- tapOn:
+    id: load-samples
+- extendedWaitUntil:
+    visible: "8 recettes d'exemple ajoutées à votre boîte."
+    timeout: 10000
+- takeScreenshot: nadia-08-exemples-charges
+- tapOn: "OK"
+- tapOn: "Retour"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element: "Écartée : fruits à coque"
+    direction: DOWN
+- assertVisible: "Poulet sauté aux noix de cajou"
+- takeScreenshot: nadia-09-boite-recette-ecartee
+
+- tapOn: "Semaine"
+- tapOn:
+    id: plan-week
+- extendedWaitUntil:
+    visible:
+      id: meal-0
+    timeout: 30000
+- waitForAnimationToEnd
+- assertNotVisible: "Poulet sauté aux noix de cajou"
+- takeScreenshot: nadia-10-semaine-sans-noix-de-cajou
+
+- tapOn: "Courses"
+- extendedWaitUntil:
+    visible:
+      id: paywall-close
+    timeout: 6000
+    optional: true
+- runFlow:
+    when:
+      visible:
+        id: paywall-close
+    commands:
+      - takeScreenshot: nadia-11-paywall-propose
+      - tapOn:
+          id: paywall-close
+- waitForAnimationToEnd
+- assertVisible: ".*\\d+(,\\d+)? (g|kg|ml|cl|l)\\b.*"
+- assertNotVisible: ".*\\d (oz|lb|fl oz)\\b.*"
+- takeScreenshot: nadia-12-liste-metrique
+
+- tapOn: "Semaine"
+- tapOn:
+    id: open-settings
+- scrollUntilVisible:
+    element:
+      id: subscription-pro
+    direction: DOWN
+- assertVisible: "Gratuit · 15 recettes et votre première semaine"
+- takeScreenshot: nadia-13-reglages-abonnement-gratuit
+- tapOn:
+    id: subscription-pro
+- extendedWaitUntil:
+    visible:
+      id: paywall-close
+    timeout: 10000
+- waitForAnimationToEnd
+- takeScreenshot: nadia-14-paywall-gratuit-vs-pro
+- tapOn:
+    id: paywall-close
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: allergy-notice
+    direction: DOWN
+- tapOn:
+    id: allergy-notice
+- extendedWaitUntil:
+    visible: "Avis sur les allergies"
+    timeout: 10000
+- takeScreenshot: nadia-15-avis-allergies
+- scrollUntilVisible:
+    element: "Pas un avis médical"
+    direction: DOWN
+- takeScreenshot: nadia-16-avis-allergies-fin
+- stopRecording

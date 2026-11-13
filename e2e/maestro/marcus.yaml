@@ -1,0 +1,138 @@
+appId: app.demidemi.ios
+name: Marcus - careful explorer, sample recipes, swap and paywall
+tags:
+  - persona
+  - en
+---
+- launchApp:
+    clearState: true
+    arguments:
+      AppleLanguages: "(en)"
+      AppleLocale: en_US
+- startRecording: marcus
+- extendedWaitUntil:
+    visible:
+      id: welcome-start
+    timeout: 20000
+- assertVisible: "Your recipes, planned so every pack gets finished"
+- takeScreenshot: marcus-01-welcome
+- tapOn:
+    id: welcome-start
+- waitForAnimationToEnd
+- takeScreenshot: marcus-02-how-it-works
+- scrollUntilVisible:
+    element:
+      id: how-continue
+    direction: DOWN
+- takeScreenshot: marcus-03-how-it-works-end
+- tapOn:
+    id: how-continue
+- waitForAnimationToEnd
+- takeScreenshot: marcus-04-household-default
+- tapOn:
+    id: stepper-lunches-plus
+- takeScreenshot: marcus-05-household-lunch-added
+- tapOn:
+    id: stepper-lunches-minus
+- scrollUntilVisible:
+    element:
+      id: household-next
+    direction: DOWN
+- takeScreenshot: marcus-06-household-units
+- tapOn:
+    id: household-next
+- waitForAnimationToEnd
+- takeScreenshot: marcus-07-allergies
+- scrollUntilVisible:
+    element:
+      id: allergies-next
+    direction: DOWN
+- takeScreenshot: marcus-08-allergies-notice
+- tapOn:
+    id: allergies-next
+- waitForAnimationToEnd
+- takeScreenshot: marcus-09-diets-equipment
+- scrollUntilVisible:
+    element:
+      id: diets-save
+    direction: DOWN
+- takeScreenshot: marcus-10-equipment
+- tapOn:
+    id: diets-save
+- extendedWaitUntil:
+    visible:
+      id: open-settings
+    timeout: 10000
+- takeScreenshot: marcus-11-week-empty
+
+- tapOn:
+    id: open-settings
+- waitForAnimationToEnd
+- takeScreenshot: marcus-12-settings
+- scrollUntilVisible:
+    element:
+      id: load-samples
+    direction: DOWN
+- tapOn:
+    id: load-samples
+- extendedWaitUntil:
+    visible: "8 sample recipes added to your box."
+    timeout: 10000
+- takeScreenshot: marcus-13-samples-loaded
+- tapOn: "OK"
+- tapOn: "Back"
+- waitForAnimationToEnd
+
+- tapOn:
+    id: plan-week
+- extendedWaitUntil:
+    visible:
+      id: meal-0
+    timeout: 30000
+- waitForAnimationToEnd
+- takeScreenshot: marcus-14-week-planned
+
+- tapOn:
+    id: meal-0
+- waitForAnimationToEnd
+- takeScreenshot: marcus-15-meal-detail
+- scrollUntilVisible:
+    element: "Steps"
+    direction: DOWN
+- takeScreenshot: marcus-16-meal-steps
+- tapOn:
+    id: recipe-back
+- waitForAnimationToEnd
+
+- longPressOn:
+    id: meal-1
+- extendedWaitUntil:
+    visible:
+      id: swap-close
+    timeout: 10000
+- takeScreenshot: marcus-17-swap-sheet
+- tapOn:
+    id: "swap-option-.*"
+    index: 0
+- waitForAnimationToEnd
+- takeScreenshot: marcus-18-week-after-swap
+
+- tapOn:
+    id: open-settings
+- scrollUntilVisible:
+    element:
+      id: subscription-pro
+    direction: DOWN
+- tapOn:
+    id: subscription-pro
+- extendedWaitUntil:
+    visible:
+      id: paywall-close
+    timeout: 10000
+- waitForAnimationToEnd
+- takeScreenshot: marcus-19-paywall
+- tapOn:
+    id: paywall-close
+- waitForAnimationToEnd
+- takeScreenshot: marcus-20-settings-after-paywall
+- stopRecording

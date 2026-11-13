@@ -1,0 +1,131 @@
+appId: app.demidemi.ios
+name: Jess - busy parent of 5, three links to a planned week
+tags:
+  - persona
+  - en
+---
+- launchApp:
+    clearState: true
+    arguments:
+      AppleLanguages: "(en)"
+      AppleLocale: en_US
+- startRecording: jess
+- extendedWaitUntil:
+    visible:
+      id: welcome-start
+    timeout: 20000
+- takeScreenshot: jess-01-welcome
+- tapOn:
+    id: welcome-start
+- tapOn:
+    id: how-continue
+- tapOn:
+    id: stepper-people-plus
+- tapOn:
+    id: stepper-people-plus
+- tapOn:
+    id: stepper-people-plus
+- tapOn: "60\\+ min"
+- assertVisible: "5"
+- takeScreenshot: jess-02-household-5-people-5-dinners
+- tapOn:
+    id: household-next
+- takeScreenshot: jess-03-no-allergies
+- tapOn:
+    id: allergies-next
+- tapOn:
+    id: diets-save
+- extendedWaitUntil:
+    visible: "Recipes"
+    timeout: 10000
+- tapOn: "Recipes"
+- takeScreenshot: jess-04-empty-recipes
+
+- tapOn:
+    id: add-recipe
+- tapOn:
+    id: import-link
+- tapOn:
+    id: import-input
+- inputText: "https://www.bbcgoodfood.com/recipes/easy-chicken-curry"
+- tapOn:
+    id: import-submit
+- extendedWaitUntil:
+    visible:
+      id: review-save
+    timeout: 45000
+- assertVisible: "Easy chicken curry"
+- takeScreenshot: jess-05-review-bbc-chicken-curry
+- tapOn:
+    id: review-save
+- waitForAnimationToEnd
+
+- tapOn:
+    id: add-recipe
+- tapOn:
+    id: import-link
+- tapOn:
+    id: import-input
+- inputText: "https://www.delish.com/cooking/recipe-ideas/a19636089/creamy-tuscan-chicken-recipe/"
+- tapOn:
+    id: import-submit
+- extendedWaitUntil:
+    visible:
+      id: review-save
+    timeout: 45000
+- assertVisible: "Creamy Tuscan Chicken"
+- takeScreenshot: jess-06-review-delish-tuscan-chicken
+- tapOn:
+    id: review-save
+- waitForAnimationToEnd
+
+- tapOn:
+    id: add-recipe
+- tapOn:
+    id: import-link
+- tapOn:
+    id: import-input
+- inputText: "https://www.tasteofhome.com/recipes/garlic-lime-chicken/"
+- tapOn:
+    id: import-submit
+- extendedWaitUntil:
+    visible:
+      id: review-save
+    timeout: 45000
+- assertVisible: "Garlic Lime Chicken"
+- takeScreenshot: jess-07-review-toh-garlic-lime-chicken
+- tapOn:
+    id: review-save
+- waitForAnimationToEnd
+- takeScreenshot: jess-08-recipe-box
+
+- tapOn: "Week"
+- tapOn:
+    id: plan-week
+- extendedWaitUntil:
+    visible:
+      id: meal-4
+    timeout: 30000
+- waitForAnimationToEnd
+- takeScreenshot: jess-09-week-5-dinners
+
+- tapOn: "List"
+- extendedWaitUntil:
+    visible: "Shopping list"
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: paywall-close
+    timeout: 6000
+    optional: true
+- runFlow:
+    when:
+      visible:
+        id: paywall-close
+    commands:
+      - takeScreenshot: jess-10-paywall-offered
+      - tapOn:
+          id: paywall-close
+- waitForAnimationToEnd
+- takeScreenshot: jess-11-shopping-list
+- stopRecording

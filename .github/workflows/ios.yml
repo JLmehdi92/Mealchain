@@ -109,16 +109,57 @@ jobs:
             echo "::error::App is not running 15 s after launch"; exit 1
           fi
 
+      - name: Prepare simulator for Maestro
+        run: |
+          for key in KeyboardAutocorrection KeyboardPrediction KeyboardAutocapitalization KeyboardCheckSpelling KeyboardSmartPunctuation; do
+            xcrun simctl spawn "$UDID" defaults write com.apple.Preferences "$key" -bool false
+          done
+          # The photo picker cannot be targeted by file name: fill the library so any cell near the middle is the recipe screenshot.
+          mkdir -p "$RUNNER_TEMP/media"
+          for i in $(seq -w 1 24); do cp e2e/assets/recipe-screenshot.png "$RUNNER_TEMP/media/recipe-screenshot-$i.png"; done
+          xcrun simctl addmedia "$UDID" "$RUNNER_TEMP"/media/*.png
+
       - name: Maestro flows
         run: |
-          if ! ls e2e/maestro/*.yaml > /dev/null 2>&1; then echo "No Maestro flows"; exit 0; fi
           curl -fsSL -o "$RUNNER_TEMP/maestro.zip" \
             "https://github.com/mobile-dev-inc/maestro/releases/download/cli-$MAESTRO_VERSION/maestro.zip"
           shasum -a 256 "$RUNNER_TEMP/maestro.zip"
           unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP"
           export PATH="$RUNNER_TEMP/maestro/bin:$PATH"
-          maestro --device "$UDID" test e2e/maestro --format junit --output build/maestro.xml \
-            --test-output-dir build/screens
+          set +e
+          mkdir -p build/maestro build/screens/launch
+          mv build/screens/launch-15s.png build/screens/launch/ 2>/dev/null || true
+          run_flow() {
+            local name=$1 out="$GITHUB_WORKSPACE/build/screens/$1"
+            mkdir -p "$out"
+            # Run from the output folder so screenshots and recordings land there whatever the Maestro version.
+            ( cd "$out" && maestro --device "$UDID" test "$GITHUB_WORKSPACE/e2e/maestro/$name.yaml" \
+                --format junit --output "$GITHUB_WORKSPACE/build/maestro/$name.xml" --test-output-dir "$out" )
+            local status=$?
+            find "$out" -mindepth 2 \( -name '*.png' -path '*takeScreenshot*' -o -name '*.mp4' \) -exec mv -n {} "$out/" \;
+            return $status
+          }
+          run_flow smoke; SMOKE=$?
+          FAILED=""
+          for flow in jess marcus nadia theo; do
+            run_flow "$flow" || { FAILED="$FAILED $flow"; echo "::warning::Maestro persona flow failed: $flow"; }
+          done
+          {
+            echo '<?xml version="1.0" encoding="UTF-8"?>'
+            echo '<testsuites>'
+            for f in build/maestro/*.xml; do
+              sed -e '/<?xml/d' -e 's#</\{0,1\}testsuites[^>]*>##g' "$f"
+            done
+            echo '</testsuites>'
+          } > build/maestro.xml
+          {
+            echo "### Maestro"
+            echo "- smoke: $([ "$SMOKE" = 0 ] && echo passed || echo FAILED)"
+            for flow in jess marcus nadia theo; do
+              case " $FAILED " in *" $flow "*) echo "- $flow: FAILED (see build/screens/$flow)";; *) echo "- $flow: passed";; esac
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$SMOKE"
 
       - name: Stop video and collect crash logs
         if: always()

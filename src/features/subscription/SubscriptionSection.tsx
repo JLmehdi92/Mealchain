@@ -22,6 +22,7 @@ export function SubscriptionSection() {
       <SectionLabel>{copy.subscription}</SectionLabel>
       <Group>
         <Row
+          testID="subscription-pro"
           label="Demidemi Pro"
           detail={detail}
           trailing={<Icon name="chevron.right" size={14} muted />}
