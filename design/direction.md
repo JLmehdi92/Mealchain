@@ -109,3 +109,31 @@ animations » : fondus de 150 ms.
 Dégradés de teinte, lueurs, verre décoratif ; violet ; émojis et badges ; images générées par IA ; cartes
 identiques en grille ; capitales espacées ; rouge `chili` pour autre chose qu'une allergie, une exclusion ou
 une suppression ; « demi » appliqué à une allergie.
+
+## Illustrations
+
+Système maison, cohérent avec la marque : formes géométriques pleines (ronds, demi-ronds, rectangles très
+arrondis), aplats de la palette plus quatre teintes « cuisine » (céramique, crème, croûte dorée, herbe), aucun
+contour, une ombre portée unique décalée vers le bas. Aucune image générée par IA. Source : `illustrations.js`.
+- Accueil : la brique de crème coupée en deux comme le logo, l'orzo de lundi et le gratin de mercredi.
+- Boîte vide : un lien, une légende et une capture au-dessus d'une boîte à fiches.
+- Liste vide : un cabas d'où dépassent une brique, une boîte et des poireaux.
+- Page sans recette : une page dont la zone d'ingrédients est vide, sous une loupe.
+- Vignettes de recettes : l'emballage principal en petite illustration couleur (64 pt).
+
+## Inventaire des animations (à reproduire à l'étape 4 avec Reanimated)
+
+| Moment | Ce qui bouge | Pourquoi |
+|---|---|---|
+| Accueil | La moitié verte de la brique se détache et se pose (seul léger dépassement), puis les plats et le texte arrivent | Montrer le mécanisme avant toute explication |
+| Boutons | Échelle 0,97 au toucher, retour en ressort | Retour immédiat |
+| Navigation | L'écran suivant arrive de la droite, le précédent recule de 30 % ; retour par le même chemin | Cohérence spatiale |
+| Boîte vide | Lien, légende, capture apparaissent tour à tour ; les fiches sortent de la boîte | Dire les trois façons d'importer |
+| Import | La revue se ferme vers le bas, la nouvelle fiche prend sa place en tête et pousse les autres | La recette rejoint la boîte |
+| Lecture d'une page | Chaque étape se coche au fil de la lecture | Un chargement qui dit ce qu'il fait |
+| Plan | Les jours entrent avec 40 ms d'écart, chaque fil se dessine du paquet vers le repas | Le plan se compose sous les yeux |
+| Reste réutilisé | Le pictogramme du paquet voyage le long du fil et se pose sur le repas qui le finit | Le moment fort du produit |
+| Changer un repas | Feuille qui suit le doigt, interruptible ; le plan se recompose | Agir sans perdre le fil |
+| Liste | La coche se remplit, un trait barre l'article, la ligne rejoint « Dans le panier » | Satisfaction du cochage |
+| Paywall | La feuille monte, l'écran dessous recule et s'assombrit | Hiérarchie claire |
+| Abonnement activé | Haptique `success`, les deux moitiés de la marque se rejoignent | Célébrer sans confettis |

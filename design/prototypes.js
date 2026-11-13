@@ -6,6 +6,38 @@ let protoLang = 'fr';
 
 const PROTOS = [
   {
+    id: 'welcome', title: { fr: "Accueil : la brique se partage", en: 'Welcome: the carton splits' },
+    note: "La moitié verte de la brique se détache et se pose sur le gratin de mercredi, comme le logo. Puis les deux plats arrivent.",
+    build: (L, lang) => single(SCREENS.welcome(L, lang)),
+    play(p, haptic) {
+      const half = p.querySelector('.carton-r-wrap');
+      const foods = p.querySelectorAll('.plate-mon, .dish-wed');
+      const trails = p.querySelectorAll('.trail');
+      const labels = p.querySelectorAll('.welcome-scene text:not(.carton-l text):not(.carton-r text)');
+      const copy = p.querySelectorAll('.title, .subtitle, .bottom');
+      return gsap.timeline()
+        .set(half, { x: 0, y: 0 }).set([foods, trails, labels, copy], { opacity: 0 })
+        .fromTo(foods, { scale: 0.86, transformOrigin: '50% 50%' }, { opacity: 1, scale: 1, duration: 0.5, ease: EASE.out, stagger: 0.08 }, 0.2)
+        .to(half, { x: 10, y: -6, duration: 0.55, ease: EASE.land }, 0.7)
+        .call(() => haptic('light'), null, 0.8)
+        .to(trails, { opacity: 1, duration: 0.35, stagger: 0.15 }, 1.0)
+        .to(labels, { opacity: 1, duration: 0.3 }, 1.2)
+        .fromTo(copy, { y: 10 }, { y: 0, opacity: 1, duration: 0.45, ease: EASE.out, stagger: 0.06 }, 1.3);
+    },
+  },
+  {
+    id: 'box', title: { fr: 'Boîte vide : vos sources arrivent', en: 'Empty box: your sources arrive' },
+    note: 'Un lien, une légende, une capture : les trois façons d\'importer apparaissent tour à tour, puis les fiches sortent de la boîte.',
+    build: (L, lang) => single(SCREENS.boxEmpty(L, lang)),
+    play(p) {
+      const srcs = p.querySelectorAll('.src');
+      const cards = p.querySelectorAll('.rcard');
+      return gsap.timeline()
+        .fromTo(srcs, { y: -14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: EASE.out, stagger: 0.12 }, 0.3)
+        .fromTo(cards, { y: 34 }, { y: 0, duration: 0.5, ease: EASE.out, stagger: 0.08 }, 0.8);
+    },
+  },
+  {
     id: 'push', title: { fr: "Passage d'un écran à l'autre", en: 'Screen to screen' },
     note: "Le nouvel écran arrive de la droite, l'ancien recule de 30 % : le retour suit le même chemin.",
     build: (L, lang) => layered(SCREENS.welcome(L, lang), SCREENS.household(L, lang)),

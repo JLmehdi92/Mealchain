@@ -30,20 +30,8 @@ const CARRIES = [[0, 2], [1, 3], [3, 4]];
 const SCREENS = {
   welcome: (L) => `
     <div style="flex:1;display:grid;align-content:center;padding:0 28px 180px">
-      <svg class="hero-strand" viewBox="0 0 337 230" width="337" height="230" aria-hidden="true">
-        <g fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
-          <path d="M40 70l9-16h18l9 16v86a3 3 0 0 1-3 3H43a3 3 0 0 1-3-3z" fill="var(--sheet)"/><path d="M40 70h36M50 92h16"/>
-        </g>
-        <path class="s1" d="M76 118 C 150 118 150 70 214 70" fill="none" stroke="var(--strand)" stroke-width="3" stroke-linecap="round"/>
-        <path class="s2" d="M76 132 C 150 132 160 176 214 176" fill="none" stroke="var(--strand)" stroke-width="3" stroke-linecap="round"/>
-        <g font-family="Urbanist" font-weight="500">
-          <rect x="214" y="44" width="104" height="52" rx="14" fill="var(--sheet)" stroke="var(--rule)"/><text x="230" y="66" font-size="12" fill="var(--ink-2)" font-family="var(--sf)">${L('Mon', 'lun.')}</text><text x="230" y="84" font-size="15" fill="var(--ink)">${L('Orzo', 'Orzo')}</text>
-          <rect x="214" y="150" width="104" height="52" rx="14" fill="var(--sheet)" stroke="var(--rule)"/><text x="230" y="172" font-size="12" fill="var(--ink-2)" font-family="var(--sf)">${L('Wed', 'mer.')}</text><text x="230" y="190" font-size="15" fill="var(--ink)">${L('Gratin', 'Gratin')}</text>
-        </g>
-        <circle cx="214" cy="70" r="4" fill="var(--strand)"/><circle cx="214" cy="176" r="4" fill="var(--strand)"/>
-        <text x="58" y="186" text-anchor="middle" font-size="13" fill="var(--ink-2)" font-family="var(--sf)">${L('8 fl oz', '20 cl')}</text>
-      </svg>
-      <h1 class="title" style="margin-top:36px">${L('Your recipes, planned so every pack gets finished', 'Vos recettes, organisées pour finir chaque paquet')}</h1>
+      ${welcomeScene(L)}
+      <h1 class="title" style="margin-top:24px">${L('Your recipes, planned so every pack gets finished', 'Vos recettes, organisées pour finir chaque paquet')}</h1>
       <p class="subtitle" style="margin-top:12px;font-size:17px">${L("The cream you open for Monday's orzo goes into Wednesday's gratin. Demidemi plans the week around what you'll actually buy.", "La crème ouverte pour l'orzo de lundi finit dans le gratin de mercredi. Demidemi compose la semaine autour de ce que vous achetez vraiment.")}</p>
     </div>
     <div class="bottom"><button class="btn primary">${L('Set up my household', 'Configurer mon foyer')}</button><button class="btn quiet">${L('I already have an account', "J'ai déjà un compte")}</button></div>`,
@@ -117,7 +105,7 @@ const SCREENS = {
     <div class="scroll">
       <h1 class="title">${L('Recipes', 'Recettes')}</h1>
       <div class="empty">
-        <svg width="132" height="104" viewBox="0 0 132 104" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="22" width="64" height="76" rx="8" transform="rotate(-6 16 22)"/><rect x="36" y="10" width="64" height="80" rx="8" fill="var(--paper)"/><path d="M48 30h40M48 40h28M48 50h34"/><path d="M100 64 C 116 64 118 84 126 90" stroke="var(--strand)" stroke-width="2.4"/></svg>
+        ${boxScene()}
         <h2 class="h2">${L('Your recipes, in one place', 'Toutes vos recettes, au même endroit')}</h2>
         <p>${L('Paste a link, a caption or a screenshot. Demidemi keeps every word as written.', 'Collez un lien, une légende ou une capture. Demidemi garde chaque mot tel quel.')}</p>
         <button class="btn primary" style="width:auto;padding:0 24px;margin-top:8px">${icon('plus', 20)}${L('Import a recipe', 'Importer une recette')}</button>
@@ -134,7 +122,7 @@ const SCREENS = {
       <h1 class="title">${L('Recipes', 'Recettes')}</h1>
       <p class="subtitle num">${L('12 of 15 free recipes', '12 recettes sur 15 gratuites')}</p>
       <div class="field" style="display:flex;gap:8px;align-items:center;margin:16px 0 20px;color:var(--ink-2);background:var(--surface);box-shadow:none;min-height:40px;padding:8px 12px">${icon('search', 18)}${L('Search', 'Rechercher')}</div>
-      <div class="group">${items.map(([ic, n, src, day, flag]) => `<div class="recipe-card"><div class="thumb">${icon(ic, 28)}</div><div><div class="recipe-name">${n}</div><div class="recipe-meta"><span>${src}</span>${day ? `<span>·</span><span>${L('This week', 'Cette semaine')}, ${day}</span>` : ''}${flag === 'review' ? `<span class="tag review">${L('2 to check', '2 à vérifier')}</span>` : ''}${flag === 'excluded' ? `<span class="tag excluded">${icon('alert', 13, 2)}${L('Left out: tree nuts', 'Écartée : fruits à coque')}</span>` : ''}</div></div></div>`).join('')}</div>
+      <div class="group">${items.map(([ic, n, src, day, flag]) => `<div class="recipe-card"><div class="thumb">${packThumb(ic)}</div><div><div class="recipe-name">${n}</div><div class="recipe-meta"><span>${src}</span>${day ? `<span>·</span><span>${L('This week', 'Cette semaine')}, ${day}</span>` : ''}${flag === 'review' ? `<span class="tag review">${L('2 to check', '2 à vérifier')}</span>` : ''}${flag === 'excluded' ? `<span class="tag excluded">${icon('alert', 13, 2)}${L('Left out: tree nuts', 'Écartée : fruits à coque')}</span>` : ''}</div></div></div>`).join('')}</div>
     </div>${tabbar(L, 'recipes')}`;
   },
 
@@ -185,7 +173,7 @@ const SCREENS = {
     <div class="nav"><button class="text-btn">${L('Close', 'Fermer')}</button><span></span><span style="width:60px"></span></div>
     <div class="scroll">
       <div class="empty" style="padding-top:96px">
-        <svg width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="18" y="14" width="60" height="72" rx="8"/><path d="M30 34h36M30 44h24"/><path d="M34 62 C 46 56 56 70 70 62" stroke="var(--strand)" stroke-width="2.4" stroke-dasharray="2 6"/></svg>
+        ${pageScene()}
         <h2 class="h2">${L('No recipe on this page', 'Pas de recette sur cette page')}</h2>
         <p>${L("This page doesn't share its recipe in a form we can read. Copy the ingredients and steps, then paste them as text.", "Cette page ne partage pas sa recette dans un format lisible. Copiez les ingrédients et les étapes, puis collez-les en texte.")}</p>
       </div>
@@ -264,7 +252,7 @@ const SCREENS = {
     <div class="scroll">
       <h1 class="title">${L('Shopping list', 'Courses')}</h1>
       <div class="empty">
-        <svg width="120" height="104" viewBox="0 0 120 104" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 34h76l-6 58H28z"/><path d="M44 34v-6a16 16 0 0 1 32 0v6"/><path d="M40 56h40M40 70h26" stroke-dasharray="3 6"/></svg>
+        ${bagScene()}
         <h2 class="h2">${L('Nothing to buy yet', 'Rien à acheter pour le moment')}</h2>
         <p>${L('Your list fills itself once the week is planned, in packs you can find on the shelf.', 'La liste se remplit dès que la semaine est composée, en paquets que vous trouverez en rayon.')}</p>
         <button class="btn secondary" style="width:auto;padding:0 24px;margin-top:8px">${L('Plan my week', 'Composer ma semaine')}</button>

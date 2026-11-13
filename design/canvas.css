@@ -105,7 +105,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .recipe-card { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; padding: 10px 16px; position: relative; }
 .recipe-card + .recipe-card::before { content: ""; position: absolute; top: 0; left: 92px; right: 0; height: .5px; background: var(--rule); }
-.thumb { width: 64px; height: 64px; border-radius: 12px; background: var(--surface); display: grid; place-items: center; color: var(--ink-2); overflow: hidden; }
+.thumb { width: 64px; height: 64px; border-radius: 14px; background: var(--surface); display: grid; place-items: center; color: var(--ink-2); overflow: hidden; }
 .thumb.type { font: 500 22px var(--display); color: var(--ink); }
 .recipe-name { font: 500 17px/1.25 var(--sf); }
 .recipe-meta { font-size: 13px; color: var(--ink-2); display: flex; gap: 8px; align-items: center; margin-top: 2px; flex-wrap: wrap; }
