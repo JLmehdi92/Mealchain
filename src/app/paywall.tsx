@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LegalSheet } from '@/features/household/LegalPage';
 import { PRIVACY, TERMS } from '@/features/household/legalText';
+import { Activated } from '@/features/subscription/Activated';
 import { PAYWALL_COPY } from '@/features/subscription/copy';
 import { Benefits, OfferState, PaywallFooter, PaywallNav } from '@/features/subscription/PaywallParts';
 import { PlanCard } from '@/features/subscription/PlanCard';
@@ -17,18 +18,18 @@ import { report } from '@/lib/monitoring';
 import { Body, Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
-async function buyPlan(plan: Plan) {
+async function buyPlan(plan: Plan): Promise<boolean> {
   const copy = pick(PAYWALL_COPY);
   try {
     const result = await purchase(plan.pkg);
     if (result === 'pending') Alert.alert(copy.pendingTitle, copy.pending);
-    if (result === 'active') {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.back();
-    }
+    if (result !== 'active') return false;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    return true;
   } catch (error) {
     report(error);
     Alert.alert(copy.error);
+    return false;
   }
 }
 
@@ -40,6 +41,7 @@ export default function Paywall() {
   const [selected, setSelected] = useState<'yearly' | 'monthly'>('yearly');
   const [busy, setBusy] = useState(false);
   const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null);
+  const [active, setActive] = useState(false);
   const plan = plans.find((p) => p.id === selected) ?? plans[0] ?? null;
 
   useEffect(() => track('paywall_viewed'), []);
@@ -47,7 +49,9 @@ export default function Paywall() {
   const buy = () => {
     if (!plan) return;
     setBusy(true);
-    buyPlan(plan).finally(() => setBusy(false));
+    buyPlan(plan)
+      .then(setActive)
+      .finally(() => setBusy(false));
   };
 
   return (
@@ -63,6 +67,7 @@ export default function Paywall() {
         ))}
       </ScrollView>
       <PaywallFooter plan={plan} busy={busy} onBuy={buy} onLegal={setLegal} />
+      {active ? <Activated onDone={router.back} /> : null}
       <LegalSheet text={legal === 'terms' ? TERMS : legal === 'privacy' ? PRIVACY : null} onClose={() => setLegal(null)} />
     </SafeAreaView>
   );

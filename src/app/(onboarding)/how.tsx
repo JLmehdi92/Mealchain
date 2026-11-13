@@ -18,7 +18,7 @@ const STEPS: [IconName, StringKey, StringKey][] = [
 export default function How() {
   const c = useTheme();
   return (
-    <Screen title={t('onboarding.how.title')} footer={<Button label={t('common.continue')} onPress={() => router.push('/household')} />}>
+    <Screen title={t('onboarding.how.title')} footer={<Button testID="how-continue" label={t('common.continue')} onPress={() => router.push('/household')} />}>
       {STEPS.map(([icon, title, body]) => (
         <View key={title} style={styles.step}>
           <View style={[styles.icon, { backgroundColor: c.surface }]}>

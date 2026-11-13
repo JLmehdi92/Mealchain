@@ -29,7 +29,7 @@ export default function DietsStep() {
     <Screen
       title={t('diets.title')}
       subtitle={t('diets.subtitle')}
-      footer={<Button label={pick(COPY).save} disabled={saving} onPress={save} />}
+      footer={<Button testID="diets-save" label={pick(COPY).save} disabled={saving} onPress={save} />}
     >
       <DietsForm value={draft} onChange={setDraft} />
     </Screen>

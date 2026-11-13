@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue } from 'react-native-reanimated';
 
 import { Skeleton, TextButton } from '@/features/recipes/ui/parts';
 import { isAllowedUrl } from '@/lib/importApi';
 import { fill, pick, t } from '@/lib/i18n';
 import { Icon } from '@/ui/Icon';
+import { toward } from '@/ui/motion';
 import { NavBar } from '@/ui/NavBar';
 import { Body, Caption, Title } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
@@ -20,10 +23,20 @@ function sourceLine(input: ImportInput, s: (typeof importCopy)['en']): { icon: '
 
 function StepRow({ label, state }: { label: string; state: 'done' | 'now' | 'todo' }) {
   const c = useTheme();
-  const ring = state === 'now' ? { borderColor: c.strand, borderWidth: 2 } : state === 'todo' ? { borderColor: c.rule, borderWidth: 1.5 } : { backgroundColor: c.ink };
+  const reduced = useReducedMotion();
+  const done = useSharedValue(state === 'done' ? 1 : 0);
+  useEffect(() => {
+    done.set(toward(reduced, state === 'done' ? 1 : 0));
+  }, [done, reduced, state]);
+  const fill = useAnimatedStyle(() => (reduced ? { opacity: done.get() } : { opacity: Math.min(1, done.get() * 2), transform: [{ scale: 0.6 + 0.4 * done.get() }] }));
+  const ring = state === 'now' ? { borderColor: c.strand, borderWidth: 2 } : { borderColor: c.rule, borderWidth: 1.5 };
   return (
     <View style={styles.step} accessible accessibilityLabel={label} accessibilityState={{ checked: state === 'done', busy: state === 'now' }}>
-      <View style={[styles.check, ring]}>{state === 'done' ? <Icon name="checkmark" size={12} color={c.onInk} /> : null}</View>
+      <View style={[styles.check, ring]}>
+        <Animated.View style={[styles.checkFill, { backgroundColor: c.ink }, fill]}>
+          <Icon name="checkmark" size={12} color={c.onInk} />
+        </Animated.View>
+      </View>
       <Body muted={state === 'todo'}>{label}</Body>
     </View>
   );
@@ -68,7 +81,8 @@ const styles = StyleSheet.create({
   source: { flexDirection: 'row', gap: 6, alignItems: 'center', marginBottom: space.sm },
   steps: { marginTop: 28, gap: 14 },
   step: { flexDirection: 'row', gap: space.md, alignItems: 'center', minHeight: 24 },
-  check: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  check: { width: 24, height: 24, borderRadius: 12 },
+  checkFill: { position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   preview: { marginTop: space.xxxl, padding: space.lg, gap: 10, borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth },
   gap: { height: space.sm },
 });

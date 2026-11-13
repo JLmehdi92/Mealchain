@@ -1,15 +1,12 @@
-import { StyleSheet, View, type ViewProps } from 'react-native';
+import type { ComponentProps } from 'react';
+import { StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 import { radius, useTheme } from './theme';
 
-export function Card({ style, ...props }: ViewProps) {
+export function Card({ style, ...props }: ComponentProps<typeof Animated.View>) {
   const c = useTheme();
-  return (
-    <View
-      style={[styles.card, { backgroundColor: c.sheet, borderColor: c.rule }, style]}
-      {...props}
-    />
-  );
+  return <Animated.View style={[styles.card, { backgroundColor: c.sheet, borderColor: c.rule }, style]} {...props} />;
 }
 
 export const Group = Card;

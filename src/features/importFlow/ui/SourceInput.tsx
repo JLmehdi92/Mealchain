@@ -19,6 +19,7 @@ function SourceField({ link, value, onChange, onSubmit }: { link: boolean; value
   const s = pick(importCopy);
   return (
     <TextInput
+      testID="import-input"
       accessibilityLabel={link ? s.link : s.text}
       autoFocus
       value={value}
@@ -59,7 +60,7 @@ export function SourceInput({ kind, value, onChange, onSubmit, onBack }: Props) 
         {invalid ? <Caption style={{ color: c.chili }}>{s.badLink}</Caption> : null}
       </ScrollView>
       <View style={styles.footer}>
-        <Button label={s.importAction} disabled={!ready} onPress={submit} />
+        <Button testID="import-submit" label={s.importAction} disabled={!ready} onPress={submit} />
       </View>
     </KeyboardAvoidingView>
   );

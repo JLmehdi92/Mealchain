@@ -1,67 +1,84 @@
-import { useRef, useState } from 'react';
+import * as Haptics from 'expo-haptics';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Animated, { useReducedMotion, useSharedValue } from 'react-native-reanimated';
 
 import type { WeekPlan } from '@/features/planner/plan';
 import { unsafeSlots } from '@/features/planner/swap';
 import type { Household, Recipe } from '@/features/recipes/types';
 import { language, pick } from '@/lib/i18n';
+import { enterDown, pulse } from '@/ui/motion';
 import { Caption, H2 } from '@/ui/Text';
-import { space, useTheme } from '@/ui/theme';
+import { space } from '@/ui/theme';
 
 import { chainsOf, dateOf, dayLabel, daysOf } from '../chains';
 import { weekCopy } from '../copy';
-import { strandPath } from '../strands';
-import { MealCard, type Frame, type Host } from './MealCard';
-import { pillsFor } from './pills';
+import { strandsOf, type Frame } from '../strands';
+import { CarryToken, type Travel } from './CarryToken';
+import { MealCard, type Host } from './MealCard';
+import { chainThumb, pillsFor } from './pills';
+import { STRAND_START, STRAND_STAGGER, Strands } from './Strands';
 
-type Props = { plan: WeekPlan; recipes: Recipe[]; household: Household; weekStart: string; onOpen: (id: string) => void; onSwap: (slot: number) => void };
+type Props = {
+  plan: WeekPlan;
+  recipes: Recipe[];
+  household: Household;
+  weekStart: string;
+  animate: boolean;
+  onOpen: (id: string) => void;
+  onSwap: (slot: number) => void;
+};
 
 const same = (a: Frame | undefined, b: Frame) => !!a && a.top === b.top && a.right === b.right && a.pillRight === b.pillRight && a.pillY === b.pillY;
 
-function Strands({ plan, frames }: { plan: WeekPlan; frames: Record<number, Frame> }) {
-  const c = useTheme();
-  const paths = chainsOf(plan).flatMap((chain, index) => {
-    const from = frames[chain.fromSlot];
-    const pillRight = from?.pillRight;
-    const pillY = from?.pillY;
-    if (!from || pillRight === undefined || pillY === undefined) return [];
-    return chain.toSlots.flatMap((to) => {
-      const target = frames[to];
-      return target ? [{ key: `${chain.ingredientId}-${chain.fromSlot}-${to}`, ...strandPath({ pillRight, pillY, cardRight: from.right, targetTop: target.top, index }) }] : [];
-    });
-  });
-  return (
-    <Svg style={StyleSheet.absoluteFill} pointerEvents="none" accessible={false}>
-      {paths.map(({ key, d, start, end }) => (
-        <PathGroup key={key} d={d} start={start} end={end} color={c.strand} />
-      ))}
-    </Svg>
-  );
+function useCarry(plan: WeekPlan, frames: Record<number, Frame>, household: Household) {
+  const reduced = useReducedMotion();
+  const land = useSharedValue(0);
+  const [travel, setTravel] = useState<(Travel & { landSlot: number; landPill: string }) | null>(null);
+  const strands = strandsOf(plan, frames);
+  const play = (chain: number, delay: number) => {
+    const finishing = strands.filter((strand) => strand.chain === chain).at(-1);
+    const ingredientId = chainsOf(plan)[chain]?.ingredientId;
+    if (!finishing || !ingredientId) return;
+    setTravel((prev) => ({
+      d: finishing.d,
+      thumb: chainThumb(ingredientId, household.market),
+      delay,
+      run: (prev?.run ?? 0) + 1,
+      landSlot: finishing.toSlot,
+      landPill: `in-${ingredientId}`,
+    }));
+  };
+  const arrive = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    land.set(pulse(reduced));
+  };
+  return { strands, travel, land, play, arrive };
 }
 
-function PathGroup({ d, start, end, color }: { d: string; start: { x: number; y: number }; end: { x: number; y: number }; color: string }) {
-  return (
-    <>
-      <Path d={d} stroke={color} strokeWidth={2} strokeLinecap="round" fill="none" />
-      <Circle cx={start.x} cy={start.y} r={3} fill={color} />
-      <Circle cx={end.x} cy={end.y} r={3.5} fill={color} />
-    </>
-  );
-}
-
-export function PlanView({ plan, recipes, household, weekStart, onOpen, onSwap }: Props) {
+export function PlanView({ plan, recipes, household, weekStart, animate, onOpen, onSwap }: Props) {
   const s = pick(weekCopy);
+  const reduced = useReducedMotion();
   const body = useRef<Host>(null);
+  const played = useRef(false);
   const [frames, setFrames] = useState<Record<number, Frame>>({});
+  const { strands, travel, land, play, arrive } = useCarry(plan, frames, household);
   const unsafe = new Set(unsafeSlots(plan, recipes, household));
   const byId = new Map(recipes.map((recipe) => [recipe.id, recipe]));
+  const chains = chainsOf(plan);
   const measure = (slot: number) => (frame: Frame) => setFrames((all) => (same(all[slot], frame) ? all : { ...all, [slot]: frame }));
+  const ready = strands.length > 0;
+
+  useEffect(() => {
+    if (!animate || !ready || played.current) return;
+    played.current = true;
+    play(0, STRAND_START + strands.length * STRAND_STAGGER);
+  });
 
   return (
     <View ref={body} style={styles.body}>
-      {daysOf(plan).map(({ day, slots }) => (
-        <View key={day} style={styles.day}>
+      {daysOf(plan).map(({ day, slots }, i) => (
+        <Animated.View key={day} entering={animate ? enterDown(reduced, i * 40) : undefined} style={styles.day}>
           <View style={styles.dayName}>
             <Caption muted>{dayLabel(weekStart, day, language(), 'short')}</Caption>
             <H2>{dateOf(weekStart, day).getDate()}</H2>
@@ -72,21 +89,25 @@ export function PlanView({ plan, recipes, household, weekStart, onOpen, onSwap }
               return (
                 <MealCard
                   key={slot}
+                  testID={`meal-${slot}`}
                   recipe={entry ? byId.get(entry.recipeId) : undefined}
                   label={entry?.meal === 'lunch' ? s.lunch : undefined}
                   pills={pillsFor(plan, slot, weekStart, household.market)}
                   unsafe={unsafe.has(slot)}
                   body={body}
+                  landing={travel?.landSlot === slot ? { key: travel.landPill, value: land } : null}
                   onMeasure={measure(slot)}
                   onOpen={() => entry && onOpen(entry.recipeId)}
                   onSwap={() => onSwap(slot)}
+                  onCarry={(id) => play(chains.findIndex((chain) => chain.fromSlot === slot && chain.ingredientId === id), 0)}
                 />
               );
             })}
           </View>
-        </View>
+        </Animated.View>
       ))}
-      <Strands plan={plan} frames={frames} />
+      <Strands strands={strands} animate={animate} />
+      {travel ? <CarryToken key={travel.run} travel={travel} onArrive={arrive} /> : null}
     </View>
   );
 }

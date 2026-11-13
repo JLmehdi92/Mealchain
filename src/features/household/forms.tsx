@@ -23,12 +23,12 @@ export function HouseholdForm({ value, onChange }: FormProps) {
     <>
       <SectionLabel>{t('household.section')}</SectionLabel>
       <Group>
-        <StepperRow label={t('household.people')} value={value.people} min={1} max={12} onChange={(people) => onChange({ people })} />
+        <StepperRow testID="stepper-people" label={t('household.people')} value={value.people} min={1} max={12} onChange={(people) => onChange({ people })} />
       </Group>
       <SectionLabel>{t('household.meals')}</SectionLabel>
       <Group>
-        <StepperRow label={t('household.dinners')} value={value.dinners} min={0} max={7} onChange={(dinners) => onChange({ dinners })} />
-        <StepperRow label={t('household.lunches')} value={value.lunches} min={0} max={7} onChange={(lunches) => onChange({ lunches })} />
+        <StepperRow testID="stepper-dinners" label={t('household.dinners')} value={value.dinners} min={0} max={7} onChange={(dinners) => onChange({ dinners })} />
+        <StepperRow testID="stepper-lunches" label={t('household.lunches')} value={value.lunches} min={0} max={7} onChange={(lunches) => onChange({ lunches })} />
       </Group>
       <SectionLabel>{t('household.maxPrep')}</SectionLabel>
       <Segmented
@@ -55,6 +55,7 @@ export function AllergiesForm({ value, onChange }: FormProps) {
         {ALLERGEN_ORDER.map((allergen) => (
           <Chip
             key={allergen}
+            testID={`allergen-${allergen}`}
             label={labels[allergen]}
             selected={value.allergens.includes(allergen)}
             onPress={() => onChange({ allergens: toggle(value.allergens, allergen) })}
@@ -77,7 +78,7 @@ export function DietsForm({ value, onChange }: FormProps) {
       <SectionLabel>{t('diets.section')}</SectionLabel>
       <View style={styles.chips}>
         {DIETS.map((diet) => (
-          <Chip key={diet} label={diets[diet]} selected={value.diets.includes(diet)} onPress={() => onChange({ diets: toggle(value.diets, diet) })} />
+          <Chip key={diet} testID={`diet-${diet}`} label={diets[diet]} selected={value.diets.includes(diet)} onPress={() => onChange({ diets: toggle(value.diets, diet) })} />
         ))}
       </View>
       <SectionLabel>{t('diets.equipment')}</SectionLabel>
@@ -85,6 +86,7 @@ export function DietsForm({ value, onChange }: FormProps) {
         {EQUIPMENT.map((item) => (
           <ToggleRow
             key={item}
+            testID={`equipment-${item}`}
             label={equipment[item]}
             value={value.equipment.includes(item)}
             onChange={() => onChange({ equipment: toggle(value.equipment, item) })}

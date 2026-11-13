@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { Press } from './Press';
 import { Body, Secondary } from './Text';
 import { space, useTheme } from './theme';
 
@@ -9,18 +10,19 @@ type Props = { label: string; detail?: string; trailing?: ReactNode; onPress?: (
 export function Row({ label, detail, trailing, onPress }: Props) {
   const c = useTheme();
   return (
-    <Pressable
+    <Press
       accessibilityRole={onPress ? 'button' : undefined}
       disabled={!onPress}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, { borderTopColor: c.rule }, pressed && { backgroundColor: c.surface }]}
+      highlight={c.surface}
+      style={[styles.row, { borderTopColor: c.rule }]}
     >
       <View style={styles.grow}>
         <Body>{label}</Body>
         {detail ? <Secondary muted>{detail}</Secondary> : null}
       </View>
       {trailing}
-    </Pressable>
+    </Press>
   );
 }
 

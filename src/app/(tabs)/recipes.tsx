@@ -28,8 +28,8 @@ export default function Recipes() {
       <NavBar
         right={
           <>
-            <IconButton name="gearshape" label={s.settings} onPress={() => router.push('/settings')} />
-            {count > 0 ? <IconButton name="plus" label={s.add} onPress={add} /> : null}
+            <IconButton testID="open-settings" name="gearshape" label={s.settings} onPress={() => router.push('/settings')} />
+            {count > 0 ? <IconButton testID="add-recipe" name="plus" label={s.add} onPress={add} /> : null}
           </>
         }
       />
@@ -37,7 +37,7 @@ export default function Recipes() {
         <View style={styles.pad}>
           <Title>{s.title}</Title>
           <Empty art={<BoxScene />} title={s.emptyTitle} body={s.emptyBody}>
-            <Button label={s.add} onPress={add} />
+            <Button testID="add-recipe" label={s.add} onPress={add} />
           </Empty>
         </View>
       ) : (

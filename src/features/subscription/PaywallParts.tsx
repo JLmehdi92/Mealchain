@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { fill, pick, t } from '@/lib/i18n';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { IconButton } from '@/ui/IconButton';
+import { Press } from '@/ui/Press';
 import { Body, Caption, Secondary } from '@/ui/Text';
 import { space, touch, useTheme } from '@/ui/theme';
 
@@ -16,10 +17,10 @@ export function PaywallNav() {
   const copy = pick(PAYWALL_COPY);
   return (
     <View style={styles.nav}>
-      <IconButton name="xmark" label={t('common.close')} onPress={() => router.back()} />
-      <Pressable accessibilityRole="button" onPress={() => restoreWithFeedback().then((ok) => ok && router.back())} style={styles.navButton}>
+      <IconButton testID="paywall-close" name="xmark" label={t('common.close')} onPress={() => router.back()} />
+      <Press testID="paywall-restore" accessibilityRole="button" onPress={() => restoreWithFeedback().then((ok) => ok && router.back())} style={styles.navButton}>
         <Secondary muted>{copy.restore}</Secondary>
-      </Pressable>
+      </Press>
     </View>
   );
 }
@@ -64,7 +65,7 @@ export function PaywallFooter({ plan, busy, onBuy, onLegal }: FooterProps) {
   const billed = !plan ? '' : plan.id === 'monthly' ? copy.legalMonthly : trial ? copy.legalYearlyTrial : copy.legalYearly;
   return (
     <View style={styles.bottom}>
-      <Button label={trial ? copy.startTrial : copy.subscribe} disabled={busy || !plan} onPress={onBuy} />
+      <Button testID="paywall-subscribe" label={trial ? copy.startTrial : copy.subscribe} disabled={busy || !plan} onPress={onBuy} />
       {trial ? <Caption muted style={styles.center}>{copy.reminder}</Caption> : null}
       <Caption muted style={styles.center}>
         {plan ? `${fill(billed, { price: plan.price })} ` : ''}

@@ -1,5 +1,7 @@
+import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
+import { SceneLayer, StaticLayer } from '@/ui/SceneLayer';
 import { useTheme } from '@/ui/theme';
 
 import type { Thumb } from '../meta';
@@ -62,28 +64,48 @@ function IndexCard({ x, y, rot, band }: { x: number; y: number; rot: number; ban
   );
 }
 
+const BOX = '0 0 240 180';
+const DROP = { y: -14 };
+const RISE = { y: 30, opacity: 1 };
+
 export function BoxScene() {
   const c = useTheme();
   return (
-    <Svg width={240} height={180} viewBox="0 0 240 180" accessible={false}>
-      <Rect x={18} y={20} width={58} height={26} rx={13} fill={c.sheet} />
-      <Path d="M36 35 l6-6 M33 31 l-3 3 a3.5 3.5 0 0 0 5 5 l3-3 M45 30 l3-3 a3.5 3.5 0 0 0-5-5 l-3 3" stroke={c.ink} strokeWidth={1.8} fill="none" strokeLinecap="round" />
-      <Rect x={52} y={30} width={16} height={4} rx={2} fill={c.ink2} opacity={0.4} />
-      <Path d="M168 14 h48 a10 10 0 0 1 10 10 v14 a10 10 0 0 1-10 10 h-30 l-8 8 v-8 h-10 a10 10 0 0 1-10-10 v-14 a10 10 0 0 1 10-10z" fill={c.sheet} />
-      <Rect x={170} y={24} width={40} height={4} rx={2} fill={c.ink2} opacity={0.45} />
-      <Rect x={170} y={33} width={28} height={4} rx={2} fill={c.ink2} opacity={0.45} />
-      <Rect x={104} y={4} width={32} height={54} rx={7} fill={c.ink} />
-      <Rect x={107} y={10} width={26} height={42} rx={4} fill={c.sheet} />
-      <Rect x={111} y={16} width={18} height={12} rx={2} fill={ILLU.crust} />
-      <Rect x={111} y={32} width={18} height={3} rx={1.5} fill={c.ink2} opacity={0.45} />
-      <Rect x={111} y={39} width={12} height={3} rx={1.5} fill={c.ink2} opacity={0.45} />
-      <Rect x={44} y={96} width={152} height={18} rx={6} fill={ILLU.ceramicDark} />
-      <IndexCard x={62} y={64} rot={-9} band={ILLU.crust} />
-      <IndexCard x={122} y={66} rot={10} band={ILLU.leaf} />
-      <IndexCard x={92} y={56} rot={2} />
-      <Path d="M38 108 h164 l-8 58 a12 12 0 0 1-12 10 h-124 a12 12 0 0 1-12-10z" fill={ILLU.ceramic} />
-      <Rect x={102} y={128} width={36} height={12} rx={6} fill={c.sheet} opacity={0.8} />
-    </Svg>
+    <View style={styles.box}>
+      <SceneLayer viewBox={BOX} delay={150} from={DROP}>
+        <Rect x={18} y={20} width={58} height={26} rx={13} fill={c.sheet} />
+        <Path d="M36 35 l6-6 M33 31 l-3 3 a3.5 3.5 0 0 0 5 5 l3-3 M45 30 l3-3 a3.5 3.5 0 0 0-5-5 l-3 3" stroke={c.ink} strokeWidth={1.8} fill="none" strokeLinecap="round" />
+        <Rect x={52} y={30} width={16} height={4} rx={2} fill={c.ink2} opacity={0.4} />
+      </SceneLayer>
+      <SceneLayer viewBox={BOX} delay={270} from={DROP}>
+        <Path d="M168 14 h48 a10 10 0 0 1 10 10 v14 a10 10 0 0 1-10 10 h-30 l-8 8 v-8 h-10 a10 10 0 0 1-10-10 v-14 a10 10 0 0 1 10-10z" fill={c.sheet} />
+        <Rect x={170} y={24} width={40} height={4} rx={2} fill={c.ink2} opacity={0.45} />
+        <Rect x={170} y={33} width={28} height={4} rx={2} fill={c.ink2} opacity={0.45} />
+      </SceneLayer>
+      <SceneLayer viewBox={BOX} delay={390} from={DROP}>
+        <Rect x={104} y={4} width={32} height={54} rx={7} fill={c.ink} />
+        <Rect x={107} y={10} width={26} height={42} rx={4} fill={c.sheet} />
+        <Rect x={111} y={16} width={18} height={12} rx={2} fill={ILLU.crust} />
+        <Rect x={111} y={32} width={18} height={3} rx={1.5} fill={c.ink2} opacity={0.45} />
+        <Rect x={111} y={39} width={12} height={3} rx={1.5} fill={c.ink2} opacity={0.45} />
+      </SceneLayer>
+      <StaticLayer viewBox={BOX}>
+        <Rect x={44} y={96} width={152} height={18} rx={6} fill={ILLU.ceramicDark} />
+      </StaticLayer>
+      <SceneLayer viewBox={BOX} delay={500} from={RISE}>
+        <IndexCard x={62} y={64} rot={-9} band={ILLU.crust} />
+      </SceneLayer>
+      <SceneLayer viewBox={BOX} delay={580} from={RISE}>
+        <IndexCard x={122} y={66} rot={10} band={ILLU.leaf} />
+      </SceneLayer>
+      <SceneLayer viewBox={BOX} delay={660} from={RISE}>
+        <IndexCard x={92} y={56} rot={2} />
+      </SceneLayer>
+      <StaticLayer viewBox={BOX}>
+        <Path d="M38 108 h164 l-8 58 a12 12 0 0 1-12 10 h-124 a12 12 0 0 1-12-10z" fill={ILLU.ceramic} />
+        <Rect x={102} y={128} width={36} height={12} rx={6} fill={c.sheet} opacity={0.8} />
+      </StaticLayer>
+    </View>
   );
 }
 
@@ -102,3 +124,5 @@ export function PageScene() {
     </Svg>
   );
 }
+
+const styles = StyleSheet.create({ box: { width: 240, height: 180 } });

@@ -15,7 +15,7 @@ import { weekCopy } from '../copy';
 import { PlanLoading } from './PlanLoading';
 import { PlanView } from './PlanView';
 
-type Props = { planning: boolean; onPlan: () => void; onSwap: (slot: number) => void };
+type Props = { planning: boolean; composed: boolean; onPlan: () => void; onSwap: (slot: number) => void };
 
 function summary(plan: WeekPlan, weekStart: string, lunches: number): string {
   const s = pick(weekCopy);
@@ -26,7 +26,7 @@ function summary(plan: WeekPlan, weekStart: string, lunches: number): string {
   return [rangeLabel(weekStart, Math.min(...days), Math.max(...days), language()), meals, ...finished].join(' · ');
 }
 
-export function WeekContent({ planning, onPlan, onSwap }: Props) {
+export function WeekContent({ planning, composed, onPlan, onSwap }: Props) {
   const s = pick(weekCopy);
   const plan = usePlan();
   const recipes = useRecipes();
@@ -39,7 +39,7 @@ export function WeekContent({ planning, onPlan, onSwap }: Props) {
       <>
         <Title>{s.title}</Title>
         <Secondary muted>{summary(plan, weekStart, household.lunches)}</Secondary>
-        <PlanView plan={plan} recipes={recipes} household={household} weekStart={weekStart} onSwap={onSwap} onOpen={(id) => router.push({ pathname: '/recipe/[id]', params: { id } })} />
+        <PlanView plan={plan} recipes={recipes} household={household} weekStart={weekStart} animate={composed} onSwap={onSwap} onOpen={(id) => router.push({ pathname: '/recipe/[id]', params: { id } })} />
       </>
     );
   }
@@ -55,7 +55,7 @@ export function WeekContent({ planning, onPlan, onSwap }: Props) {
       <Title>{plan ? s.nothingFits : s.title}</Title>
       <Secondary muted>{plan ? s.nothingFitsBody : fill(s.startBody, { count: recipes.length })}</Secondary>
       <View style={styles.cta}>
-        <Button label={s.start} onPress={onPlan} />
+        <Button testID="plan-week" label={s.start} onPress={onPlan} />
       </View>
     </>
   );

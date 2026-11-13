@@ -1,17 +1,18 @@
 import * as Haptics from 'expo-haptics';
-import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 
 import { fill, pick } from '@/lib/i18n';
 import { Icon, type IconName } from '@/ui/Icon';
+import { Press } from '@/ui/Press';
 import { Row } from '@/ui/Row';
 import { Body, Secondary } from '@/ui/Text';
 import { radius, space, touch, useTheme } from '@/ui/theme';
 
 import { COPY } from './labels';
 
-type StepperProps = { label: string; value: number; min: number; max: number; onChange: (value: number) => void };
+type StepperProps = { label: string; value: number; min: number; max: number; onChange: (value: number) => void; testID?: string };
 
-function Stepper({ label, value, min, max, onChange }: StepperProps) {
+function Stepper({ label, value, min, max, onChange, testID }: StepperProps) {
   const c = useTheme();
   const copy = pick(COPY);
   const step = (delta: number) => {
@@ -21,7 +22,8 @@ function Stepper({ label, value, min, max, onChange }: StepperProps) {
     onChange(next);
   };
   const button = (delta: number, icon: IconName, a11y: string) => (
-    <Pressable
+    <Press
+      testID={testID && `${testID}-${delta < 0 ? 'minus' : 'plus'}`}
       accessibilityRole="button"
       accessibilityLabel={fill(a11y, { label: label.toLocaleLowerCase() })}
       accessibilityState={{ disabled: delta < 0 ? value <= min : value >= max }}
@@ -30,7 +32,7 @@ function Stepper({ label, value, min, max, onChange }: StepperProps) {
       style={styles.stepButton}
     >
       <Icon name={icon} size={16} />
-    </Pressable>
+    </Press>
   );
   return (
     <View style={[styles.stepper, { backgroundColor: c.surface }]}>
@@ -63,7 +65,7 @@ export function Segmented<T>({ options, value, onChange }: SegmentedProps<T>) {
       {options.map((option) => {
         const on = option.value === value;
         return (
-          <Pressable
+          <Press
             key={option.label}
             accessibilityRole="radio"
             accessibilityState={{ selected: on }}
@@ -74,22 +76,22 @@ export function Segmented<T>({ options, value, onChange }: SegmentedProps<T>) {
             style={[styles.segButton, on && { backgroundColor: c.sheet }]}
           >
             <Secondary style={{ fontWeight: on ? '500' : '400' }}>{option.label}</Secondary>
-          </Pressable>
+          </Press>
         );
       })}
     </View>
   );
 }
 
-type ToggleProps = { label: string; detail?: string; value: boolean; onChange: (value: boolean) => void };
+type ToggleProps = { label: string; detail?: string; value: boolean; onChange: (value: boolean) => void; testID?: string };
 
-export function ToggleRow({ label, detail, value, onChange }: ToggleProps) {
+export function ToggleRow({ label, detail, value, onChange, testID }: ToggleProps) {
   const c = useTheme();
   return (
     <Row
       label={label}
       detail={detail}
-      trailing={<Switch accessibilityLabel={label} value={value} onValueChange={onChange} trackColor={{ true: c.ink, false: c.surface }} />}
+      trailing={<Switch testID={testID} accessibilityLabel={label} value={value} onValueChange={onChange} trackColor={{ true: c.ink, false: c.surface }} />}
     />
   );
 }

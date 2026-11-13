@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
+import Animated, { LayoutAnimationConfig, useReducedMotion } from 'react-native-reanimated';
 
 import { BagScene } from '@/features/list/BagScene';
 import { LIST_COPY } from '@/features/list/copy';
@@ -13,22 +14,25 @@ import { Button } from '@/ui/Button';
 import { Group } from '@/ui/Card';
 import { Empty } from '@/ui/Empty';
 import { IconButton } from '@/ui/IconButton';
+import { enterDown, exitFade, REFLOW } from '@/ui/motion';
 import { Screen } from '@/ui/Screen';
 import { SectionLabel } from '@/ui/SectionLabel';
 import { Caption, Secondary } from '@/ui/Text';
 import { space } from '@/ui/theme';
 
 function Rows({ label, rows, onToggle }: { label: string; rows: Row[]; onToggle: (id: string) => void }) {
+  const reduced = useReducedMotion();
+  const layout = reduced ? undefined : REFLOW;
   if (rows.length === 0) return null;
   return (
-    <>
+    <Animated.View entering={enterDown(reduced)} exiting={exitFade(reduced)} layout={layout} style={styles.section}>
       <SectionLabel>{label}</SectionLabel>
-      <Group>
+      <Group layout={layout}>
         {rows.map((row) => (
           <ListRow key={row.id} row={row} onToggle={onToggle} />
         ))}
       </Group>
-    </>
+    </Animated.View>
   );
 }
 
@@ -50,14 +54,16 @@ export default function List() {
     <Screen title={t('list.title')}>
       <View style={styles.meta}>
         <Secondary muted style={styles.grow}>{fill(shared ? (one ? copy.sharedOne : copy.shared) : one ? copy.packsOne : copy.packs, { n: sections.packCount })}</Secondary>
-        <IconButton name="square.and.arrow.up" label={copy.share} onPress={shareList} />
+        <IconButton testID="share-list" name="square.and.arrow.up" label={copy.share} onPress={shareList} />
       </View>
-      {sections.aisles.map((group) => (
-        <Rows key={group.aisle} label={copy.aisles[group.aisle]} rows={group.rows} onToggle={toggle} />
-      ))}
-      <Rows label={copy.toCheck} rows={sections.toCheck} onToggle={toggle} />
-      {sections.toCheck.length > 0 ? <Caption muted>{copy.toCheckHint}</Caption> : null}
-      <Rows label={copy.cart} rows={sections.cart} onToggle={toggle} />
+      <LayoutAnimationConfig skipEntering>
+        {sections.aisles.map((group) => (
+          <Rows key={group.aisle} label={copy.aisles[group.aisle]} rows={group.rows} onToggle={toggle} />
+        ))}
+        <Rows label={copy.toCheck} rows={sections.toCheck} onToggle={toggle} />
+        {sections.toCheck.length > 0 ? <Caption muted>{copy.toCheckHint}</Caption> : null}
+        <Rows label={copy.cart} rows={sections.cart} onToggle={toggle} />
+      </LayoutAnimationConfig>
     </Screen>
   );
 }
@@ -65,4 +71,5 @@ export default function List() {
 const styles = StyleSheet.create({
   meta: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   grow: { flex: 1 },
+  section: { gap: space.md },
 });

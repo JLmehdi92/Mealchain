@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ALLERGEN_LABELS, EQUIPMENT_LABELS } from '@/features/household/labels';
 import { checkRecipe, type Reason } from '@/features/planner/filter';
 import type { WeekPlan } from '@/features/planner/plan';
 import { dayLabel } from '@/features/week/chains';
 import { fill, language, pick, t } from '@/lib/i18n';
+import { Press } from '@/ui/Press';
 import { Tag } from '@/ui/Tag';
 import { Body, Caption, H2 } from '@/ui/Text';
 import { fonts, space, useTheme } from '@/ui/theme';
@@ -55,10 +56,12 @@ export function RecipeCard({ recipe, household, plan, weekStart, first }: Props)
   const toCheck = reviewCount(recipe);
   const day = slot ? fill(s.thisWeek, { day: dayLabel(weekStart, slot.day, language(), 'short') }) : null;
   return (
-    <Pressable
+    <Press
+      testID={`recipe-${recipe.id}`}
       accessibilityRole="button"
       onPress={() => router.push({ pathname: '/recipe/[id]', params: { id: recipe.id } })}
-      style={({ pressed }) => [styles.card, pressed && { backgroundColor: c.surface }]}
+      highlight={c.surface}
+      style={styles.card}
     >
       <Thumb recipe={recipe} household={household} />
       <View style={[styles.body, !first && { borderTopColor: c.rule, borderTopWidth: StyleSheet.hairlineWidth }]}>
@@ -70,7 +73,7 @@ export function RecipeCard({ recipe, household, plan, weekStart, first }: Props)
           {reason ? <Tag kind="excluded" label={fill(s.leftOut, { reason: reasonText(reason) })} /> : null}
         </View>
       </View>
-    </Pressable>
+    </Press>
   );
 }
 

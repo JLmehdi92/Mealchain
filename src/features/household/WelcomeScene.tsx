@@ -1,6 +1,10 @@
-import Svg, { Circle, Ellipse, G, Path, Rect, Text } from 'react-native-svg';
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Circle, Ellipse, G, Path, Rect, Text } from 'react-native-svg';
+
 
 import { pick } from '@/lib/i18n';
+import { SceneLayer, StaticLayer } from '@/ui/SceneLayer';
 import { fonts, useTheme, type Colors } from '@/ui/theme';
 
 export const ILLU = {
@@ -79,28 +83,51 @@ function GratinDish({ x, y, c }: { x: number; y: number; c: Colors }) {
   );
 }
 
+const VIEW = '0 0 337 290';
+const CARTON = 'translate(128 0) scale(1.3)';
+const HALF_SHIFT = { x: 13, y: -7.8 };
+
 export function WelcomeScene() {
   const c = useTheme();
   const copy = pick(COPY);
+  const [unit, setUnit] = useState(1);
   const trail = { fill: 'none', stroke: c.strand, strokeWidth: 2.5, strokeLinecap: 'round' as const, strokeDasharray: '1 7' };
   return (
-    <Svg viewBox="0 0 337 290" width="100%" style={{ aspectRatio: 337 / 290 }} accessibilityElementsHidden>
-      <Path d="M138 150 C 118 162 100 160 88 150" {...trail} />
-      <Path d="M212 142 C 236 150 250 162 256 182" {...trail} />
-      <OrzoPlate cx={76} cy={214} c={c} />
-      <GratinDish x={198} y={190} c={c} />
-      <G transform="translate(128 0) scale(1.3)">
-        <CartonHalf side="l" label={copy.size} c={c} />
-        <G transform="translate(10 -6)">
-          <CartonHalf side="r" label={copy.size} c={c} />
+    <View style={styles.scene} onLayout={(e) => setUnit(e.nativeEvent.layout.width / 337)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <SceneLayer viewBox={VIEW} delay={650} from={{}}>
+        <Path d="M138 150 C 118 162 100 160 88 150" {...trail} />
+      </SceneLayer>
+      <SceneLayer viewBox={VIEW} delay={800} from={{}}>
+        <Path d="M212 142 C 236 150 250 162 256 182" {...trail} />
+      </SceneLayer>
+      <SceneLayer viewBox={VIEW} delay={100} from={{ scale: 0.86, origin: '22.5% 73.8%' }}>
+        <OrzoPlate cx={76} cy={214} c={c} />
+      </SceneLayer>
+      <SceneLayer viewBox={VIEW} delay={180} from={{ scale: 0.86, origin: '76.9% 79.3%' }}>
+        <GratinDish x={198} y={190} c={c} />
+      </SceneLayer>
+      <StaticLayer viewBox={VIEW}>
+        <G transform={CARTON}>
+          <CartonHalf side="l" label={copy.size} c={c} />
         </G>
-      </G>
-      <Text x={76} y={284} textAnchor="middle" fontSize={13} fill={c.ink2}>
-        {copy.mon}
-      </Text>
-      <Text x={259} y={284} textAnchor="middle" fontSize={13} fill={c.ink2}>
-        {copy.wed}
-      </Text>
-    </Svg>
+      </StaticLayer>
+      <SceneLayer viewBox={VIEW} delay={350} land from={{ x: -HALF_SHIFT.x * unit, y: -HALF_SHIFT.y * unit, opacity: 1 }}>
+        <G transform={CARTON}>
+          <G transform="translate(10 -6)">
+            <CartonHalf side="r" label={copy.size} c={c} />
+          </G>
+        </G>
+      </SceneLayer>
+      <SceneLayer viewBox={VIEW} delay={900} from={{}}>
+        <Text x={76} y={284} textAnchor="middle" fontSize={13} fill={c.ink2}>
+          {copy.mon}
+        </Text>
+        <Text x={259} y={284} textAnchor="middle" fontSize={13} fill={c.ink2}>
+          {copy.wed}
+        </Text>
+      </SceneLayer>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({ scene: { width: '100%', aspectRatio: 337 / 290 } });

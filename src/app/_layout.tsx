@@ -4,6 +4,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 
 import migrations from '../../drizzle/migrations';
 import { useProfileSync } from '@/features/household/useProfileSync';
@@ -30,6 +31,7 @@ export default function RootLayout() {
   const ready = useReady();
   const household = useHousehold();
   const c = useTheme();
+  const reduced = useReducedMotion();
   const [loadError, setLoadError] = useState<unknown>(null);
 
   useEffect(() => {
@@ -54,13 +56,17 @@ export default function RootLayout() {
   if (!ready || !fontsLoaded) return null;
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.paper } }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.paper }, animation: reduced ? 'fade' : 'default' }}>
       <Stack.Protected guard={!!household}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="settings" />
         <Stack.Screen name="recipe/[id]" />
         <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
         <Stack.Screen name="import" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="swap"
+          options={{ presentation: 'formSheet', sheetAllowedDetents: [0.6, 1], sheetGrabberVisible: true, contentStyle: { backgroundColor: c.sheet } }}
+        />
       </Stack.Protected>
       <Stack.Protected guard={!household}>
         <Stack.Screen name="(onboarding)" />

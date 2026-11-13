@@ -1,14 +1,12 @@
 import * as Haptics from 'expo-haptics';
-import { Pressable, StyleSheet, type PressableProps } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { StyleSheet, type PressableProps } from 'react-native';
 
+import { Press } from './Press';
 import { Body, Secondary } from './Text';
 import { touch, useTheme, type Colors } from './theme';
 
 type Kind = 'primary' | 'secondary' | 'quiet' | 'danger';
 type Props = Omit<PressableProps, 'children' | 'style'> & { label: string; kind?: Kind };
-
-const SPRING = { damping: 40, stiffness: 500 };
 
 function palette(c: Colors, kind: Kind) {
   switch (kind) {
@@ -23,43 +21,26 @@ function palette(c: Colors, kind: Kind) {
   }
 }
 
-export function Button({ label, kind = 'primary', onPressIn, onPressOut, onPress, disabled, ...props }: Props) {
+export function Button({ label, kind = 'primary', onPress, disabled, ...props }: Props) {
   const c = useTheme();
-  const scale = useSharedValue(1);
-  const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
   const { bg, fg } = palette(c, kind);
   const Label = kind === 'quiet' ? Secondary : Body;
 
   return (
-    <Pressable
+    <Press
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
-      onPressIn={(e) => {
-        scale.set(withSpring(0.97, SPRING));
-        onPressIn?.(e);
-      }}
-      onPressOut={(e) => {
-        scale.set(withSpring(1, SPRING));
-        onPressOut?.(e);
-      }}
       onPress={(e) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
       }}
+      style={[styles.base, { backgroundColor: bg, minHeight: kind === 'quiet' ? touch.min : touch.button, opacity: disabled ? 0.5 : 1 }]}
       {...props}
     >
-      <Animated.View
-        style={[
-          styles.base,
-          { backgroundColor: bg, minHeight: kind === 'quiet' ? touch.min : touch.button, opacity: disabled ? 0.5 : 1 },
-          animated,
-        ]}
-      >
-        <Label style={{ color: fg, fontWeight: kind === 'quiet' ? '400' : '500' }}>{label}</Label>
-      </Animated.View>
-    </Pressable>
+      <Label style={{ color: fg, fontWeight: kind === 'quiet' ? '400' : '500' }}>{label}</Label>
+    </Press>
   );
 }
 

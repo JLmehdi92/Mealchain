@@ -1,14 +1,17 @@
-import { Pressable, StyleSheet, TextInput, View, type DimensionValue } from 'react-native';
+import { StyleSheet, TextInput, View, type DimensionValue } from 'react-native';
 
 import { Icon } from '@/ui/Icon';
+import { Press } from '@/ui/Press';
 import { Body } from '@/ui/Text';
 import { radius, space, touch, type as typography, useTheme } from '@/ui/theme';
 
-export function TextButton({ label, onPress, strong }: { label: string; onPress: () => void; strong?: boolean }) {
+type TextButtonProps = { label: string; onPress: () => void; strong?: boolean; testID?: string };
+
+export function TextButton({ label, onPress, strong, testID }: TextButtonProps) {
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} hitSlop={8} style={styles.textButton}>
+    <Press testID={testID} accessibilityRole="button" onPress={onPress} hitSlop={8} style={styles.textButton}>
       <Body style={strong ? styles.strong : undefined}>{label}</Body>
-    </Pressable>
+    </Press>
   );
 }
 

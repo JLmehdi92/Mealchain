@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { remoteAvailable } from '@/lib/importApi';
 import { pick, t } from '@/lib/i18n';
 import { Icon, type IconName } from '@/ui/Icon';
 import { IconButton } from '@/ui/IconButton';
+import { Press } from '@/ui/Press';
 import { Body, Caption, H2 } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
 
@@ -11,15 +12,12 @@ import { importCopy } from '../copy';
 
 type Props = { onLink: () => void; onText: () => void; onShot: () => void; onClose: () => void };
 
-function Option({ icon, label, hint, onPress }: { icon: IconName; label: string; hint: string; onPress: () => void }) {
+type OptionProps = { icon: IconName; label: string; hint: string; onPress: () => void; testID: string };
+
+function Option({ icon, label, hint, onPress, testID }: OptionProps) {
   const c = useTheme();
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityHint={hint}
-      onPress={onPress}
-      style={({ pressed }) => [styles.option, { backgroundColor: pressed ? c.surface : c.paper }]}
-    >
+    <Press testID={testID} accessibilityRole="button" accessibilityHint={hint} onPress={onPress} style={[styles.option, { backgroundColor: c.paper }]}>
       <View style={[styles.optionIcon, { backgroundColor: c.surface }]}>
         <Icon name={icon} />
       </View>
@@ -28,7 +26,7 @@ function Option({ icon, label, hint, onPress }: { icon: IconName; label: string;
         <Caption muted>{hint}</Caption>
       </View>
       <Icon name="chevron.right" size={16} muted />
-    </Pressable>
+    </Press>
   );
 }
 
@@ -38,11 +36,11 @@ export function ChooseSource({ onLink, onText, onShot, onClose }: Props) {
     <View style={styles.sheet}>
       <View style={styles.head}>
         <H2>{s.title}</H2>
-        <IconButton name="xmark" label={t('common.close')} onPress={onClose} />
+        <IconButton testID="import-close" name="xmark" label={t('common.close')} onPress={onClose} />
       </View>
-      <Option icon="link" label={s.link} hint={s.linkHint} onPress={onLink} />
-      <Option icon="doc.text" label={s.text} hint={s.textHint} onPress={onText} />
-      <Option icon="camera" label={s.shot} hint={s.shotHint} onPress={onShot} />
+      <Option testID="import-link" icon="link" label={s.link} hint={s.linkHint} onPress={onLink} />
+      <Option testID="import-text" icon="doc.text" label={s.text} hint={s.textHint} onPress={onText} />
+      <Option testID="import-screenshot" icon="camera" label={s.shot} hint={s.shotHint} onPress={onShot} />
       {remoteAvailable() ? <Caption muted style={styles.note}>{s.aiNote}</Caption> : null}
     </View>
   );

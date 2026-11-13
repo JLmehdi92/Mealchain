@@ -1,4 +1,5 @@
 import * as Crypto from 'expo-crypto';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
@@ -47,8 +48,9 @@ function useRunGuard() {
 
 async function save(recipe: Recipe, pro: boolean) {
   try {
-    if ((await saveImported(recipe, pro)) === 'paywall') router.replace('/paywall');
-    else router.back();
+    if ((await saveImported(recipe, pro)) === 'paywall') return router.replace('/paywall');
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    router.back();
   } catch {
     Alert.alert(pick(reviewCopy).saveFailed);
   }

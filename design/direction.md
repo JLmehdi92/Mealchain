@@ -137,3 +137,9 @@ contour, une ombre portée unique décalée vers le bas. Aucune image générée
 | Liste | La coche se remplit, un trait barre l'article, la ligne rejoint « Dans le panier » | Satisfaction du cochage |
 | Paywall | La feuille monte, l'écran dessous recule et s'assombrit | Hiérarchie claire |
 | Abonnement activé | Haptique `success`, les deux moitiés de la marque se rejoignent | Célébrer sans confettis |
+
+Dans l'app, la navigation et les feuilles restent natives : poussée iOS du stack (fondu si « Réduire les
+animations »), paywall et import en `modal` (la feuille iOS fait reculer et assombrir l'écran dessous ; l'import
+change de hauteur en cours de route, donc pas de crans), changement de repas en `formSheet` à crans 60 % / 100 %
+avec poignée : `UISheetPresentationController` suit le doigt, reste interruptible, transmet la vitesse et
+freine au-delà du cran haut, ce qu'une feuille Gesture Handler refaite en JS n'améliorerait pas.

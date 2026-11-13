@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useReducedMotion } from 'react-native-reanimated';
 
 import { plainHeader } from '@/features/household/header';
 import { t } from '@/lib/i18n';
@@ -11,8 +12,9 @@ function Step({ current }: { current: number }) {
 
 export default function OnboardingLayout() {
   const c = useTheme();
+  const reduced = useReducedMotion();
   return (
-    <Stack screenOptions={{ ...plainHeader(c), contentStyle: { backgroundColor: c.paper } }}>
+    <Stack screenOptions={{ ...plainHeader(c), contentStyle: { backgroundColor: c.paper }, animation: reduced ? 'fade' : 'default' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="how" />
       <Stack.Screen name="household" options={{ headerRight: () => <Step current={1} /> }} />

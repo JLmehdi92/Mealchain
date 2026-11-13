@@ -12,7 +12,7 @@ export default function AllergiesStep() {
     <Screen
       title={t('allergies.title')}
       subtitle={t('allergies.subtitle')}
-      footer={<Button label={t('common.next')} onPress={() => router.push('/diets')} />}
+      footer={<Button testID="allergies-next" label={t('common.next')} onPress={() => router.push('/diets')} />}
     >
       <AllergiesForm value={draft} onChange={setDraft} />
     </Screen>

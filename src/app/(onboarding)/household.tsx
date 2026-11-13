@@ -12,7 +12,7 @@ export default function HouseholdStep() {
     <Screen
       title={t('household.title')}
       subtitle={t('household.subtitle')}
-      footer={<Button label={t('common.next')} onPress={() => router.push('/allergies')} />}
+      footer={<Button testID="household-next" label={t('common.next')} onPress={() => router.push('/allergies')} />}
     >
       <HouseholdForm value={draft} onChange={setDraft} />
     </Screen>

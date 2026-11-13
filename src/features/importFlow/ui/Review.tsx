@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ingredientById } from '@/features/ingredients/catalog';
 import { ALLERGEN_LABELS } from '@/features/household/labels';
@@ -11,6 +11,7 @@ import { fill, language, pick, t } from '@/lib/i18n';
 import { Banner } from '@/ui/Banner';
 import { Group } from '@/ui/Card';
 import { NavBar } from '@/ui/NavBar';
+import { Press } from '@/ui/Press';
 import { Tag } from '@/ui/Tag';
 import { Body, Caption, Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
@@ -28,18 +29,19 @@ function IngredientRow({ line, first, onPress }: { line: RecipeIngredient; first
   const name = line.ingredientId ? ingredientById.get(line.ingredientId)?.name[language()] : undefined;
   const detail = line.status === 'unmatched' || !name ? s.unmatched : line.status === 'needsReview' ? `→ ${name} · ${s.confirm}` : `→ ${name}`;
   return (
-    <Pressable
+    <Press
       accessibilityRole="button"
       accessibilityLabel={`${line.raw}. ${detail}`}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, !first && { borderTopColor: c.rule, borderTopWidth: StyleSheet.hairlineWidth }, pressed && { backgroundColor: c.surface }]}
+      highlight={c.surface}
+      style={[styles.row, !first && { borderTopColor: c.rule, borderTopWidth: StyleSheet.hairlineWidth }]}
     >
       <View style={styles.grow}>
         <Body>{line.raw}</Body>
         <Caption muted={line.status === 'matched'}>{detail}</Caption>
       </View>
       {line.status === 'matched' ? null : <Tag kind="review" label={s.check} />}
-    </Pressable>
+    </Press>
   );
 }
 
@@ -82,7 +84,7 @@ export function Review({ initial, onCancel, onSave }: Props) {
       <NavBar
         left={<TextButton label={t('common.cancel')} onPress={onCancel} />}
         center={<Caption muted>{pick(labels).fromSource[draft.source]}</Caption>}
-        right={<TextButton label={t('common.save')} strong onPress={save} />}
+        right={<TextButton testID="review-save" label={t('common.save')} strong onPress={save} />}
       />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Title>{s.title}</Title>

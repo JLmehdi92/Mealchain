@@ -1,8 +1,12 @@
 import * as Haptics from 'expo-haptics';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue } from 'react-native-reanimated';
 import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';
 
 import { Icon } from '@/ui/Icon';
+import { enterDown, exitFade, REFLOW, toward } from '@/ui/motion';
+import { Press } from '@/ui/Press';
 import { Body, Caption, Mono } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
@@ -34,35 +38,76 @@ function Gauge({ ratio }: { ratio: number }) {
   );
 }
 
+const TICK_MS = 320;
+
+function Check({ checked }: { checked: boolean }) {
+  const c = useTheme();
+  const reduced = useReducedMotion();
+  const fill = useSharedValue(checked ? 1 : 0);
+  useEffect(() => {
+    fill.set(toward(reduced, checked ? 1 : 0));
+  }, [fill, reduced, checked]);
+  const style = useAnimatedStyle(() => (reduced ? { opacity: fill.get() } : { opacity: Math.min(1, fill.get() * 2), transform: [{ scale: 0.6 + 0.4 * fill.get() }] }));
+  return (
+    <View style={[styles.check, { borderColor: c.ink2 }]}>
+      <Animated.View style={[styles.fill, { backgroundColor: c.ink }, style]}>
+        <Icon name="checkmark" size={13} weight="bold" color={c.onInk} />
+      </Animated.View>
+    </View>
+  );
+}
+
+function Strike({ color }: { color: string }) {
+  const reduced = useReducedMotion();
+  const drawn = useSharedValue(0);
+  useEffect(() => {
+    drawn.set(toward(reduced, 1, 60));
+  }, [drawn, reduced]);
+  const style = useAnimatedStyle(() => (reduced ? { opacity: drawn.get() } : { transform: [{ scaleX: drawn.get() }] }));
+  return <Animated.View style={[styles.strike, { backgroundColor: color }, style]} />;
+}
+
 export function ListRow({ row, onToggle }: { row: Row; onToggle: (id: string) => void }) {
   const c = useTheme();
-  const done = row.checked ? { color: c.ink2, textDecorationLine: 'line-through' as const } : null;
+  const reduced = useReducedMotion();
+  const [ticking, setTicking] = useState(false);
+  const muted = row.checked || ticking ? { color: c.ink2 } : null;
+  const struck = row.checked ? { textDecorationLine: 'line-through' as const } : null;
+  const press = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (row.checked) return onToggle(row.id);
+    if (ticking) return;
+    setTicking(true);
+    setTimeout(() => onToggle(row.id), reduced ? 150 : TICK_MS);
+  };
   return (
-    <Pressable
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked: row.checked }}
-      accessibilityLabel={[row.name, row.qty, row.detail].filter(Boolean).join(', ')}
-      onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onToggle(row.id);
-      }}
-      style={({ pressed }) => [styles.row, { borderTopColor: c.rule }, pressed && { backgroundColor: c.surface }]}
-    >
-      <View style={[styles.check, row.checked ? { backgroundColor: c.ink } : { borderColor: c.ink2 }]}>
-        {row.checked ? <Icon name="checkmark" size={13} weight="bold" color={c.onInk} /> : null}
-      </View>
-      <View style={styles.grow}>
-        <Body style={done}>{row.name}</Body>
-        {row.detail ? (
-          <View style={styles.why}>
-            {row.used ? <StrandGlyph color={c.strand} /> : null}
-            <Caption muted style={styles.grow}>{row.detail}</Caption>
+    <Animated.View entering={enterDown(reduced)} exiting={exitFade(reduced)} layout={reduced ? undefined : REFLOW}>
+      <Press
+        testID={`list-item-${row.id}`}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: row.checked || ticking }}
+        accessibilityLabel={[row.name, row.qty, row.detail].filter(Boolean).join(', ')}
+        onPress={press}
+        highlight={c.surface}
+        style={[styles.row, { borderTopColor: c.rule }]}
+      >
+        <Check checked={row.checked || ticking} />
+        <View style={styles.grow}>
+          <View style={styles.name}>
+            <Body style={[muted, struck]}>{row.name}</Body>
+            {ticking ? <Strike color={c.ink2} /> : null}
           </View>
-        ) : null}
-        {row.ratio !== null ? <Gauge ratio={row.ratio} /> : null}
-      </View>
-      {row.qty ? <Mono style={[styles.qty, done]}>{row.qty}</Mono> : null}
-    </Pressable>
+          {row.detail ? (
+            <View style={styles.why}>
+              {row.used ? <StrandGlyph color={c.strand} /> : null}
+              <Caption muted style={styles.grow}>{row.detail}</Caption>
+            </View>
+          ) : null}
+          {row.ratio !== null ? <Gauge ratio={row.ratio} /> : null}
+        </View>
+        {row.qty ? <Mono style={[styles.qty, muted, struck]}>{row.qty}</Mono> : null}
+      </Press>
+    </Animated.View>
   );
 }
 
@@ -77,7 +122,10 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     marginTop: -StyleSheet.hairlineWidth,
   },
-  check: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center', marginTop: 1 },
+  check: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, marginTop: 1 },
+  fill: { position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  name: { alignSelf: 'flex-start' },
+  strike: { position: 'absolute', left: 0, right: 0, top: '55%', height: 1.5, transformOrigin: 'left center' },
   grow: { flex: 1, minWidth: 0 },
   why: { flexDirection: 'row', alignItems: 'center', gap: space.xs, marginTop: 2 },
   gauge: { flexDirection: 'row', width: 120, height: 6, gap: 2, borderRadius: 3, overflow: 'hidden', marginTop: space.sm },

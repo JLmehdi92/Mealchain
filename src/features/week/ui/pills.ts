@@ -8,7 +8,7 @@ import { fill, language, pick } from '@/lib/i18n';
 import { dayLabel, usesOf, type Chain } from '../chains';
 import { weekCopy } from '../copy';
 
-export type Pill = { key: string; thumb: Thumb | null; text: string; to?: string; carry: boolean };
+export type Pill = { key: string; ingredientId: string; thumb: Thumb | null; text: string; to?: string; carry: boolean };
 
 export const ingredientName = (id: string) => ingredientById.get(id)?.name[language()] ?? id;
 
@@ -27,9 +27,10 @@ export function pillsFor(plan: WeekPlan, slot: number, weekStart: string, market
   const { outgoing, incoming } = usesOf(plan, slot);
   const day = (index: number) => dayLabel(weekStart, plan.slots[index]?.day ?? 0, language(), 'short');
   return [
-    ...incoming.map(({ chain, finishes }) => ({ key: `in-${chain.ingredientId}`, thumb: chainThumb(chain.ingredientId, market), text: finishLabel(chain, finishes), carry: false })),
+    ...incoming.map(({ chain, finishes }) => ({ key: `in-${chain.ingredientId}`, ingredientId: chain.ingredientId, thumb: chainThumb(chain.ingredientId, market), text: finishLabel(chain, finishes), carry: false })),
     ...outgoing.map((chain) => ({
       key: `out-${chain.ingredientId}`,
+      ingredientId: chain.ingredientId,
       thumb: chainThumb(chain.ingredientId, market),
       text: `${ingredientName(chain.ingredientId)} ${amountOf(chain.ingredientId, chain.amount, market)}`.trim(),
       to: fill(s.to, { days: [...new Set(chain.toSlots.map(day))].join(', ') }),

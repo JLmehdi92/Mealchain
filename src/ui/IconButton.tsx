@@ -1,23 +1,27 @@
 import * as Haptics from 'expo-haptics';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { Icon, type IconName } from './Icon';
+import { Press } from './Press';
 import { touch, useTheme } from './theme';
 
-export function IconButton({ name, label, onPress }: { name: IconName; label: string; onPress: () => void }) {
+type Props = { name: IconName; label: string; onPress: () => void; testID?: string };
+
+export function IconButton({ name, label, onPress, testID }: Props) {
   const c = useTheme();
   return (
-    <Pressable
+    <Press
+      testID={testID}
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={() => {
         Haptics.selectionAsync();
         onPress();
       }}
-      style={({ pressed }) => [styles.button, { backgroundColor: c.sheet, borderColor: c.rule, opacity: pressed ? 0.7 : 1 }]}
+      style={[styles.button, { backgroundColor: c.sheet, borderColor: c.rule }]}
     >
       <Icon name={name} />
-    </Pressable>
+    </Press>
   );
 }
 
