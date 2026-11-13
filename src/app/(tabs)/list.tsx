@@ -9,7 +9,6 @@ import type { ListRow as Row } from '@/features/list/sections';
 import { listText } from '@/features/list/sections';
 import { shareList } from '@/features/list/share';
 import { useShoppingList } from '@/features/list/useShoppingList';
-import { useOfferPaywall } from '@/features/subscription/useOfferPaywall';
 import { fill, pick, t } from '@/lib/i18n';
 import { Button } from '@/ui/Button';
 import { Group } from '@/ui/Card';
@@ -39,8 +38,7 @@ function Rows({ label, rows, onToggle }: { label: string; rows: Row[]; onToggle:
 
 export default function List() {
   const copy = pick(LIST_COPY);
-  const { sections, empty, toggle, shared, listSeen } = useShoppingList();
-  useOfferPaywall(listSeen);
+  const { sections, empty, toggle, shared } = useShoppingList();
   const one = sections?.packCount === 1;
   if (empty || !sections) {
     return (

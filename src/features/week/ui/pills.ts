@@ -12,6 +12,8 @@ export type Pill = { key: string; ingredientId: string; thumb: Thumb | null; tex
 
 export const ingredientName = (id: string) => ingredientById.get(id)?.name[language()] ?? id;
 
+const capitalized = (text: string) => text.charAt(0).toLocaleUpperCase() + text.slice(1);
+
 export const chainThumb = (ingredientId: string, market: Market): Thumb | null => thumbOfIngredient(ingredientById.get(ingredientId), market);
 
 export function amountOf(ingredientId: string, amount: number, market: Market): string {
@@ -35,7 +37,7 @@ export function pillsFor(plan: WeekPlan, slot: number, weekStart: string, market
       key: `out-${chain.ingredientId}`,
       ingredientId: chain.ingredientId,
       thumb: chainThumb(chain.ingredientId, market),
-      text: `${ingredientName(chain.ingredientId)} ${amountOf(chain.ingredientId, chain.amount, market)}`.trim(),
+      text: `${capitalized(ingredientName(chain.ingredientId))} ${amountOf(chain.ingredientId, chain.amount, market)}`.trim(),
       to: fill(s.to, { days: [...new Set(chain.toSlots.map(day))].join(', ') }),
       carry: true,
     })),

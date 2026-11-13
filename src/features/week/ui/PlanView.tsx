@@ -6,7 +6,7 @@ import Animated, { useReducedMotion, useSharedValue } from 'react-native-reanima
 import type { WeekPlan } from '@/features/planner/plan';
 import { unsafeSlots } from '@/features/planner/swap';
 import type { Household, Recipe } from '@/features/recipes/types';
-import { language, pick } from '@/lib/i18n';
+import { fill, language, pick } from '@/lib/i18n';
 import { enterDown, pulse } from '@/ui/motion';
 import { Caption, H2 } from '@/ui/Text';
 import { space } from '@/ui/theme';
@@ -14,6 +14,7 @@ import { space } from '@/ui/theme';
 import { chainsOf, dateOf, dayLabel, daysOf } from '../chains';
 import { weekCopy } from '../copy';
 import { strandsOf, type Frame } from '../strands';
+import { useSwappedSlot } from '../swapped';
 import { CarryToken, type Travel } from './CarryToken';
 import { MealCard, type Host } from './MealCard';
 import { chainThumb, pillsFor } from './pills';
@@ -59,6 +60,7 @@ function useCarry(plan: WeekPlan, frames: Record<number, Frame>, household: Hous
 export function PlanView({ plan, recipes, household, weekStart, animate, onOpen, onSwap }: Props) {
   const s = pick(weekCopy);
   const reduced = useReducedMotion();
+  const swapped = useSwappedSlot();
   const body = useRef<Host>(null);
   const played = useRef(false);
   const [frames, setFrames] = useState<Record<number, Frame>>({});
@@ -67,6 +69,8 @@ export function PlanView({ plan, recipes, household, weekStart, animate, onOpen,
   const byId = new Map(recipes.map((recipe) => [recipe.id, recipe]));
   const measure = (slot: number) => (frame: Frame) => setFrames((all) => (same(all[slot], frame) ? all : { ...all, [slot]: frame }));
   const ready = strands.length > 0;
+  const announce = (day: number, recipeId = '') =>
+    fill(s.swapped, { day: dayLabel(weekStart, day, language(), 'long'), title: byId.get(recipeId)?.title ?? '' });
 
   useEffect(() => {
     if (!animate || !ready || played.current) return;
@@ -91,6 +95,7 @@ export function PlanView({ plan, recipes, household, weekStart, animate, onOpen,
                   testID={`meal-${slot}`}
                   recipe={entry ? byId.get(entry.recipeId) : undefined}
                   label={entry?.meal === 'lunch' ? s.lunch : undefined}
+                  swapped={swapped === slot ? announce(day, entry?.recipeId) : null}
                   pills={pillsFor(plan, slot, weekStart, household.market)}
                   unsafe={unsafe.has(slot)}
                   body={body}

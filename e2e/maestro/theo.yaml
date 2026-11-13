@@ -107,19 +107,6 @@ onFlowComplete:
 - takeScreenshot: theo-10-semaine-4-diners
 
 - tapOn: "Courses"
-- extendedWaitUntil:
-    visible:
-      id: paywall-close
-    timeout: 6000
-    optional: true
-- runFlow:
-    when:
-      visible:
-        id: paywall-close
-    commands:
-      - takeScreenshot: theo-11-paywall-propose
-      - tapOn:
-          id: paywall-close
 - waitForAnimationToEnd
 - extendedWaitUntil:
     visible:

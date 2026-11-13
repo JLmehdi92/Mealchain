@@ -1,4 +1,4 @@
-import { canAddRecipe, canPlanWeek, FREE_RECIPE_LIMIT, shouldOfferPaywall, trialReminderAt } from './rules';
+import { canAddRecipe, canPlanWeek, FREE_RECIPE_LIMIT, trialReminderAt } from './rules';
 
 describe('free tier rules', () => {
   it('allows 15 recipes for free, unlimited with Pro', () => {
@@ -13,13 +13,6 @@ describe('free tier rules', () => {
     expect(canPlanWeek(['2026-11-16'], '2026-11-16', false)).toBe(true);
     expect(canPlanWeek(['2026-11-16'], '2026-11-23', false)).toBe(false);
     expect(canPlanWeek(['2026-11-16', '2026-11-23'], '2026-11-30', true)).toBe(true);
-  });
-
-  it('offers the paywall only after the first plan and its list were seen', () => {
-    expect(shouldOfferPaywall({ firstPlanSeen: false, firstListSeen: false, pro: false })).toBe(false);
-    expect(shouldOfferPaywall({ firstPlanSeen: true, firstListSeen: false, pro: false })).toBe(false);
-    expect(shouldOfferPaywall({ firstPlanSeen: true, firstListSeen: true, pro: false })).toBe(true);
-    expect(shouldOfferPaywall({ firstPlanSeen: true, firstListSeen: true, pro: true })).toBe(false);
   });
 
   it('schedules the trial reminder two days before the trial ends, never in the past', () => {

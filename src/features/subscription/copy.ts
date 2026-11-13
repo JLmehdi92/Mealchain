@@ -1,6 +1,10 @@
 export const PAYWALL_COPY = {
   en: {
     restore: 'Restore',
+    weekValue: 'This week: {packs} finished across your {dinners}.',
+    packs: ['pack', 'packs'],
+    dinners: ['dinner', 'dinners'],
+    storeOnly: 'Available on the App Store',
     title: 'Keep planning after this week',
     subtitle: 'Your first plan and list stay yours. Demidemi Pro plans every week from here.',
     benefits: ['Unlimited recipes (free: 15)', 'A new plan and list every week', 'One shared list for the household', 'Family Sharing: up to 6 people, one subscription'],
@@ -34,6 +38,10 @@ export const PAYWALL_COPY = {
   },
   fr: {
     restore: 'Restaurer',
+    weekValue: 'Cette semaine : {packs} grâce à vos {dinners}.',
+    packs: ['paquet fini', 'paquets finis'],
+    dinners: ['dîner', 'dîners'],
+    storeOnly: "Disponible sur l'App Store",
     title: 'Continuez après cette semaine',
     subtitle: 'Votre premier plan et sa liste restent à vous. Demidemi Pro compose toutes les semaines suivantes.',
     benefits: ['Recettes illimitées (gratuit : 15)', 'Un nouveau plan et sa liste chaque semaine', 'Une liste partagée pour tout le foyer', "Partage familial : jusqu'à 6 personnes, un seul abonnement"],

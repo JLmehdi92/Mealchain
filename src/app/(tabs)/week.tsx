@@ -2,7 +2,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useIsPro } from '@/features/subscription/useIsPro';
 import { markPlanSeen, startPlan } from '@/features/week/actions';
@@ -21,6 +21,7 @@ export default function Week() {
   const s = pick(weekCopy);
   const plan = usePlan();
   const pro = useIsPro();
+  const { bottom } = useSafeAreaInsets();
   const [busy, setBusy] = useState(false);
   const [planning, setPlanning] = useState(false);
   const [composed, setComposed] = useState(false);
@@ -50,14 +51,16 @@ export default function Week() {
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={[styles.fill, { backgroundColor: c.paper }]}>
       <NavBar right={<IconButton testID="open-settings" name="gearshape" label={s.settings} onPress={() => router.push('/settings')} />} />
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: bottom + TAB_BAR_CLEARANCE }]} contentInsetAdjustmentBehavior="automatic">
         <WeekContent busy={busy} planning={planning} composed={composed} onPlan={makePlan} onSwap={openSwap} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+const TAB_BAR_CLEARANCE = 120;
+
 const styles = StyleSheet.create({
   fill: { flex: 1 },
-  content: { paddingHorizontal: space.xl, paddingBottom: space.xxxl * 3, gap: space.xs },
+  content: { paddingHorizontal: space.xl, gap: space.xs },
 });

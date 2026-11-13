@@ -14,12 +14,14 @@ import { radius, space, useTheme } from '@/ui/theme';
 import { weekCopy } from '../copy';
 import type { Frame } from '../strands';
 import type { Pill } from './pills';
+import { useSwapFlash } from './useSwapFlash';
 
 export type Host = ComponentRef<typeof View>;
 type Props = {
   recipe: Recipe | undefined;
   pills: Pill[];
   label?: string;
+  swapped: string | null;
   unsafe: boolean;
   body: RefObject<Host | null>;
   testID: string;
@@ -68,13 +70,14 @@ function useFrame(body: RefObject<Host | null>, onMeasure: (frame: Frame) => voi
   return { card, carry, measure };
 }
 
-export function MealCard({ recipe, pills, label, unsafe, body, testID, landing, onMeasure, onOpen, onSwap }: Props) {
+export function MealCard({ recipe, pills, label, swapped, unsafe, body, testID, landing, onMeasure, onOpen, onSwap }: Props) {
   const c = useTheme();
   const s = pick(weekCopy);
   const { card, carry, measure } = useFrame(body, onMeasure);
   const firstCarry = pills.findIndex((pill) => pill.carry);
+  const flash = useSwapFlash(swapped !== null, swapped ?? '');
   return (
-    <View ref={card} onLayout={measure}>
+    <Animated.View ref={card} onLayout={measure} style={flash.lift}>
       <Press
         testID={testID}
         onPress={onOpen}
@@ -82,7 +85,7 @@ export function MealCard({ recipe, pills, label, unsafe, body, testID, landing, 
         accessibilityRole="button"
         accessibilityActions={[{ name: 'swap', label: s.swapAction }]}
         onAccessibilityAction={(event) => event.nativeEvent.actionName === 'swap' && onSwap()}
-        style={[styles.card, { backgroundColor: c.sheet, borderColor: c.rule }]}
+        style={[styles.card, { backgroundColor: c.sheet }, flash.border]}
       >
         {label ? <Caption muted>{label}</Caption> : null}
         <Body testID={testID && `${testID}-title`} style={styles.name}>{recipe?.title ?? ''}</Body>
@@ -106,7 +109,7 @@ export function MealCard({ recipe, pills, label, unsafe, body, testID, landing, 
           </View>
         ) : null}
       </Press>
-    </View>
+    </Animated.View>
   );
 }
 

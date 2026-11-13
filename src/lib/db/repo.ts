@@ -12,8 +12,6 @@ type SettingKey =
   | 'ai_consent'
   | 'onboarded'
   | 'first_plan_seen'
-  | 'first_list_seen'
-  | 'paywall_offered'
   | 'installed'
   | 'remote_household'
   | 'remote_profile_seen'

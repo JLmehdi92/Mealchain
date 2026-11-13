@@ -48,13 +48,13 @@ export function RecipeBody({ recipe, household, plan, slot }: Props) {
   const day = planned ? capitalize(dayLabel(weekStart, planned.slots[slot]?.day ?? 0, language(), 'long')) : null;
   const from = pick(labels).fromSource[recipe.source];
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView style={styles.fill} contentContainerStyle={styles.content}>
       <Caption muted>{day ? `${day} · ${from}` : capitalize(from)}</Caption>
       <Title>{recipe.title}</Title>
       <Meta recipe={recipe} household={household} />
       {gauge && planned ? <CarryGauge gauge={gauge} slot={slot} slotDays={planned.slots.map((e) => e.day)} weekStart={weekStart} market={household.market} /> : null}
       <Caption muted style={styles.section}>{s.ingredients}</Caption>
-      <IngredientList lines={recipe.ingredients} factor={recipe.servings ? household.people / recipe.servings : 1} />
+      <IngredientList lines={recipe.ingredients} servings={recipe.servings} people={household.people} />
       <Caption muted style={styles.disclaimer}>{s.disclaimer}</Caption>
       {recipe.steps.length > 0 ? <Caption muted style={styles.section}>{s.steps}</Caption> : null}
       {recipe.steps.map((step, i) => (
@@ -65,6 +65,7 @@ export function RecipeBody({ recipe, household, plan, slot }: Props) {
 }
 
 const styles = StyleSheet.create({
+  fill: { flex: 1 },
   content: { paddingHorizontal: space.xl, paddingBottom: space.xxxl * 2, gap: space.xs },
   meta: { flexDirection: 'row', flexWrap: 'wrap', gap: space.lg, marginTop: space.sm },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: space.xs },

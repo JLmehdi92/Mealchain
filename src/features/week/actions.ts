@@ -8,6 +8,8 @@ import { plans } from '@/lib/db/schema';
 import { report } from '@/lib/monitoring';
 import { getState, savePlan } from '@/lib/store';
 
+import { markSwapped } from './swapped';
+
 const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
 async function plannedWeeks(): Promise<string[]> {
@@ -28,7 +30,9 @@ export async function startPlan(pro: boolean): Promise<'planned' | 'paywall' | '
 
 export async function swapSlot(slot: number, recipeId: string): Promise<void> {
   const { plan, recipes, household } = getState();
-  if (plan && household) await savePlan(replaceSlot(plan, slot, recipeId, recipes, household));
+  if (!plan || !household) return;
+  await savePlan(replaceSlot(plan, slot, recipeId, recipes, household));
+  markSwapped(slot);
 }
 
 export const markPlanSeen = () => setSetting('first_plan_seen', 'yes');

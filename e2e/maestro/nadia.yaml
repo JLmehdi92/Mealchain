@@ -112,19 +112,6 @@ onFlowComplete:
 - takeScreenshot: nadia-10-semaine-sans-noix-de-cajou
 
 - tapOn: "Courses"
-- extendedWaitUntil:
-    visible:
-      id: paywall-close
-    timeout: 6000
-    optional: true
-- runFlow:
-    when:
-      visible:
-        id: paywall-close
-    commands:
-      - takeScreenshot: nadia-11-paywall-propose
-      - tapOn:
-          id: paywall-close
 - waitForAnimationToEnd
 - assertVisible: ".*\\d+(,\\d+)? (g|kg|ml|cl|l)\\b.*"
 - assertNotVisible: ".*\\d (oz|lb|fl oz)\\b.*"

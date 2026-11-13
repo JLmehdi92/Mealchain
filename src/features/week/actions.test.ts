@@ -7,6 +7,7 @@ import { getState, savePlan } from '@/lib/store';
 
 import { household, line, recipe } from '../planner/fixtures';
 import { markPlanSeen, startPlan, swapSlot } from './actions';
+import { clearSwapped, swappedSlot } from './swapped';
 
 jest.mock('@/lib/analytics', () => ({ trackOnce: jest.fn(() => Promise.resolve()) }));
 jest.mock('@/lib/monitoring', () => ({ report: jest.fn() }));
@@ -58,12 +59,15 @@ describe('swapSlot', () => {
     await swapSlot(1, 'b');
     expect(replaceSlot).toHaveBeenCalledWith(PLAN, 1, 'b', recipes, home);
     expect(savePlan).toHaveBeenCalledWith(PLAN);
+    expect(swappedSlot()).toBe(1);
+    clearSwapped();
   });
 
   it('does nothing without a plan', async () => {
     jest.mocked(getState).mockReturnValue({ ready: true, household: home, recipes, plan: null, weekStart: '2026-11-16' });
     await swapSlot(1, 'b');
     expect(savePlan).not.toHaveBeenCalled();
+    expect(swappedSlot()).toBeNull();
   });
 });
 

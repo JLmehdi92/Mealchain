@@ -31,8 +31,10 @@ function SamplesSection() {
   const pro = useIsPro();
   const reduced = useReducedMotion();
   const [notice, setNotice] = useState<string | null>(null);
-  const show = (message: string) => {
+  const [loaded, setLoaded] = useState(false);
+  const show = (message: string, ok = false) => {
     setNotice(message);
+    setLoaded(ok);
     AccessibilityInfo.announceForAccessibility(message);
   };
   const loading = useRef(false);
@@ -43,7 +45,7 @@ function SamplesSection() {
     try {
       const result = await loadSamples(language(), Date.now(), pro);
       if (result === 'paywall') return router.push('/paywall');
-      show(result.added > 0 ? fill(copy.samplesAdded, { count: result.added }) : copy.samplesPresent);
+      show(result.added > 0 ? fill(copy.samplesAdded, { count: result.added }) : copy.samplesPresent, true);
     } catch (error) {
       report(error);
       show(copy.error);
@@ -62,6 +64,7 @@ function SamplesSection() {
           <Secondary muted>{notice}</Secondary>
         </Animated.View>
       ) : null}
+      {loaded ? <Button testID="samples-plan-week" kind="secondary" label={copy.planWeek} onPress={() => router.back()} /> : null}
     </>
   );
 }

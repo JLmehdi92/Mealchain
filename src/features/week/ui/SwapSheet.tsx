@@ -34,35 +34,51 @@ function Option({ title, detail, best, onPress, testID }: OptionProps) {
   );
 }
 
-function useDetail(slot: number) {
+type Shown = Alternative & { title: string; detail: string };
+
+function useFrozenOptions(slot: number): Shown[] {
   const s = pick(weekCopy);
   const plan = usePlan();
   const recipes = useRecipes();
   const household = useHousehold();
-  return (option: Alternative) => {
+  const [options] = useState(() => {
+    if (!plan || !household) return [];
+    const titles = new Map(recipes.map((recipe) => [recipe.id, recipe.title]));
+    return alternativesFor(plan, slot, recipes, household).map((option) => ({
+      ...option,
+      title: titles.get(option.recipeId) ?? '',
+      detail: detailOf(option),
+    }));
+  });
+  return options;
+
+  function detailOf(option: Alternative) {
     if (!plan || !household) return '';
     const preview = replaceSlot(plan, slot, option.recipeId, recipes, household);
     const reuse = usesOf(preview, slot).incoming.map(({ chain, finishes }) => finishLabel(chain, finishes));
     const extra = option.extraPacks <= 0 ? s.nothingExtra : option.extraPacks === 1 ? s.extraOne : fill(s.extra, { count: option.extraPacks });
     return [...reuse, extra].join(' · ');
-  };
+  }
 }
 
 export function SwapList({ slot, onClose }: { slot: number; onClose: () => void }) {
   const s = pick(weekCopy);
   const plan = usePlan();
-  const recipes = useRecipes();
-  const household = useHousehold();
-  const detail = useDetail(slot);
+  const options = useFrozenOptions(slot);
   const weekStart = useWeekStart();
   const [all, setAll] = useState(false);
-  const options = plan && household ? alternativesFor(plan, slot, recipes, household) : [];
-  const titles = new Map(recipes.map((recipe) => [recipe.id, recipe.title]));
-  const choose = (recipeId: string) =>
+  const [day] = useState(() => dayLabel(weekStart, plan?.slots[slot]?.day ?? 0, language(), 'long'));
+  const [chosen, setChosen] = useState(false);
+  const choose = (recipeId: string) => {
+    if (chosen) return;
+    setChosen(true);
     swapSlot(slot, recipeId)
       .then(onClose)
-      .catch(() => Alert.alert(s.failed));
-  const day = dayLabel(weekStart, plan?.slots[slot]?.day ?? 0, language(), 'long');
+      .catch(() => {
+        setChosen(false);
+        Alert.alert(s.failed);
+      });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
@@ -76,8 +92,8 @@ export function SwapList({ slot, onClose }: { slot: number; onClose: () => void 
         <Option
           key={option.recipeId}
           testID={`swap-option-${option.recipeId}`}
-          title={titles.get(option.recipeId) ?? ''}
-          detail={detail(option)}
+          title={option.title}
+          detail={option.detail}
           best={i === 0 && option.extraPacks <= 0}
           onPress={() => choose(option.recipeId)}
         />

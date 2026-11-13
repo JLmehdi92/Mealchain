@@ -6,9 +6,6 @@ export const canAddRecipe = (recipeCount: number, pro: boolean) => pro || recipe
 export const canPlanWeek = (plannedWeeks: string[], weekStart: string, pro: boolean) =>
   pro || plannedWeeks.every((week) => week === weekStart);
 
-export const shouldOfferPaywall = (seen: { firstPlanSeen: boolean; firstListSeen: boolean; pro: boolean }) =>
-  !seen.pro && seen.firstPlanSeen && seen.firstListSeen;
-
 export function trialReminderAt(trialEnd: Date, now: Date): Date | null {
   const at = new Date(trialEnd.getTime() - 2 * DAY_MS);
   return at > now ? at : null;

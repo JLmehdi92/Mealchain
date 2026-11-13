@@ -13,10 +13,12 @@ import { PlanCard } from '@/features/subscription/PlanCard';
 import { usePlans, type Plan } from '@/features/subscription/plans';
 import { referencePlans } from '@/features/subscription/reference';
 import { purchase } from '@/features/subscription/purchase';
+import { weekValue } from '@/features/subscription/weekValue';
 import { track } from '@/lib/analytics';
 import { market, pick } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
-import { Body, Title } from '@/ui/Text';
+import { usePlan } from '@/lib/store';
+import { Body, Secondary, Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
 async function buyPlan(plan: Plan): Promise<boolean> {
@@ -43,6 +45,7 @@ export default function Paywall() {
   const [busy, setBusy] = useState(false);
   const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null);
   const [active, setActive] = useState(false);
+  const value = weekValue(usePlan(), copy);
   const plan = plans.find((p) => p.id === selected) ?? null;
   const cards = offer.status === 'unavailable' ? referencePlans(market()) : plans;
   const card = cards.find((p) => p.id === selected) ?? null;
@@ -61,6 +64,7 @@ export default function Paywall() {
     <SafeAreaView style={[styles.fill, { backgroundColor: c.paper }]}>
       <PaywallNav />
       <ScrollView contentContainerStyle={styles.content}>
+        {value ? <Secondary style={{ color: c.strand }}>{value}</Secondary> : null}
         <Title>{copy.title}</Title>
         <Body muted>{copy.subtitle}</Body>
         <Benefits />

@@ -1,7 +1,6 @@
-import { useIsFocused } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { getChecks, setCheck, setSetting } from '@/lib/db/repo';
+import { getChecks, setCheck } from '@/lib/db/repo';
 import { language } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { useHousehold, usePlan, useRecipes, useWeekStart } from '@/lib/store';
@@ -53,7 +52,6 @@ export function useShoppingList() {
   const household = useHousehold();
   const weekStart = useWeekStart();
   const { checks, toggle, shared } = useChecks(weekStart);
-  const [listSeen, setListSeen] = useState(false);
 
   const list = useMemo(() => (plan && household ? buildShoppingList(plan, recipes, household) : null), [plan, recipes, household]);
   const sections = useMemo(() => {
@@ -64,14 +62,6 @@ export function useShoppingList() {
   }, [list, plan, recipes, household, checks, weekStart]);
   const empty = !list || list.items.length + list.unlisted.length === 0;
 
-  // Native tabs mount every tab at launch: the list only counts as seen once its tab is on screen.
-  const focused = useIsFocused();
-  useEffect(() => {
-    if (empty || !focused || listSeen) return;
-    setSetting('first_list_seen', 'yes')
-      .then(() => setListSeen(true))
-      .catch(report);
-  }, [empty, focused, listSeen]);
 
-  return { sections, empty, toggle, shared, listSeen };
+  return { sections, empty, toggle, shared };
 }

@@ -65,7 +65,7 @@ export function PaywallFooter({ plan, canBuy, busy, onBuy, onLegal }: FooterProp
   const billed = !plan ? '' : plan.id === 'monthly' ? copy.legalMonthly : trial ? copy.legalYearlyTrial : copy.legalYearly;
   return (
     <View style={styles.bottom}>
-      <Button testID="paywall-subscribe" label={trial ? copy.startTrial : copy.subscribe} disabled={busy || !canBuy} onPress={onBuy} />
+      <Button testID="paywall-subscribe" label={plan && !canBuy ? copy.storeOnly : trial ? copy.startTrial : copy.subscribe} disabled={busy || !canBuy} onPress={onBuy} />
       {plan && !canBuy ? <Caption muted style={styles.center}>{copy.unavailable}</Caption> : null}
       {trial ? <Caption muted style={styles.center}>{copy.reminder}</Caption> : null}
       <Caption muted style={styles.center}>
