@@ -36,6 +36,17 @@ describe('roundToPacks', () => {
     expect(roundToPacks(0, [carton(200)])).toEqual({ items: [], total: 0, leftover: 0 });
   });
 
+  it('refuses a non-finite need instead of looping forever', () => {
+    expect(roundToPacks(Number.POSITIVE_INFINITY, [carton(200)])).toBeNull();
+    expect(roundToPacks(Number.NaN, [carton(200)])).toBeNull();
+  });
+
+  it('sorts unsorted pack sizes before choosing', () => {
+    expect(roundToPacks(1200, [carton(200), carton(1000), carton(500)])?.items).toEqual([
+      { pack: carton(1000), count: 1 }, { pack: carton(200), count: 1 },
+    ]);
+  });
+
   it('returns null when no pack size is known', () => {
     expect(roundToPacks(100, [])).toBeNull();
   });

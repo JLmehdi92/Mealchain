@@ -20,6 +20,7 @@ export const ingredientSchema = z.strictObject({
   synonyms: z.strictObject({ en: z.array(z.string().min(1)), fr: z.array(z.string().min(1)) }),
   aisle: z.enum(AISLES),
   allergens: z.array(z.enum(ALLERGENS)),
+  mayContain: z.array(z.enum(ALLERGENS)).default([]),
   notFor: z.array(z.enum(DIETS)),
   protein: z.enum(PROTEINS).optional(),
   baseUnit: z.enum(BASE_UNITS),

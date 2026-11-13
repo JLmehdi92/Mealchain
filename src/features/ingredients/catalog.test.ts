@@ -2,7 +2,7 @@ import { catalog, packsFor } from './catalog';
 import type { Allergen, Diet, Ingredient } from './schema';
 
 const named = (ing: Ingredient, pattern: RegExp) => pattern.test(`${ing.id} ${ing.name.en}`.toLowerCase());
-const has = (ing: Ingredient, allergen: Allergen) => ing.allergens.includes(allergen);
+const has = (ing: Ingredient, allergen: Allergen) => ing.allergens.includes(allergen) || ing.mayContain.includes(allergen);
 const excludes = (ing: Ingredient, diet: Diet) => ing.notFor.includes(diet);
 const offenders = (rule: (ing: Ingredient) => boolean) => catalog.filter(rule).map((ing) => ing.id);
 
@@ -49,6 +49,31 @@ describe('ingredient catalog', () => {
   it('excludes pork, alcohol and gelatin from halal', () => {
     const haram = /\b(pork|bacon|ham|prosciutto|chorizo|pancetta|lard|gelatin|wine|beer|rum|brandy|cognac|sake|mirin)\b/;
     expect(offenders((i) => named(i, haram) && !excludes(i, 'halal'))).toEqual([]);
+  });
+
+  it('declares every allergen that a review note mentions', () => {
+    const mentions: [Allergen, RegExp][] = [
+      ['sesame', /sesame/], ['milk', /\b(milk|dairy|butter|cheese|yogurt|whey)\b/], ['eggs', /\beggs?\b/], ['soy', /\bsoy/],
+      ['gluten', /\b(gluten|wheat|barley)\b/], ['nuts', /\b(tree nuts?|almond|walnut|hazelnut|cashew)/], ['peanuts', /peanut/],
+      ['fish', /\b(fish|anchov)/], ['crustaceans', /\b(shrimp|crustacean)/], ['celery', /celery/], ['mustard', /mustard/],
+    ];
+    const negated = /\b(no|not|without|free of|free)\b/;
+    expect(catalog.flatMap((i) => mentions
+      .filter(([allergen, word]) => i.review !== undefined && word.test(i.review.toLowerCase()) && !negated.test(i.review.toLowerCase()) && !has(i, allergen))
+      .map(([allergen]) => `${i.id}:${allergen}`))).toEqual([]);
+  });
+
+  it('keeps proteins consistent with allergens', () => {
+    expect(offenders((i) => i.protein === 'cheese' && !has(i, 'milk'))).toEqual([]);
+    expect(offenders((i) => i.protein === 'fish' && !has(i, 'fish'))).toEqual([]);
+    expect(offenders((i) => i.protein === 'seafood' && !(has(i, 'crustaceans') || has(i, 'molluscs')))).toEqual([]);
+    expect(offenders((i) => i.protein === 'egg' && !has(i, 'eggs'))).toEqual([]);
+    expect(offenders((i) => named(i, /\bhoney\b/) && !excludes(i, 'vegan'))).toEqual([]);
+  });
+
+  it('lists each allergen and diet at most once', () => {
+    const dup = (list: string[]) => new Set(list).size !== list.length;
+    expect(offenders((i) => dup(i.allergens) || dup(i.mayContain) || dup(i.notFor))).toEqual([]);
   });
 
   it('gives a piece weight to every ingredient counted in pieces', () => {

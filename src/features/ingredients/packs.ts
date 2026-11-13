@@ -37,6 +37,7 @@ function cheapest(need: number, sizes: number[]): Candidate | null {
 export function roundToPacks(need: number, packs: Pack[]): PackChoice | null {
   const sizes = packs.filter((p) => Number.isFinite(p.amount) && p.amount > 0).sort((a, b) => b.amount - a.amount);
   if (sizes.length === 0) return null;
+  if (!Number.isFinite(need)) return null;
   if (need <= 0) return { items: [], total: 0, leftover: 0 };
   const best = cheapest(need, sizes.map((p) => p.amount));
   if (best === null) return null;

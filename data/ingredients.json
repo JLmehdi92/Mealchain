@@ -63,8 +63,15 @@
   "allergens": [
    "gluten"
   ],
+  "mayContain": [
+   "sesame",
+   "milk",
+   "eggs"
+  ],
   "notFor": [
-   "gluten_free"
+   "gluten_free",
+   "vegan",
+   "lactose_free"
   ],
   "baseUnit": "piece",
   "gramsPerPiece": 60,
@@ -103,7 +110,12 @@
   },
   "aisle": "bakery",
   "allergens": [],
-  "notFor": [],
+  "mayContain": [
+   "gluten"
+  ],
+  "notFor": [
+   "gluten_free"
+  ],
   "baseUnit": "piece",
   "gramsPerPiece": 30,
   "packs": {
@@ -188,6 +200,9 @@
   "allergens": [
    "gluten",
    "milk"
+  ],
+  "mayContain": [
+   "eggs"
   ],
   "notFor": [
    "gluten_free",
@@ -408,8 +423,14 @@
   "allergens": [
    "gluten"
   ],
+  "mayContain": [
+   "milk",
+   "soy"
+  ],
   "notFor": [
-   "gluten_free"
+   "gluten_free",
+   "vegan",
+   "lactose_free"
   ],
   "baseUnit": "piece",
   "gramsPerPiece": 28,
@@ -879,6 +900,9 @@
    "soy",
    "gluten"
   ],
+  "mayContain": [
+   "sesame"
+  ],
   "notFor": [
    "gluten_free"
   ],
@@ -1048,7 +1072,12 @@
   "allergens": [
    "soy"
   ],
-  "notFor": [],
+  "mayContain": [
+   "gluten"
+  ],
+  "notFor": [
+   "gluten_free"
+  ],
   "baseUnit": "g",
   "gramsPerMl": 1.15,
   "packs": {
@@ -1192,7 +1221,8 @@
   ],
   "notFor": [
    "vegan",
-   "lactose_free"
+   "lactose_free",
+   "vegetarian"
   ],
   "baseUnit": "g",
   "gramsPerMl": 1,
@@ -2659,8 +2689,12 @@
   "allergens": [
    "gluten"
   ],
+  "mayContain": [
+   "eggs"
+  ],
   "notFor": [
-   "gluten_free"
+   "gluten_free",
+   "vegan"
   ],
   "baseUnit": "g",
   "packs": {
@@ -3285,7 +3319,12 @@
   },
   "aisle": "dairy",
   "allergens": [],
-  "notFor": [],
+  "mayContain": [
+   "gluten"
+  ],
+  "notFor": [
+   "gluten_free"
+  ],
   "baseUnit": "ml",
   "gramsPerMl": 1.03,
   "packs": {
@@ -6931,12 +6970,16 @@
   "allergens": [
    "sulphites"
   ],
+  "mayContain": [
+   "gluten"
+  ],
   "notFor": [
    "vegetarian",
    "vegan",
    "pescatarian",
    "halal",
-   "no_pork"
+   "no_pork",
+   "gluten_free"
   ],
   "protein": "pork",
   "baseUnit": "g",
@@ -7477,12 +7520,16 @@
    "celery",
    "gluten"
   ],
+  "mayContain": [
+   "milk"
+  ],
   "notFor": [
    "vegetarian",
    "vegan",
    "pescatarian",
    "halal",
-   "gluten_free"
+   "gluten_free",
+   "lactose_free"
   ],
   "baseUnit": "piece",
   "gramsPerPiece": 10,
@@ -7562,8 +7609,14 @@
   "allergens": [
    "gluten"
   ],
+  "mayContain": [
+   "milk",
+   "eggs"
+  ],
   "notFor": [
-   "gluten_free"
+   "gluten_free",
+   "vegan",
+   "lactose_free"
   ],
   "baseUnit": "g",
   "gramsPerMl": 0.45,
@@ -8023,12 +8076,16 @@
    "celery",
    "gluten"
   ],
+  "mayContain": [
+   "milk"
+  ],
   "notFor": [
    "vegetarian",
    "vegan",
    "pescatarian",
    "halal",
-   "gluten_free"
+   "gluten_free",
+   "lactose_free"
   ],
   "baseUnit": "piece",
   "gramsPerPiece": 10,
@@ -9715,8 +9772,13 @@
   "allergens": [
    "gluten"
   ],
+  "mayContain": [
+   "eggs",
+   "soy"
+  ],
   "notFor": [
-   "gluten_free"
+   "gluten_free",
+   "vegan"
   ],
   "baseUnit": "g",
   "packs": {
@@ -10279,8 +10341,13 @@
    "celery",
    "gluten"
   ],
+  "mayContain": [
+   "milk"
+  ],
   "notFor": [
-   "gluten_free"
+   "gluten_free",
+   "vegan",
+   "lactose_free"
   ],
   "baseUnit": "piece",
   "gramsPerPiece": 10,
@@ -14010,6 +14077,10 @@
   },
   "aisle": "spices",
   "allergens": [],
+  "mayContain": [
+   "celery",
+   "mustard"
+  ],
   "notFor": [],
   "baseUnit": "g",
   "gramsPerMl": 0.42,

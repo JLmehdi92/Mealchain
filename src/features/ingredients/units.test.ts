@@ -38,6 +38,11 @@ describe('toBase', () => {
     expect(toBase(110, 'g', egg)).toBe(2);
   });
 
+  it('chains conversions through grams', () => {
+    expect(toBase(1, 'lb', cream)).toBeCloseTo(449.1, 1);
+    expect(toBase(2, 'piece', { baseUnit: 'ml', gramsPerPiece: 50, gramsPerMl: 1 })).toBe(100);
+  });
+
   it('refuses to guess when density or piece weight is unknown', () => {
     expect(toBase(1, 'cup', salt)).toBeNull();
     expect(toBase(1, 'piece', salt)).toBeNull();
