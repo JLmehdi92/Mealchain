@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Mealchain",
+    "slug": "mealchain",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "mealchain",
+    "userInterfaceStyle": "automatic",
+    "platforms": ["ios"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.mealchain.ios"
+    },
+    "plugins": [
+      "expo-router",
+      ["expo-splash-screen", { "backgroundColor": "#FFFFFF", "image": "./assets/images/splash-icon.png", "imageWidth": 76 }]
+    ],
+    "experiments": { "typedRoutes": true, "reactCompiler": true }
+  }
+}
