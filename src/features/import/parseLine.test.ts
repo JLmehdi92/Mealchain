@@ -92,3 +92,33 @@ describe('French spoon units written in full', () => {
     expect(parseIngredientLine(raw)).toMatchObject({ qty, unit });
   });
 });
+
+describe('ambiguous quantities, review fixes', () => {
+  it.each([
+    ['1 14-oz can tomatoes', '14-oz can tomatoes'],
+    ['2 x 400g tomatoes', 'x 400g tomatoes'],
+    ['2 × 400 g tomatoes', '× 400 g tomatoes'],
+    ['1 tomatoes 400 g', 'tomatoes 400 g'],
+    ['1,000 g flour', 'flour'],
+    ['2,500,000 g flour', ''],
+  ])('drops the quantity of %p', (raw, name) => {
+    expect(parseIngredientLine(raw)).toEqual({ qty: null, unit: null, name });
+  });
+
+  it.each([
+    ['⅜ cup milk', 3 / 8], ['⅝ cup milk', 5 / 8], ['⅞ cup milk', 7 / 8], ['⅕ cup milk', 1 / 5], ['⅖ cup milk', 2 / 5],
+    ['⅗ cup milk', 3 / 5], ['⅘ cup milk', 4 / 5], ['⅙ cup milk', 1 / 6], ['⅚ cup milk', 5 / 6], ['2 xanthan gum', 2],
+  ])('reads %p as %p', (raw, qty) => {
+    expect(parseIngredientLine(raw).qty).toBeCloseTo(qty, 5);
+  });
+
+  it('drops a trailing conjunction from the name', () => {
+    expect(parseIngredientLine('1 tsp salt or to taste')).toEqual({ qty: 1, unit: 'tsp', name: 'salt' });
+    expect(parseIngredientLine('poivre et')).toEqual({ qty: null, unit: null, name: 'poivre' });
+  });
+
+  it('does not read T-bone as tablespoons', () => {
+    expect(parseIngredientLine('1 T-bone steak')).toEqual({ qty: 1, unit: 'piece', name: 't-bone steak' });
+  });
+});
+

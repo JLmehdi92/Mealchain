@@ -2,7 +2,13 @@ import type { RecipeUnit } from '../ingredients/units';
 
 export type ParsedLine = { qty: number | null; unit: RecipeUnit | null; name: string };
 
-const FRACTIONS: Record<string, string> = { '½': '1/2', '¼': '1/4', '¾': '3/4', '⅓': '1/3', '⅔': '2/3', '⅛': '1/8' };
+const FRACTIONS: Record<string, string> = {
+  '½': '1/2', '¼': '1/4', '¾': '3/4', '⅓': '1/3', '⅔': '2/3', '⅛': '1/8', '⅜': '3/8', '⅝': '5/8', '⅞': '7/8',
+  '⅕': '1/5', '⅖': '2/5', '⅗': '3/5', '⅘': '4/5', '⅙': '1/6', '⅚': '5/6',
+};
+const FRACTION_CHARS = new RegExp(`[${Object.keys(FRACTIONS).join('')}]`, 'g');
+const THOUSANDS = /^\d{1,3}(?:,\d{3})+(?!\d)/;
+const AMBIGUOUS_NAME = /^[x×](?![\p{L}])|\d/u;
 const NUM = String.raw`\d+\/\d+|\d+(?:[.,]\d+)?(?:\s+\d+\/\d+)?`;
 const QTY = new RegExp(String.raw`^(${NUM})(?:\s*(?:-|–|to|à)\s*(${NUM}))?\s*`, 'i');
 const CONTAINER = String.raw`(?:cans?|jars?|packages?|box(?:es)?|bags?|bottles?|tins?|cartons?|boîtes?|bocaux|bocal)`;
@@ -11,7 +17,7 @@ const TASTE = String.raw`to taste|as needed|au goût|à volonté|selon (?:votre 
 const LINKER = /^(?:de\s+|d['’]\s*|of\s+)/i;
 
 const unitRule = (alias: string, unit: RecipeUnit, flags = 'iu'): [RegExp, RecipeUnit] =>
-  [new RegExp(String.raw`^(?:${alias})\.?(?![\p{L}])\s*`, flags), unit];
+  [new RegExp(String.raw`^(?:${alias})\.?(?![\p{L}-])\s*`, flags), unit];
 
 const UNIT_RULES = [
   unitRule(String.raw`fl\.?\s*oz|fluid\s+ounces?`, 'fl_oz'),
@@ -53,6 +59,7 @@ const cleanName = (text: string): string =>
     .replace(new RegExp(TASTE, 'gi'), ' ')
     .replace(/\s+/g, ' ')
     .trim()
+    .replace(/\s(?:or|and|ou|et|&)$/i, '')
     .toLowerCase();
 
 function measured(qty: number, text: string): ParsedLine {
@@ -66,8 +73,9 @@ function measured(qty: number, text: string): ParsedLine {
 }
 
 export function parseIngredientLine(raw: string): ParsedLine {
-  const line = raw.replace(/[½¼¾⅓⅔⅛]/g, (f) => ` ${FRACTIONS[f]}`).replace(/\s+/g, ' ').trim();
+  const line = raw.replace(FRACTION_CHARS, (f) => ` ${FRACTIONS[f]}`).replace(/\s+/g, ' ').trim();
   const quantity = QTY.exec(line);
   if (!quantity) return { qty: null, unit: null, name: cleanName(line) };
-  return measured(toNumber(quantity[2] ?? quantity[1] ?? ''), line.slice(quantity[0].length));
+  const parsed = measured(toNumber(quantity[2] ?? quantity[1] ?? ''), line.slice(quantity[0].length));
+  return THOUSANDS.test(line) || AMBIGUOUS_NAME.test(parsed.name) ? { qty: null, unit: null, name: parsed.name } : parsed;
 }

@@ -24,7 +24,19 @@ const phrases = catalog
   )
   .sort((a, b) => b.phrase.length - a.phrase.length || (a.ingredient.id < b.ingredient.id ? -1 : a.ingredient.id > b.ingredient.id ? 1 : 0));
 
-export function matchIngredient(name: string): Ingredient | null {
+const NOISE = new Set(
+  normalize(
+    'large medium small fresh chopped minced diced sliced grated shredded crushed finely roughly ripe whole boneless skinless organic extra virgin packed softened melted room temperature ' +
+      'gros grosse petit petite frais fraiche haché hachée émincé émincée râpé râpée coupé coupée mûr mûre entier entière bio',
+  ).split(' '),
+);
+
+export type IngredientMatch = { ingredient: Ingredient; whole: boolean };
+
+export function matchIngredient(name: string): IngredientMatch | null {
   const haystack = ` ${normalize(name)} `;
-  return phrases.find(({ phrase }) => haystack.includes(phrase))?.ingredient ?? null;
+  const found = phrases.find(({ phrase }) => haystack.includes(phrase));
+  if (!found) return null;
+  const leftover = haystack.replace(found.phrase, ' ').split(' ').filter((word) => word && !NOISE.has(word));
+  return { ingredient: found.ingredient, whole: leftover.length === 0 };
 }

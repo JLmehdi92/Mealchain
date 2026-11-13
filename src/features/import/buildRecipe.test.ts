@@ -106,3 +106,26 @@ describe('equipment and multi-ingredient lines, review fixes', () => {
     expect(recipe.ingredients[0]?.status).toBe('needsReview');
   });
 });
+
+describe('safe ingredient matching', () => {
+  const lineOf = (line: string) => buildRecipe({ ...raw, ingredients: [line] }, 'web', 'id', 0).ingredients[0];
+
+  it.each([
+    '2 cups gluten-free flour', '100 g farine sans gluten', '1 cup rice flour', '1 cup vegan butter', '1 cup lactose-free milk',
+    '1 cup nut milk', '1 cup milk chocolate', '1 cup peanut oil', '1 cup peanut-free granola', '1 cup milk (dairy-free)',
+  ])('never matches %p', (line) => {
+    expect(lineOf(line)?.status).not.toBe('matched');
+  });
+
+  it.each(['2 large eggs', '1 onion, finely chopped', '200 g de farine', '20 cl de crème liquide', '1 (14.5 oz) can diced tomatoes', '1 cup coconut milk'])(
+    'still matches %p',
+    (line) => {
+      expect(lineOf(line)?.status).toBe('matched');
+    },
+  );
+
+  it('keeps the catalog suggestion on a line that needs review', () => {
+    expect(lineOf('1 cup rice flour')).toMatchObject({ ingredientId: 'all_purpose_flour', status: 'needsReview' });
+  });
+});
+

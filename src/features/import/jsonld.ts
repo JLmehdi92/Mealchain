@@ -10,7 +10,11 @@ export type RawRecipe = {
 
 type JsonObject = Record<string, unknown>;
 
-const LD_SCRIPT = /<script\b[^>]*\btype\s*=\s*["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script\s*>/gi;
+const LD_TAG = /^<script\b[^>]*\btype\s*=\s*["']?application\/ld\+json\b/i;
+const MAX_BLOCK = 500_000;
+const MAX_DEPTH = 20;
+const MAX_LINES = 100;
+const MAX_LINE = 500;
 const DURATION = /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:[\d.]+S)?)?$/i;
 const ENTITIES: Record<string, string> = {
   amp: '&', quot: '"', apos: "'", lt: '<', gt: '>', nbsp: ' ', deg: '°',
@@ -37,24 +41,35 @@ function parseJson(source: string): unknown {
   }
 }
 
-function findRecipe(data: unknown): JsonObject | null {
-  if (Array.isArray(data)) {
-    for (const item of data) {
-      const found = findRecipe(item);
-      if (found) return found;
-    }
-    return null;
+function* ldBlocks(html: string): Generator<string> {
+  const open = /<script/gi;
+  const close = /<\/script/gi;
+  for (let start = open.exec(html); start; start = open.exec(html)) {
+    const tagEnd = html.indexOf('>', start.index);
+    if (tagEnd === -1) return;
+    close.lastIndex = tagEnd;
+    const end = close.exec(html);
+    if (!end) return;
+    if (LD_TAG.test(html.slice(start.index, tagEnd)) && end.index - tagEnd <= MAX_BLOCK) yield html.slice(tagEnd + 1, end.index);
+    open.lastIndex = end.index;
   }
-  if (!isObject(data)) return null;
-  const type = data['@type'];
-  if (type === 'Recipe' || (Array.isArray(type) && type.includes('Recipe'))) return data;
-  return findRecipe(data['@graph']);
 }
+
+function recipes(data: unknown, depth = 0): JsonObject[] {
+  if (depth > MAX_DEPTH) return [];
+  if (Array.isArray(data)) return data.flatMap((item) => recipes(item, depth + 1));
+  if (!isObject(data)) return [];
+  const type = data['@type'];
+  if (type === 'Recipe' || (Array.isArray(type) && type.includes('Recipe'))) return [data];
+  return [data['@graph'], data.mainEntity, data.mainEntityOfPage].flatMap((child) => recipes(child, depth + 1));
+}
+
+const hasIngredients = (recipe: JsonObject) => Array.isArray(recipe.recipeIngredient) && recipe.recipeIngredient.length > 0;
 
 function servings(recipeYield: unknown): number | undefined {
   const first: unknown = Array.isArray(recipeYield) ? recipeYield[0] : recipeYield;
   const count = typeof first === 'number' ? first : Number(/\d+/.exec(String(first))?.[0]);
-  return count > 0 ? count : undefined;
+  return Number.isInteger(count) && count >= 1 && count <= 100 ? count : undefined;
 }
 
 function minutes(duration: unknown): number | undefined {
@@ -62,7 +77,7 @@ function minutes(duration: unknown): number | undefined {
   if (!match) return undefined;
   const [, days = '0', hours = '0', mins = '0'] = match;
   const total = Number(days) * 1440 + Number(hours) * 60 + Number(mins);
-  return total > 0 ? total : undefined;
+  return total >= 1 && total <= 10_080 ? total : undefined;
 }
 
 function totalMinutes(recipe: JsonObject): number | undefined {
@@ -70,34 +85,36 @@ function totalMinutes(recipe: JsonObject): number | undefined {
   return minutes(recipe.totalTime) ?? (parts.length ? parts.reduce((a, b) => a + b) : undefined);
 }
 
-function steps(instructions: unknown): string[] {
+function steps(instructions: unknown, depth = 0): string[] {
+  if (depth > MAX_DEPTH) return [];
   if (typeof instructions === 'string') return instructions.split(/\n+/).map(text).filter(Boolean);
-  if (Array.isArray(instructions)) return instructions.flatMap(steps);
+  if (Array.isArray(instructions)) return instructions.flatMap((item) => steps(item, depth + 1));
   if (!isObject(instructions)) return [];
-  if (instructions.itemListElement !== undefined) return steps(instructions.itemListElement);
-  return steps(instructions.text ?? instructions.name);
+  return steps(instructions.itemListElement ?? instructions.text ?? instructions.name, depth + 1);
 }
+
+const lines = (values: string[]) => values.filter((line) => line && line.length <= MAX_LINE);
 
 function imageUrl(image: unknown): string | undefined {
   const first: unknown = Array.isArray(image) ? image[0] : image;
   const url = text(isObject(first) ? first.url : first);
-  return /^https?:\/\//i.test(url) ? url : undefined;
+  return /^https:\/\//i.test(url) && url.length <= 2048 ? url : undefined;
 }
 
 export function extractRecipe(html: string, sourceUrl: string): RawRecipe | null {
-  for (const [, body = ''] of html.matchAll(LD_SCRIPT)) {
-    const recipe = findRecipe(parseJson(body));
-    if (!recipe) continue;
-    const ingredients = recipe.recipeIngredient;
-    return {
-      title: text(recipe.name) || undefined,
-      servings: servings(recipe.recipeYield),
-      totalMinutes: totalMinutes(recipe),
-      ingredients: Array.isArray(ingredients) ? ingredients.map(text).filter(Boolean) : [],
-      steps: steps(recipe.recipeInstructions),
-      imageUrl: imageUrl(recipe.image),
-      sourceUrl,
-    };
-  }
-  return null;
+  const found = [...ldBlocks(html)].flatMap((block) => recipes(parseJson(block)));
+  const recipe = found.find(hasIngredients) ?? found[0];
+  if (!recipe) return null;
+  const ingredients = lines(Array.isArray(recipe.recipeIngredient) ? recipe.recipeIngredient.map(text) : []);
+  const instructions = lines(steps(recipe.recipeInstructions));
+  if (ingredients.length > MAX_LINES || instructions.length > MAX_LINES) return null;
+  return {
+    title: text(recipe.name) || undefined,
+    servings: servings(recipe.recipeYield),
+    totalMinutes: totalMinutes(recipe),
+    ingredients,
+    steps: instructions,
+    imageUrl: imageUrl(recipe.image),
+    sourceUrl,
+  };
 }

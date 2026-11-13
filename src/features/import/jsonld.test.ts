@@ -55,6 +55,10 @@ describe('extractRecipe', () => {
     [['4', '4 servings'], 4],
     ['Serves 2-3', 2],
     ['a few', undefined],
+    [0, undefined],
+    [100, 100],
+    [101, undefined],
+    [2.5, undefined],
   ])('maps recipeYield %p to servings %p', (recipeYield, servings) => {
     expect(extractRecipe(page(ld({ '@type': 'Recipe', recipeYield })), url)?.servings).toBe(servings);
   });
@@ -66,6 +70,8 @@ describe('extractRecipe', () => {
     [{ cookTime: 'PT20M' }, 20],
     [{ totalTime: 'soon' }, undefined],
     [{}, undefined],
+    [{ totalTime: 'P7D' }, 10080],
+    [{ totalTime: 'P7DT1M' }, undefined],
   ])('maps durations %p to %p minutes', (times, minutes) => {
     expect(extractRecipe(page(ld({ '@type': 'Recipe', ...times })), url)?.totalMinutes).toBe(minutes);
   });
@@ -87,6 +93,8 @@ describe('extractRecipe', () => {
     [[{ '@type': 'ImageObject', url: 'https://example.com/e.jpg' }], 'https://example.com/e.jpg'],
     [{ width: 4 }, undefined],
     ['javascript:alert(1)', undefined],
+    ['http://example.com/f.jpg', undefined],
+    [`https://example.com/${'a'.repeat(2048)}.jpg`, undefined],
   ])('maps image %p', (image, imageUrl) => {
     expect(extractRecipe(page(ld({ '@type': 'Recipe', image })), url)?.imageUrl).toBe(imageUrl);
   });
@@ -101,3 +109,50 @@ describe('extractRecipe', () => {
     expect(raw?.ingredients).toEqual(['/&#0;"<>\u00a0x &bogus;']);
   });
 });
+
+describe('extractRecipe on hostile pages', () => {
+  const deep = (inner: string) => `${'['.repeat(20_000)}${inner}${']'.repeat(20_000)}`;
+  const script = (json: string) => `<script type="application/ld+json">${json}</script>`;
+
+  it.each([
+    ['unclosed ld+json tags', '<script type="application/ld+json">'.repeat(20_000)],
+    ['unterminated script tags', '<script '.repeat(20_000)],
+  ])('scans %s in linear time', (_, html) => {
+    const start = performance.now();
+    expect(extractRecipe(html, url)).toBeNull();
+    expect(performance.now() - start).toBeLessThan(200);
+  });
+
+  it('skips a JSON block over 500 KB', () => {
+    expect(extractRecipe(page(ld({ '@type': 'Recipe', name: 'Big', pad: 'a'.repeat(500_000) })), url)).toBeNull();
+  });
+
+  it('gives up on nesting deeper than 20 levels without throwing', () => {
+    expect(extractRecipe(script(deep('{"@type":"Recipe","name":"Deep"}')), url)).toBeNull();
+    const recipe = `{"@type":"Recipe","recipeIngredient":["1 egg"],"recipeInstructions":${deep('"Mix."')}}`;
+    expect(extractRecipe(script(recipe), url)?.steps).toEqual([]);
+  });
+
+  it('follows mainEntity and mainEntityOfPage', () => {
+    expect(extractRecipe(page(ld({ '@type': 'WebPage', mainEntity: { '@type': 'Recipe', name: 'Pie' } })), url)?.title).toBe('Pie');
+    expect(extractRecipe(page(ld({ '@type': 'WebPage', mainEntityOfPage: { '@type': 'Recipe', name: 'Cake' } })), url)?.title).toBe('Cake');
+  });
+
+  it('prefers the first recipe that lists ingredients', () => {
+    const html = page(ld({ '@type': 'Recipe', name: 'Teaser' }), ld({ '@type': 'Recipe', name: 'Full', recipeIngredient: ['1 egg'] }));
+    expect(extractRecipe(html, url)?.title).toBe('Full');
+  });
+
+  it('drops lines over 500 characters', () => {
+    const raw = extractRecipe(page(ld({ '@type': 'Recipe', recipeIngredient: ['1 egg', 'x'.repeat(501)], recipeInstructions: ['Mix.', 'y'.repeat(501)] })), url);
+    expect(raw).toMatchObject({ ingredients: ['1 egg'], steps: ['Mix.'] });
+  });
+
+  it.each([
+    ['ingredients', { recipeIngredient: Array.from({ length: 101 }, () => '1 egg') }],
+    ['steps', { recipeInstructions: Array.from({ length: 101 }, () => 'Mix.') }],
+  ])('rejects a page with more than 100 %s', (_, fields) => {
+    expect(extractRecipe(page(ld({ '@type': 'Recipe', ...fields })), url)).toBeNull();
+  });
+});
+

@@ -18,14 +18,15 @@ const EQUIPMENT_RULES: Record<Equipment, RegExp> = {
 export const detectEquipment = (steps: string[]): Equipment[] =>
   EQUIPMENT.filter((equipment) => steps.some((step) => EQUIPMENT_RULES[equipment].test(step)));
 
-const namesSeveral = (name: string) =>
-  new Set(name.split(/\s(?:and|or|et|ou|&)\s/i).map((part) => matchIngredient(part)?.id).filter(Boolean)).size > 1;
+const UNSAFE_QUALIFIER =
+  /\b(?:free|sans|without|v[ée]gan|v[ée]g[ée]tal\w*|plant[- ]based|non[- ]dairy|lactose|gluten|substitut\w*|imitation|alternativ\w*|milk chocolate|peanut oil|nut milk)\b/i;
 
 function toIngredient(raw: string): RecipeIngredient {
   const { qty, unit, name } = parseIngredientLine(raw);
-  const ingredient = matchIngredient(name);
-  if (!ingredient) return { raw, qty, unit, ingredientId: null, status: 'unmatched' };
-  if (namesSeveral(name)) return { raw, qty, unit, ingredientId: ingredient.id, status: 'needsReview' };
+  const match = matchIngredient(name);
+  if (!match) return { raw, qty, unit, ingredientId: null, status: 'unmatched' };
+  const { ingredient, whole } = match;
+  if (!whole || UNSAFE_QUALIFIER.test(raw)) return { raw, qty, unit, ingredientId: ingredient.id, status: 'needsReview' };
   const usable = qty === null || unit === null ? isToTaste(raw) : toBase(qty, unit, ingredient) !== null;
   return { raw, qty, unit, ingredientId: ingredient.id, status: usable ? 'matched' : 'needsReview' };
 }

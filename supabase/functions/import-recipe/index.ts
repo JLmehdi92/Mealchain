@@ -67,6 +67,14 @@ async function fetchPage(raw: string): Promise<string | null> {
   return null;
 }
 
+function extractSafely(html: string, url: string) {
+  try {
+    return extractRecipe(html, url);
+  } catch {
+    return null;
+  }
+}
+
 async function readText(text: string) {
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') });
   const response = await client.messages.parse({
@@ -98,7 +106,7 @@ Deno.serve(async (req) => {
   if (body.data.kind === 'url') {
     const html = await fetchPage(body.data.url).catch(() => null);
     if (html === null) return json(422, { error: 'unreachable' });
-    const recipe = extractRecipe(html, body.data.url);
+    const recipe = extractSafely(html, body.data.url);
     return recipe ? json(200, { recipe }) : json(422, { error: 'no_recipe' });
   }
 
