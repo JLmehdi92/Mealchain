@@ -36,6 +36,10 @@ describe('splitText', () => {
     expect(splitText(`${'This is a very long caption that rambles on about dinner '.repeat(2)}\n2 eggs`).title).toBeUndefined();
   });
 
+  it('skips screenshot noise above the title', () => {
+    expect(splitText('9:41\n•dll\nGratin de courgettes à la feta\nIngrédients :\n3 courgettes').title).toBe('Gratin de courgettes à la feta');
+  });
+
   it('never uses a header as the title', () => {
     expect(splitText('Ingredients\n2 eggs').title).toBeUndefined();
   });

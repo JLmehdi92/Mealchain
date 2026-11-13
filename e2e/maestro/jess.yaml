@@ -90,13 +90,21 @@ onFlowComplete:
 - tapOn:
     id: import-submit
 - extendedWaitUntil:
-    visible:
-      id: review-save
+    visible: "Try again|Garlic Lime Chicken"
     timeout: 45000
-- assertVisible: "Garlic Lime Chicken"
-- takeScreenshot: jess-07-review-toh-garlic-lime-chicken
-- tapOn:
-    id: review-save
+- runFlow:
+    when:
+      visible: "Garlic Lime Chicken"
+    commands:
+      - takeScreenshot: jess-07-review-toh-garlic-lime-chicken
+      - tapOn:
+          id: review-save
+- runFlow:
+    when:
+      visible: "Try again"
+    commands:
+      - takeScreenshot: jess-07-toh-blocked-error-screen
+      - tapOn: "Close"
 - waitForAnimationToEnd
 - takeScreenshot: jess-08-recipe-box
 

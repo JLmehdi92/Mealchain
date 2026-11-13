@@ -1,3 +1,4 @@
+import { useIsFocused } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { getChecks, setCheck, setSetting } from '@/lib/db/repo';
@@ -63,12 +64,14 @@ export function useShoppingList() {
   }, [list, plan, recipes, household, checks, weekStart]);
   const empty = !list || list.items.length + list.unlisted.length === 0;
 
+  // Native tabs mount every tab at launch: the list only counts as seen once its tab is on screen.
+  const focused = useIsFocused();
   useEffect(() => {
-    if (empty) return;
+    if (empty || !focused) return;
     setSetting('first_list_seen', 'yes')
       .then(() => setListSeen(true))
       .catch(report);
-  }, [empty]);
+  }, [empty, focused]);
 
   return { sections, empty, toggle, shared, listSeen };
 }
