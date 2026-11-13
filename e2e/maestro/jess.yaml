@@ -124,6 +124,14 @@ onFlowComplete:
 - takeScreenshot: jess-09-week-5-dinners
 
 - tapOn: "List"
+- runFlow:
+    when:
+      visible:
+        id: paywall-close
+    commands:
+      - takeScreenshot: jess-10-paywall-after-list
+      - tapOn:
+          id: paywall-close
 - extendedWaitUntil:
     visible: "Shopping list"
     timeout: 10000

@@ -98,7 +98,7 @@ onFlowComplete:
     element: ".*Écartée : fruits à coque.*"
     direction: DOWN
     visibilityPercentage: 50
-- assertVisible: "Poulet sauté aux noix de cajou"
+- assertVisible: ".*Poulet sauté aux noix de cajou.*"
 - takeScreenshot: nadia-09-boite-recette-ecartee
 
 - tapOn: "Semaine"

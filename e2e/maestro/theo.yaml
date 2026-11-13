@@ -129,9 +129,11 @@ onFlowComplete:
 - tapOn:
     id: share-list
 - extendedWaitUntil:
-    visible: "Le partage demande un compte"
+    visible: "Copier|Copy|Messages|Rappels|Reminders"
     timeout: 10000
-- takeScreenshot: theo-13-partage-demande-un-compte
+- takeScreenshot: theo-13-partage-liste-en-texte
+- swipe:
+    direction: DOWN
 - runFlow:
     when:
       visible: "OK"
