@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import Animated, { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -35,17 +35,17 @@ export default function Welcome() {
     <SafeAreaView style={[styles.fill, { backgroundColor: c.paper }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <WelcomeScene />
-        <Animated.View entering={enterDown(reduced, 600)} style={styles.title}>
+        <Animated.View entering={enterDown(reduced, 450)} style={styles.title}>
           <Title>{t('onboarding.welcome.title')}</Title>
         </Animated.View>
-        <Animated.View entering={enterDown(reduced, 660)}>
+        <Animated.View entering={enterDown(reduced, 520)}>
           <Body muted>{t('onboarding.welcome.body')}</Body>
         </Animated.View>
       </ScrollView>
-      <View style={styles.footer}>
+      <Animated.View entering={enterDown(reduced, 590)} style={styles.footer}>
         <Button testID="welcome-start" label={t('onboarding.welcome.cta')} onPress={() => router.push('/how')} />
         {accountAvailable ? <Button testID="welcome-sign-in" kind="quiet" label={t('onboarding.welcome.signIn')} disabled={busy} onPress={signIn} /> : null}
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }

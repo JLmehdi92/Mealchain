@@ -90,7 +90,6 @@ onFlowComplete:
     visible: "8 recettes d'exemple ajoutées à votre boîte."
     timeout: 10000
 - takeScreenshot: nadia-08-exemples-charges
-- tapOn: "OK"
 - tapOn:
     point: "9%,10%"
 - waitForAnimationToEnd

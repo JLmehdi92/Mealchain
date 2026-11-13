@@ -10,6 +10,7 @@ export default function AllergiesStep() {
   const draft = useDraft();
   return (
     <Screen
+      staged
       title={t('allergies.title')}
       subtitle={t('allergies.subtitle')}
       footer={<Button testID="allergies-next" label={t('common.next')} onPress={() => router.push('/diets')} />}

@@ -11,9 +11,10 @@ import { PAYWALL_COPY } from '@/features/subscription/copy';
 import { Benefits, OfferState, PaywallFooter, PaywallNav } from '@/features/subscription/PaywallParts';
 import { PlanCard } from '@/features/subscription/PlanCard';
 import { usePlans, type Plan } from '@/features/subscription/plans';
+import { referencePlans } from '@/features/subscription/reference';
 import { purchase } from '@/features/subscription/purchase';
 import { track } from '@/lib/analytics';
-import { pick } from '@/lib/i18n';
+import { market, pick } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { Body, Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
@@ -42,7 +43,9 @@ export default function Paywall() {
   const [busy, setBusy] = useState(false);
   const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null);
   const [active, setActive] = useState(false);
-  const plan = plans.find((p) => p.id === selected) ?? plans[0] ?? null;
+  const plan = plans.find((p) => p.id === selected) ?? null;
+  const cards = offer.status === 'unavailable' ? referencePlans(market()) : plans;
+  const card = cards.find((p) => p.id === selected) ?? null;
 
   useEffect(() => track('paywall_viewed'), []);
 
@@ -61,12 +64,12 @@ export default function Paywall() {
         <Title>{copy.title}</Title>
         <Body muted>{copy.subtitle}</Body>
         <Benefits />
-        {offer.status === 'ready' ? null : <OfferState offer={offer} onRetry={retry} />}
-        {plans.map((p) => (
-          <PlanCard key={p.id} plan={p} selected={p.id === plan?.id} onSelect={() => setSelected(p.id)} />
+        {offer.status === 'ready' || offer.status === 'unavailable' ? null : <OfferState offer={offer} onRetry={retry} />}
+        {cards.map((p) => (
+          <PlanCard key={p.id} plan={p} selected={p.id === card?.id} onSelect={() => setSelected(p.id)} />
         ))}
       </ScrollView>
-      <PaywallFooter plan={plan} busy={busy} onBuy={buy} onLegal={setLegal} />
+      <PaywallFooter plan={card} canBuy={!!plan} busy={busy} onBuy={buy} onLegal={setLegal} />
       {active ? <Activated onDone={router.back} /> : null}
       <LegalSheet text={legal === 'terms' ? TERMS : legal === 'privacy' ? PRIVACY : null} onClose={() => setLegal(null)} />
     </SafeAreaView>

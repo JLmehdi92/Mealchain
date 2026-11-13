@@ -27,6 +27,7 @@ export default function DietsStep() {
   };
   return (
     <Screen
+      staged
       title={t('diets.title')}
       subtitle={t('diets.subtitle')}
       footer={<Button testID="diets-save" label={pick(COPY).save} disabled={saving} onPress={save} />}

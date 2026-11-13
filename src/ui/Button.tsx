@@ -23,7 +23,7 @@ function palette(c: Colors, kind: Kind) {
 
 export function Button({ label, kind = 'primary', onPress, disabled, ...props }: Props) {
   const c = useTheme();
-  const { bg, fg } = palette(c, kind);
+  const { bg, fg } = disabled && kind === 'primary' ? { bg: c.surface, fg: c.ink2 } : palette(c, kind);
   const Label = kind === 'quiet' ? Secondary : Body;
 
   return (
@@ -36,7 +36,7 @@ export function Button({ label, kind = 'primary', onPress, disabled, ...props }:
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
       }}
-      style={[styles.base, { backgroundColor: bg, minHeight: kind === 'quiet' ? touch.min : touch.button, opacity: disabled ? 0.5 : 1 }]}
+      style={[styles.base, { backgroundColor: bg, minHeight: kind === 'quiet' ? touch.min : touch.button, opacity: disabled && kind !== 'primary' ? 0.5 : 1 }]}
       {...props}
     >
       <Label style={{ color: fg, fontWeight: kind === 'quiet' ? '400' : '500' }}>{label}</Label>

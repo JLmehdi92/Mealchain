@@ -10,6 +10,7 @@ export default function HouseholdStep() {
   const draft = useDraft();
   return (
     <Screen
+      staged
       title={t('household.title')}
       subtitle={t('household.subtitle')}
       footer={<Button testID="household-next" label={t('common.next')} onPress={() => router.push('/allergies')} />}

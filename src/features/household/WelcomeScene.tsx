@@ -90,10 +90,18 @@ const HALF_SHIFT = { x: 13, y: -7.8 };
 export function WelcomeScene() {
   const c = useTheme();
   const copy = pick(COPY);
-  const [unit, setUnit] = useState(1);
-  const trail = { fill: 'none', stroke: c.strand, strokeWidth: 2.5, strokeLinecap: 'round' as const, strokeDasharray: '1 7' };
+  const [unit, setUnit] = useState(0);
   return (
     <View style={styles.scene} onLayout={(e) => setUnit(e.nativeEvent.layout.width / 337)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      {unit > 0 ? <Layers unit={unit} c={c} copy={copy} /> : null}
+    </View>
+  );
+}
+
+function Layers({ unit, c, copy }: { unit: number; c: Colors; copy: (typeof COPY)['en'] }) {
+  const trail = { fill: 'none', stroke: c.strand, strokeWidth: 2.5, strokeLinecap: 'round' as const, strokeDasharray: '1 7' };
+  return (
+    <>
       <SceneLayer viewBox={VIEW} delay={650} from={{}}>
         <Path d="M138 150 C 118 162 100 160 88 150" {...trail} />
       </SceneLayer>
@@ -126,7 +134,7 @@ export function WelcomeScene() {
           {copy.wed}
         </Text>
       </SceneLayer>
-    </View>
+    </>
   );
 }
 

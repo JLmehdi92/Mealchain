@@ -5,7 +5,8 @@ import { report } from '@/lib/monitoring';
 
 import { purchasesEnabled } from './purchase';
 
-export type Plan = { id: 'yearly' | 'monthly'; price: string; perMonth: string | null; trial: boolean; pkg: PurchasesPackage };
+export type PlanView = { id: 'yearly' | 'monthly'; price: string; perMonth: string | null; trial: boolean };
+export type Plan = PlanView & { pkg: PurchasesPackage };
 export type Offer = { status: 'loading' | 'failed' | 'unavailable' } | { status: 'ready'; plans: Plan[] };
 
 async function trialEligible(pkg: PurchasesPackage): Promise<boolean> {

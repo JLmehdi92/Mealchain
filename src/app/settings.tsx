@@ -1,7 +1,8 @@
 import Constants from 'expo-constants';
 import { router, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { AccessibilityInfo, Alert } from 'react-native';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
 import { deleteAccount } from '@/features/household/account';
 import { ToggleRow } from '@/features/household/controls';
@@ -21,20 +22,28 @@ import { Icon } from '@/ui/Icon';
 import { Row } from '@/ui/Row';
 import { Screen } from '@/ui/Screen';
 import { SectionLabel } from '@/ui/SectionLabel';
-import { Caption } from '@/ui/Text';
+import { enterDown } from '@/ui/motion';
+import { Caption, Secondary } from '@/ui/Text';
 import { useTheme } from '@/ui/theme';
 
 function SamplesSection() {
   const copy = pick(SETTINGS_COPY);
   const pro = useIsPro();
+  const reduced = useReducedMotion();
+  const [notice, setNotice] = useState<string | null>(null);
+  const show = (message: string) => {
+    setNotice(message);
+    AccessibilityInfo.announceForAccessibility(message);
+  };
   const load = async () => {
+    setNotice(null);
     try {
       const result = await loadSamples(language(), Date.now(), pro);
       if (result === 'paywall') return router.push('/paywall');
-      Alert.alert(result.added > 0 ? fill(copy.samplesAdded, { count: result.added }) : copy.samplesPresent);
+      show(result.added > 0 ? fill(copy.samplesAdded, { count: result.added }) : copy.samplesPresent);
     } catch (error) {
       report(error);
-      Alert.alert(copy.error);
+      show(copy.error);
     }
   };
   return (
@@ -43,6 +52,11 @@ function SamplesSection() {
       <Group>
         <Row testID="load-samples" label={copy.loadSamples} detail={copy.loadSamplesDetail} onPress={load} />
       </Group>
+      {notice ? (
+        <Animated.View key={notice} testID="samples-notice" entering={enterDown(reduced)} accessibilityLiveRegion="polite">
+          <Secondary muted>{notice}</Secondary>
+        </Animated.View>
+      ) : null}
     </>
   );
 }

@@ -64,7 +64,10 @@ env:
     direction: DOWN
 - tapOn:
     id: load-samples
-- tapOn: "OK"
+- extendedWaitUntil:
+    visible:
+      id: samples-notice
+    timeout: 10000
 - tapOn:
     point: "9%,10%"
 - tapOn:

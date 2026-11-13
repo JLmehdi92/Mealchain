@@ -81,7 +81,6 @@ onFlowComplete:
     visible: "8 sample recipes added to your box."
     timeout: 10000
 - takeScreenshot: marcus-13-samples-loaded
-- tapOn: "OK"
 - tapOn:
     point: "9%,10%"
 - waitForAnimationToEnd

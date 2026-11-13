@@ -10,9 +10,9 @@ import { Body, Caption, H2 } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
 
 import { PAYWALL_COPY } from './copy';
-import type { Plan } from './plans';
+import type { PlanView } from './plans';
 
-export function PlanCard({ plan, selected, onSelect }: { plan: Plan; selected: boolean; onSelect: () => void }) {
+export function PlanCard({ plan, selected, onSelect }: { plan: PlanView; selected: boolean; onSelect: () => void }) {
   const c = useTheme();
   const copy = pick(PAYWALL_COPY);
   const yearly = plan.id === 'yearly';

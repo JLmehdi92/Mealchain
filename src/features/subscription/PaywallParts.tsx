@@ -11,7 +11,7 @@ import { space, touch, useTheme } from '@/ui/theme';
 
 import { restoreWithFeedback } from './actions';
 import { PAYWALL_COPY } from './copy';
-import type { Offer, Plan } from './plans';
+import type { Offer, PlanView } from './plans';
 
 export function PaywallNav() {
   const copy = pick(PAYWALL_COPY);
@@ -51,21 +51,22 @@ export function OfferState({ offer, onRetry }: { offer: Offer; onRetry: () => vo
   }
   return (
     <View style={styles.state}>
-      <Secondary muted style={styles.center}>{offer.status === 'unavailable' ? copy.unavailable : copy.pricesFallback}</Secondary>
-      {offer.status === 'failed' ? <Button kind="secondary" label={copy.retry} onPress={onRetry} /> : null}
+      <Secondary muted style={styles.center}>{copy.pricesFallback}</Secondary>
+      <Button kind="secondary" label={copy.retry} onPress={onRetry} />
     </View>
   );
 }
 
-type FooterProps = { plan: Plan | null; busy: boolean; onBuy: () => void; onLegal: (page: 'terms' | 'privacy') => void };
+type FooterProps = { plan: PlanView | null; canBuy: boolean; busy: boolean; onBuy: () => void; onLegal: (page: 'terms' | 'privacy') => void };
 
-export function PaywallFooter({ plan, busy, onBuy, onLegal }: FooterProps) {
+export function PaywallFooter({ plan, canBuy, busy, onBuy, onLegal }: FooterProps) {
   const copy = pick(PAYWALL_COPY);
   const trial = plan?.id === 'yearly' && plan.trial;
   const billed = !plan ? '' : plan.id === 'monthly' ? copy.legalMonthly : trial ? copy.legalYearlyTrial : copy.legalYearly;
   return (
     <View style={styles.bottom}>
-      <Button testID="paywall-subscribe" label={trial ? copy.startTrial : copy.subscribe} disabled={busy || !plan} onPress={onBuy} />
+      <Button testID="paywall-subscribe" label={trial ? copy.startTrial : copy.subscribe} disabled={busy || !canBuy} onPress={onBuy} />
+      {plan && !canBuy ? <Caption muted style={styles.center}>{copy.unavailable}</Caption> : null}
       {trial ? <Caption muted style={styles.center}>{copy.reminder}</Caption> : null}
       <Caption muted style={styles.center}>
         {plan ? `${fill(billed, { price: plan.price })} ` : ''}
