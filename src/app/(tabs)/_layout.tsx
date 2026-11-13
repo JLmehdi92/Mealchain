@@ -7,7 +7,7 @@ export default function TabsLayout() {
   const c = useTheme();
   return (
     <NativeTabs tintColor={c.ink}>
-      <NativeTabs.Trigger name="week">
+      <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Icon sf="calendar" />
         <NativeTabs.Trigger.Label>{t('tabs.week')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>

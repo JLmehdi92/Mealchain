@@ -15,7 +15,7 @@ export default function OnboardingLayout() {
   const reduced = useReducedMotion();
   return (
     <Stack screenOptions={{ ...plainHeader(c), contentStyle: { backgroundColor: c.paper }, animation: reduced ? 'fade' : 'default' }}>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="how" />
       <Stack.Screen name="household" options={{ headerRight: () => <Step current={1} /> }} />
       <Stack.Screen name="allergies" options={{ headerRight: () => <Step current={2} /> }} />

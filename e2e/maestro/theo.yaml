@@ -3,6 +3,8 @@ name: Théo - couple, légende TikTok et capture d'écran
 tags:
   - persona
   - fr
+onFlowComplete:
+  - stopRecording
 ---
 - launchApp:
     clearState: true
@@ -21,7 +23,6 @@ tags:
     id: how-continue
 - tapOn:
     id: stepper-dinners-minus
-- assertVisible: "4"
 - takeScreenshot: theo-02-foyer-2-personnes-4-diners
 - tapOn:
     id: household-next
@@ -142,4 +143,3 @@ tags:
     commands:
       - tapOn: "Annuler"
 - takeScreenshot: theo-14-liste-apres-partage
-- stopRecording

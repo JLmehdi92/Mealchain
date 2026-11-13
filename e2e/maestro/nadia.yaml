@@ -3,6 +3,8 @@ name: Nadia - allergies arachides et fruits à coque, en français
 tags:
   - persona
   - fr
+onFlowComplete:
+  - stopRecording
 ---
 - launchApp:
     clearState: true
@@ -161,4 +163,3 @@ tags:
     element: "Pas un avis médical"
     direction: DOWN
 - takeScreenshot: nadia-16-avis-allergies-fin
-- stopRecording

@@ -3,6 +3,8 @@ name: Marcus - careful explorer, sample recipes, swap and paywall
 tags:
   - persona
   - en
+onFlowComplete:
+  - stopRecording
 ---
 - launchApp:
     clearState: true
@@ -135,4 +137,3 @@ tags:
     id: paywall-close
 - waitForAnimationToEnd
 - takeScreenshot: marcus-20-settings-after-paywall
-- stopRecording

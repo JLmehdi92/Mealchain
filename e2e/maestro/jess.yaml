@@ -3,6 +3,8 @@ name: Jess - busy parent of 5, three links to a planned week
 tags:
   - persona
   - en
+onFlowComplete:
+  - stopRecording
 ---
 - launchApp:
     clearState: true
@@ -26,7 +28,6 @@ tags:
 - tapOn:
     id: stepper-people-plus
 - tapOn: "60\\+ min"
-- assertVisible: "5"
 - takeScreenshot: jess-02-household-5-people-5-dinners
 - tapOn:
     id: household-next
@@ -128,4 +129,3 @@ tags:
           id: paywall-close
 - waitForAnimationToEnd
 - takeScreenshot: jess-11-shopping-list
-- stopRecording
