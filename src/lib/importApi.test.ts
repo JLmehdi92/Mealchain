@@ -10,7 +10,7 @@ const fetchMock = jest.fn();
 globalThis.fetch = fetchMock;
 const invoke = jest.mocked(supabase!.functions.invoke);
 const page = (body: string, init: { ok?: boolean; url?: string } = {}) =>
-  fetchMock.mockResolvedValue({ ok: init.ok ?? true, url: init.url ?? 'https://example.com/dal', text: async () => body });
+  fetchMock.mockResolvedValue({ ok: init.ok ?? true, url: init.url ?? 'https://example.com/dal', body: new Response(body).body });
 const httpError = (status: number, body: unknown) =>
   new FunctionsHttpError(new Response(JSON.stringify(body), { status }));
 
@@ -47,9 +47,27 @@ describe('readPage', () => {
     expect(await readPage('https://example.com/dal')).toEqual({ error: 'no_recipe' });
   });
 
-  it('refuses an oversized page', async () => {
-    page(PAGE + ' '.repeat(3_000_001));
-    expect(await readPage('https://example.com/dal')).toEqual({ error: 'no_recipe' });
+  it('decodes a multi-byte character split across chunks', async () => {
+    const bytes = new TextEncoder().encode(PAGE.replace('Dal', 'Dal à la crème'));
+    const split = bytes.indexOf(0xc3) + 1;
+    const body = new ReadableStream({ start: (c) => { c.enqueue(bytes.slice(0, split)); c.enqueue(bytes.slice(split)); c.close(); } });
+    fetchMock.mockResolvedValue({ ok: true, url: 'https://example.com/dal', body });
+    expect(await readPage('https://example.com/dal')).toMatchObject({ recipe: { title: 'Dal à la crème' } });
+  });
+
+  it('stops reading an endless page at 3 MB and cancels the download', async () => {
+    let sent = 0;
+    const cancel = jest.fn();
+    const body = new ReadableStream({ pull: (c) => { sent += 65_536; c.enqueue(new Uint8Array(65_536)); }, cancel });
+    fetchMock.mockResolvedValue({ ok: true, url: 'https://example.com/dal', body });
+    expect(await readPage('https://example.com/dal')).toEqual({ error: 'unreachable' });
+    expect(cancel).toHaveBeenCalled();
+    expect(sent).toBeLessThan(3_300_000);
+  });
+
+  it('reports a response without a readable body as unreachable', async () => {
+    fetchMock.mockResolvedValue({ ok: true, url: 'https://example.com/dal', body: null });
+    expect(await readPage('https://example.com/dal')).toEqual({ error: 'unreachable' });
   });
 });
 

@@ -62,7 +62,10 @@ async function fetchPage(raw: string): Promise<string | null> {
       target = isAllowedUrl(new URL(res.headers.get('location') ?? '', target).toString());
       continue;
     }
-    return res.ok && res.body ? readCapped(res.body) : null;
+    const html = res.ok && res.body ? await readCapped(res.body) : null;
+    // Why: fetch resolves DNS again; a rebinding host could have pointed it at a private address,
+    // so the body is dropped unless the host still resolves only to public addresses afterwards.
+    return html !== null && (await resolvesPublic(target.hostname)) ? html : null;
   }
   return null;
 }
