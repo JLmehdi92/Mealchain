@@ -27,11 +27,10 @@ type Props = {
   onMeasure: (frame: Frame) => void;
   onOpen: () => void;
   onSwap: () => void;
-  onCarry: (ingredientId: string) => void;
 };
-type PillProps = { pill: Pill; pillRef?: RefObject<Host | null>; land?: SharedValue<number>; onPress?: () => void };
+type PillProps = { pill: Pill; pillRef?: RefObject<Host | null>; land?: SharedValue<number> };
 
-function PillView({ pill, pillRef, land, onPress }: PillProps) {
+function PillView({ pill, pillRef, land }: PillProps) {
   const c = useTheme();
   const reduced = useReducedMotion();
   const color = pill.carry ? c.strandInk : c.ink2;
@@ -50,13 +49,7 @@ function PillView({ pill, pillRef, land, onPress }: PillProps) {
   );
   return (
     <View ref={pillRef} style={styles.pillHost}>
-      {onPress ? (
-        <Press accessibilityRole="button" accessibilityHint={pick(weekCopy).showCarry} hitSlop={8} onPress={onPress} style={styles.pill}>
-          {content}
-        </Press>
-      ) : (
-        <Animated.View style={[styles.pill, landed]}>{content}</Animated.View>
-      )}
+      <Animated.View style={[styles.pill, landed]}>{content}</Animated.View>
     </View>
   );
 }
@@ -75,7 +68,7 @@ function useFrame(body: RefObject<Host | null>, onMeasure: (frame: Frame) => voi
   return { card, carry, measure };
 }
 
-export function MealCard({ recipe, pills, label, unsafe, body, testID, landing, onMeasure, onOpen, onSwap, onCarry }: Props) {
+export function MealCard({ recipe, pills, label, unsafe, body, testID, landing, onMeasure, onOpen, onSwap }: Props) {
   const c = useTheme();
   const s = pick(weekCopy);
   const { card, carry, measure } = useFrame(body, onMeasure);
@@ -108,7 +101,6 @@ export function MealCard({ recipe, pills, label, unsafe, body, testID, landing, 
                 pill={pill}
                 pillRef={i === firstCarry ? carry : undefined}
                 land={landing?.key === pill.key ? landing.value : undefined}
-                onPress={pill.carry ? () => onCarry(pill.ingredientId) : undefined}
               />
             ))}
           </View>

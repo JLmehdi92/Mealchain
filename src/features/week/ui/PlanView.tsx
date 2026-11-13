@@ -65,7 +65,6 @@ export function PlanView({ plan, recipes, household, weekStart, animate, onOpen,
   const { strands, travel, land, play, arrive } = useCarry(plan, frames, household);
   const unsafe = new Set(unsafeSlots(plan, recipes, household));
   const byId = new Map(recipes.map((recipe) => [recipe.id, recipe]));
-  const chains = chainsOf(plan);
   const measure = (slot: number) => (frame: Frame) => setFrames((all) => (same(all[slot], frame) ? all : { ...all, [slot]: frame }));
   const ready = strands.length > 0;
 
@@ -99,7 +98,6 @@ export function PlanView({ plan, recipes, household, weekStart, animate, onOpen,
                   onMeasure={measure(slot)}
                   onOpen={() => entry && onOpen(entry.recipeId)}
                   onSwap={() => onSwap(slot)}
-                  onCarry={(id) => play(chains.findIndex((chain) => chain.fromSlot === slot && chain.ingredientId === id), 0)}
                 />
               );
             })}

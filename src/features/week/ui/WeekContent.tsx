@@ -1,9 +1,11 @@
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import type { WeekPlan } from '@/features/planner/plan';
+import { loadSamples } from '@/features/recipes/loadSamples';
 import { BoxScene } from '@/features/recipes/ui/illustrations';
 import { fill, language, pick } from '@/lib/i18n';
+import { report } from '@/lib/monitoring';
 import { useHousehold, usePlan, useRecipes, useWeekStart } from '@/lib/store';
 import { Button } from '@/ui/Button';
 import { Empty } from '@/ui/Empty';
@@ -24,6 +26,13 @@ function summary(plan: WeekPlan, weekStart: string, lunches: number): string {
   const meals = fill(lunches > 0 ? s.meals : s.dinners, { count: plan.slots.length });
   const finished = packs === 0 ? [] : [packs === 1 ? s.packsOne : fill(s.packs, { count: packs })];
   return [rangeLabel(weekStart, Math.min(...days), Math.max(...days), language()), meals, ...finished].join(' · ');
+}
+
+function trySamples(failed: string) {
+  loadSamples(language(), Date.now(), false).catch((error: unknown) => {
+    report(error);
+    Alert.alert(failed);
+  });
 }
 
 export function WeekContent({ planning, composed, onPlan, onSwap }: Props) {
@@ -47,6 +56,12 @@ export function WeekContent({ planning, composed, onPlan, onSwap }: Props) {
     return (
       <Empty art={<BoxScene />} title={s.noRecipes} body={s.noRecipesBody}>
         <Button label={s.import} onPress={() => router.push('/import')} />
+        <Button
+          testID="try-samples"
+          kind="secondary"
+          label={s.trySamples}
+          onPress={() => trySamples(s.failed)}
+        />
       </Empty>
     );
   }

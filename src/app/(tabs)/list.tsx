@@ -6,6 +6,7 @@ import { BagScene } from '@/features/list/BagScene';
 import { LIST_COPY } from '@/features/list/copy';
 import { ListRow } from '@/features/list/ListRow';
 import type { ListRow as Row } from '@/features/list/sections';
+import { listText } from '@/features/list/sections';
 import { shareList } from '@/features/list/share';
 import { useShoppingList } from '@/features/list/useShoppingList';
 import { useOfferPaywall } from '@/features/subscription/useOfferPaywall';
@@ -54,7 +55,7 @@ export default function List() {
     <Screen title={t('list.title')}>
       <View style={styles.meta}>
         <Secondary muted style={styles.grow}>{fill(shared ? (one ? copy.sharedOne : copy.shared) : one ? copy.packsOne : copy.packs, { n: sections.packCount })}</Secondary>
-        <IconButton testID="share-list" name="square.and.arrow.up" label={copy.share} onPress={shareList} />
+        <IconButton testID="share-list" name="square.and.arrow.up" label={copy.share} onPress={() => shareList(listText(sections, copy.aisles, copy.toCheck))} />
       </View>
       <LayoutAnimationConfig skipEntering>
         {sections.aisles.map((group) => (

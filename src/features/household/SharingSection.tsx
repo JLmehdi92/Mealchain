@@ -65,7 +65,7 @@ export function SharingSection() {
       <Group>
         {session ? (
           <>
-            <Row label={copy.sharedWith} trailing={<Icon name="chevron.right" size={14} muted />} onPress={shareList} />
+            <Row label={copy.sharedWith} trailing={<Icon name="chevron.right" size={14} muted />} onPress={() => shareList()} />
             <Row label={copy.join} trailing={<Icon name="chevron.right" size={14} muted />} onPress={() => setJoining(true)} />
             <Row label={copy.signOut} onPress={() => signOut().catch(report)} />
           </>

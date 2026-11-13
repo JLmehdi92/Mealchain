@@ -26,7 +26,7 @@ function reasonText(reason: Reason): string {
   const [, code = ''] = reason.detail.split(':');
   switch (reason.kind) {
     case 'allergen':
-      return lookup(pick(ALLERGEN_LABELS), code).toLocaleLowerCase();
+      return fill(s.allergy, { name: lookup(pick(ALLERGEN_LABELS), code).toLocaleLowerCase() });
     case 'diet':
       return lookup(l.dietConflict, code);
     case 'equipment':

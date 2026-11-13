@@ -7,7 +7,7 @@ import { packLabel, whyLine } from './format';
 
 type Aisle = (typeof AISLES)[number];
 export type ListRow = { id: string; name: string; qty: string; detail: string; used: boolean; ratio: number | null; checked: boolean };
-type ListSections = { aisles: { aisle: Aisle; rows: ListRow[] }[]; toCheck: ListRow[]; cart: ListRow[]; packCount: number };
+export type ListSections = { aisles: { aisle: Aisle; rows: ListRow[] }[]; toCheck: ListRow[]; cart: ListRow[]; packCount: number };
 type Input = {
   list: ShoppingList;
   days: number[];
@@ -52,4 +52,12 @@ export function listSections(input: Input): ListSections {
     cart: [...items.map((item) => item.row), ...unlisted].filter((row) => row.checked),
     packCount: list.items.reduce((sum, item) => sum + item.packs.reduce((n, p) => n + p.count, 0), 0),
   };
+}
+
+const lines = (label: string, rows: ListRow[]) =>
+  rows.length ? [label, ...rows.map((row) => `- ${row.qty ? `${row.name}, ${row.qty}` : row.name}`)].join('\n') : '';
+
+export function listText(sections: ListSections, aisleLabels: Partial<Record<Aisle, string>>, toCheckLabel: string): string {
+  const groups = sections.aisles.map((group) => lines(aisleLabels[group.aisle] ?? group.aisle, group.rows.filter((row) => !row.checked)));
+  return [...groups, lines(toCheckLabel, sections.toCheck.filter((row) => !row.checked))].filter(Boolean).join('\n\n');
 }

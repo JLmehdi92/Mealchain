@@ -8,13 +8,18 @@ import { LIST_COPY } from './copy';
 
 const failed = (error: unknown) => signInFailed(error, pick(LIST_COPY).shareError);
 
-export async function shareList() {
+async function sendText(text: string): Promise<void> {
+  await Share.share({ message: text }).catch(failed);
+}
+
+export async function shareList(text = ''): Promise<void> {
   const copy = pick(LIST_COPY);
-  if (!accountAvailable) return Alert.alert(copy.needAccount, copy.needAccountBody);
+  if (!accountAvailable) return sendText(text);
   if (!(await signedIn())) {
     return Alert.alert(copy.needAccount, copy.signInBody, [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: copy.signIn, onPress: () => signInWithApple().then(shareList).catch(failed) },
+      { text: copy.sendText, onPress: () => sendText(text) },
+      { text: copy.signIn, onPress: () => signInWithApple().then(() => shareList(text)).catch(failed) },
     ]);
   }
   try {

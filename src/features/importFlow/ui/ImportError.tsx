@@ -31,7 +31,7 @@ function content({ error, fromLink, onClose, onText, onLink, onRetry, onSignIn }
     return { title: s.signInTitle, body: s.signInBody, primary: { label: s.signInApple, onPress: onSignIn }, quiet: { label: s.editText, onPress: onText } };
   }
   if (error === 'unreachable') {
-    return { title: s.unreachable, body: s.unreachableBody, primary: { label: s.tryAgain, onPress: onRetry }, quiet: { label: s.pasteText, onPress: onText } };
+    return { title: s.unreachable, body: s.unreachableBody, primary: { label: s.pasteText, onPress: onText }, quiet: { label: s.tryAgain, onPress: onRetry } };
   }
   return fromLink
     ? { title: s.noRecipePage, body: s.noRecipePageBody, primary: { label: s.pasteText, onPress: onText }, quiet: { label: s.otherLink, onPress: onLink } }

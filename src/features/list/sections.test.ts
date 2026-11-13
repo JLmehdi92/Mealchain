@@ -1,6 +1,6 @@
 import { packsFor, ingredientById } from '../ingredients/catalog';
 import type { ShoppingList } from '../planner/shopping';
-import { listSections } from './sections';
+import { listSections, listText } from './sections';
 
 const eggs = { pack: packsFor(ingredientById.get('egg')!, 'fr')[0]!, count: 1 };
 const cream = { pack: packsFor(ingredientById.get('heavy_cream')!, 'fr')[0]!, count: 1 };
@@ -44,5 +44,13 @@ describe('listSections', () => {
 
   it('counts the packs to buy', () => {
     expect(listSections({ list, days, titles, checks: {}, market: 'fr', lang: 'en', weekStart: '2026-11-09' }).packCount).toBe(5);
+  });
+});
+
+describe('listText', () => {
+  const row = (name: string, qty: string, checked = false) => ({ id: name, name, qty, detail: '', used: false, ratio: null, checked });
+  it('writes unchecked items by aisle and leaves checked ones out', () => {
+    const text = listText({ aisles: [{ aisle: 'dairy', rows: [row('Cream', '1 carton 20 cl')] }], toCheck: [row('Saffron', '')], cart: [row('Eggs', '1 box of 6', true)], packCount: 2 }, { dairy: 'Dairy' }, 'To check');
+    expect(text).toBe('Dairy\n- Cream, 1 carton 20 cl\n\nTo check\n- Saffron');
   });
 });
