@@ -24,6 +24,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16",
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
@@ -40,15 +41,15 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "doctor": "expo-doctor",
-    "check": "npm run typecheck && npm run lint && npm test -- --ci && npx expo-doctor"
+    "check": "npm run typecheck && npm run lint && npm test -- --ci && npm run test:db && npx expo-doctor",
+    "test:db": "node --test supabase/tests/rls.test.mjs"
   },
   "private": true,
   "jest": {
     "preset": "jest-expo/ios",
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/design/",
-      "/supabase/"
+      "/design/"
     ]
   }
 }
