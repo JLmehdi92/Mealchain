@@ -27,6 +27,11 @@ describe('roundToPacks', () => {
     });
   });
 
+  it('does not buy an extra pack because of floating-point drift', () => {
+    expect(roundToPacks(0.1 + 0.2, [carton(0.3)])?.items).toEqual([{ pack: carton(0.3), count: 1 }]);
+    expect(roundToPacks((236.5882365 / 3) * 3, [carton(236.5882365)])?.leftover).toBe(0);
+  });
+
   it('returns nothing to buy for a zero need', () => {
     expect(roundToPacks(0, [carton(200)])).toEqual({ items: [], total: 0, leftover: 0 });
   });

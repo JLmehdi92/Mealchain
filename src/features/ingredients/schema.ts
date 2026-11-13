@@ -5,6 +5,7 @@ export const DIETS = ['vegetarian', 'vegan', 'pescatarian', 'gluten_free', 'lact
 export const AISLES = ['produce', 'dairy', 'meat', 'fish', 'bakery', 'pantry', 'spices', 'condiments', 'frozen', 'drinks'] as const;
 export const PROTEINS = ['chicken', 'beef', 'pork', 'lamb', 'fish', 'seafood', 'egg', 'legume', 'tofu', 'cheese'] as const;
 export const CONTAINERS = ['carton', 'can', 'jar', 'bottle', 'bag', 'box', 'bunch', 'pack', 'tub', 'block', 'tray', 'loose'] as const;
+export const BASE_UNITS = ['g', 'ml', 'piece'] as const;
 export const UNITS = ['g', 'kg', 'oz', 'lb', 'ml', 'cl', 'l', 'tsp', 'tbsp', 'cup', 'fl_oz', 'piece'] as const;
 
 const packSchema = z.strictObject({
@@ -21,7 +22,7 @@ export const ingredientSchema = z.strictObject({
   allergens: z.array(z.enum(ALLERGENS)),
   notFor: z.array(z.enum(DIETS)),
   protein: z.enum(PROTEINS).optional(),
-  baseUnit: z.enum(['g', 'ml', 'piece']),
+  baseUnit: z.enum(BASE_UNITS),
   gramsPerMl: z.number().positive().optional(),
   gramsPerPiece: z.number().positive().optional(),
   packs: z.strictObject({ us: z.array(packSchema).min(1), fr: z.array(packSchema).min(1) }),
