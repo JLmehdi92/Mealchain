@@ -5,6 +5,7 @@ import type { PackItem } from '../ingredients/packs';
 import type { Ingredient, Market } from '../ingredients/schema';
 import { toBase, type BaseUnit, type RecipeUnit } from '../ingredients/units';
 import { dayLabel } from '../week/chains';
+import { piecesLabel } from './pieces';
 
 type Container = PackItem['pack']['container'];
 
@@ -23,8 +24,8 @@ const CONTAINERS: Record<Language, Record<Container, [string, string]>> = {
 
 const UNIT_LABEL: Partial<Record<RecipeUnit, string>> = { fl_oz: 'fl oz' };
 const WHY = {
-  en: { used: 'All used · {days}', rest: '{need} for {days} · {left} left over' },
-  fr: { used: 'Tout utilisé · {days}', rest: '{need} pour {days} · reste {left}' },
+  en: { used: 'All used · {days}', rest: '{need} across the week ({days}) · {left} left over' },
+  fr: { used: 'Tout utilisé · {days}', rest: '{need} sur la semaine ({days}) · reste {left}' },
 };
 const US_UNITS: Record<Exclude<BaseUnit, 'piece'>, { unit: string; per: number }> = {
   g: { unit: 'oz', per: 28.349523125 },
@@ -47,7 +48,10 @@ function measured(value: number, unit: Exclude<BaseUnit, 'piece'>, market: Marke
 }
 
 export function amountLabel(amount: number, ingredient: Ingredient, market: Market, lang: Language): string {
-  if (ingredient.baseUnit === 'piece') return String(Math.ceil(amount - 1e-9));
+  if (ingredient.baseUnit === 'piece') {
+    const count = Math.ceil(amount - 1e-9);
+    return piecesLabel(count, ingredient.id, lang);
+  }
   return measured(amount, ingredient.baseUnit, market, lang);
 }
 
@@ -58,7 +62,7 @@ function onePack({ pack, count }: PackItem, ingredient: Ingredient, market: Mark
   if (!spec) return amountLabel(pack.amount * count, ingredient, market, lang);
   if (spec.container === 'loose') {
     const total = num(spec.size * count, lang);
-    return spec.unit === 'piece' ? total : `${total} ${unitLabel(spec.unit)}`;
+    return spec.unit === 'piece' ? piecesLabel(spec.size * count, ingredient.id, lang, total) : `${total} ${unitLabel(spec.unit)}`;
   }
   const name = CONTAINERS[lang][spec.container][count > 1 ? 1 : 0];
   const size = num(spec.size, lang);

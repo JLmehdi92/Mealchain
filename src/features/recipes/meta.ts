@@ -1,3 +1,7 @@
+import type { Language } from '@/lib/i18n';
+
+import { ALLERGEN_LABELS } from '../household/labels';
+import { ingredientById } from '../ingredients/catalog';
 import type { Allergen, Ingredient, Market } from '../ingredients/schema';
 import { catalogIngredient } from '../planner/needs';
 import type { Reason } from '../planner/filter';
@@ -32,4 +36,12 @@ export const mainReason = (reasons: Reason[]): Reason | undefined =>
 export function lineAllergens(line: RecipeIngredient): { contains: Allergen[]; mayContain: Allergen[] } {
   const ingredient = catalogIngredient(line);
   return { contains: ingredient?.allergens ?? [], mayContain: ingredient?.mayContain ?? [] };
+}
+
+export function allergenName(detail: string, lang: Language): string {
+  const [ingredientId = '', code = ''] = detail.split(':');
+  const table: Record<string, string> = ALLERGEN_LABELS[lang];
+  const allergen = (table[code] ?? code).toLocaleLowerCase();
+  const ingredient = ingredientById.get(ingredientId);
+  return ingredient ? `${ingredient.name[lang].toLocaleLowerCase()} (${allergen})` : allergen;
 }

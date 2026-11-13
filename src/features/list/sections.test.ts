@@ -23,7 +23,7 @@ describe('listSections', () => {
     expect(sections.aisles.map((group) => group.aisle)).toEqual(['produce', 'dairy']);
     expect(sections.aisles[1]!.rows.map((row) => row.name)).toEqual(['Heavy cream', 'Egg']);
     expect(sections.aisles[1]!.rows[0]).toMatchObject({ id: 'heavy_cream', qty: '1 carton (20 cl)', detail: 'All used · Mon, Wed', used: true, ratio: null });
-    expect(sections.aisles[1]!.rows[1]).toMatchObject({ detail: '4 for Wed · 2 left over', used: false, ratio: 4 / 6 });
+    expect(sections.aisles[1]!.rows[1]).toMatchObject({ detail: '4 eggs across the week (Wed) · 2 eggs left over', used: false, ratio: 4 / 6 });
   });
 
   it('moves checked items to the cart', () => {

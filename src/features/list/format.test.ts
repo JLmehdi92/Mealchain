@@ -22,7 +22,8 @@ describe('packLabel', () => {
   });
 
   it('gives loose items as a whole count', () => {
-    expect(packLabel([pack('lemon', 'fr', 0, 3)], ing('lemon'), 'fr', 'en')).toBe('3');
+    expect(packLabel([pack('lemon', 'fr', 0, 3)], ing('lemon'), 'fr', 'en')).toBe('3 lemons');
+    expect(packLabel([pack('lemon', 'fr', 0)], ing('lemon'), 'fr', 'fr')).toBe('1 citron');
   });
 
   it('uses irregular plurals', () => {
@@ -55,7 +56,18 @@ describe('amountLabel', () => {
   });
 
   it('never shows a fraction of a piece', () => {
-    expect(amountLabel(0.64, ing('egg'), 'fr', 'en')).toBe('1');
+    expect(amountLabel(0.64, ing('egg'), 'fr', 'en')).toBe('1 egg');
+  });
+
+  it('names counted pieces in the singular and the plural', () => {
+    expect(amountLabel(10, ing('garlic'), 'fr', 'fr')).toBe('10 gousses');
+    expect(amountLabel(10, ing('garlic'), 'us', 'en')).toBe('10 cloves');
+    expect(amountLabel(1, ing('leek'), 'fr', 'fr')).toBe('1 poireau');
+    expect(amountLabel(1, ing('leek'), 'us', 'en')).toBe('1 leek');
+  });
+
+  it('keeps a bare count when a piece has no label', () => {
+    expect(amountLabel(2, { ...ing('leek'), id: 'unlabelled' }, 'fr', 'en')).toBe('2');
   });
 });
 
@@ -68,8 +80,8 @@ describe('whyLine', () => {
 
   it('rounds pieces up and shows what is left', () => {
     const line = whyLine({ ingredientId: 'egg', need: 3.36, leftover: 2.64, days: [4], weekStart: '2026-11-09' }, 'fr', 'en');
-    expect(line).toEqual({ text: '4 for Fri · 2 left over', used: false, ratio: 4 / 6 });
-    expect(whyLine({ ingredientId: 'egg', need: 3.36, leftover: 2.64, days: [4], weekStart: '2026-11-09' }, 'fr', 'fr').text).toBe('4 pour ven. · reste 2');
+    expect(line).toEqual({ text: '4 eggs across the week (Fri) · 2 eggs left over', used: false, ratio: 4 / 6 });
+    expect(whyLine({ ingredientId: 'egg', need: 3.36, leftover: 2.64, days: [4], weekStart: '2026-11-09' }, 'fr', 'fr').text).toBe('4 œufs sur la semaine (ven.) · reste 2 œufs');
   });
 
   it('treats a leftover under a whole piece as all used', () => {
@@ -78,7 +90,7 @@ describe('whyLine', () => {
 
   it('shows a measured leftover with its unit', () => {
     const line = whyLine({ ingredientId: 'feta', need: 150, leftover: 50, days: [6, 5], weekStart: '2026-11-09' }, 'fr', 'en');
-    expect(line.text).toBe('150 g for Sat, Sun · 50 g left over');
+    expect(line.text).toBe('150 g across the week (Sat, Sun) · 50 g left over');
     expect(line.ratio).toBeCloseTo(0.75);
   });
 

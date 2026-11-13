@@ -1,6 +1,6 @@
 import { line, recipe } from '../planner/fixtures';
 import { ingredientById } from '../ingredients/catalog';
-import { lineAllergens, mainReason, reviewCount, thumbFor, thumbOfIngredient } from './meta';
+import { allergenName, lineAllergens, mainReason, reviewCount, thumbFor, thumbOfIngredient } from './meta';
 
 describe('thumbFor', () => {
   it('draws the first ingredient that has a pack picture', () => {
@@ -72,5 +72,16 @@ describe('lineAllergens', () => {
 
   it('is empty for an unmatched line', () => {
     expect(lineAllergens({ ...line('heavy_cream', 1, 'cup'), status: 'unmatched' })).toEqual({ contains: [], mayContain: [] });
+  });
+});
+
+describe('allergenName', () => {
+  it('names the ingredient and its allergen from the catalogue', () => {
+    expect(allergenName('cashews:nuts', 'en')).toBe('cashews (tree nuts)');
+    expect(allergenName('cashews:nuts', 'fr')).toBe('noix de cajou (fruits à coque)');
+  });
+
+  it('falls back to the allergen alone when the ingredient is unknown', () => {
+    expect(allergenName('nope:nuts', 'en')).toBe('tree nuts');
   });
 });

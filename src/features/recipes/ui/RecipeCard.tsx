@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { ALLERGEN_LABELS, EQUIPMENT_LABELS } from '@/features/household/labels';
+import { EQUIPMENT_LABELS } from '@/features/household/labels';
 import { checkRecipe, type Reason } from '@/features/planner/filter';
 import type { WeekPlan } from '@/features/planner/plan';
 import { dayLabel } from '@/features/week/chains';
@@ -12,7 +12,7 @@ import { Body, Caption, H2 } from '@/ui/Text';
 import { fonts, space, useTheme } from '@/ui/theme';
 
 import { boxCopy, labels } from '../copy';
-import { mainReason, reviewCount, thumbFor } from '../meta';
+import { allergenName, mainReason, reviewCount, thumbFor } from '../meta';
 import type { Household, Recipe } from '../types';
 import { PackThumb } from './illustrations';
 
@@ -26,7 +26,7 @@ function reasonText(reason: Reason): string {
   const [, code = ''] = reason.detail.split(':');
   switch (reason.kind) {
     case 'allergen':
-      return fill(s.allergy, { name: lookup(pick(ALLERGEN_LABELS), code).toLocaleLowerCase() });
+      return fill(s.allergy, { name: allergenName(reason.detail, language()) });
     case 'diet':
       return lookup(l.dietConflict, code);
     case 'equipment':
