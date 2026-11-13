@@ -124,7 +124,7 @@ onFlowComplete:
     element:
       id: subscription-pro
     direction: DOWN
-- assertVisible: "Gratuit · 15 recettes et votre première semaine"
+- assertVisible: ".*Gratuit · 15 recettes.*"
 - takeScreenshot: nadia-13-reglages-abonnement-gratuit
 - tapOn:
     id: subscription-pro

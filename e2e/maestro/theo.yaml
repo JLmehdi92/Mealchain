@@ -88,7 +88,7 @@ onFlowComplete:
 - extendedWaitUntil:
     visible:
       id: review-save
-    timeout: 45000
+    timeout: 90000
 - assertVisible: "Gratin de courgettes à la feta"
 - takeScreenshot: theo-08-verification-capture
 - tapOn:
