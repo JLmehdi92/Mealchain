@@ -8,7 +8,6 @@ env:
   TAB_WEEK: Week
   TAB_RECIPES: Recipes
   TAB_LIST: List
-  BACK: Back
 ---
 - launchApp:
     clearState: true
@@ -66,7 +65,8 @@ env:
 - tapOn:
     id: load-samples
 - tapOn: "OK"
-- tapOn: ${BACK}
+- tapOn:
+    point: "9%,10%"
 - tapOn:
     id: plan-week
 - extendedWaitUntil:

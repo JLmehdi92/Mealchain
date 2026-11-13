@@ -82,7 +82,8 @@ onFlowComplete:
     timeout: 10000
 - takeScreenshot: marcus-13-samples-loaded
 - tapOn: "OK"
-- tapOn: "Back"
+- tapOn:
+    point: "9%,10%"
 - waitForAnimationToEnd
 
 - tapOn:

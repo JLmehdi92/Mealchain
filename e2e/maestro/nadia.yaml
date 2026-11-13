@@ -91,7 +91,8 @@ onFlowComplete:
     timeout: 10000
 - takeScreenshot: nadia-08-exemples-charges
 - tapOn: "OK"
-- tapOn: "Retour"
+- tapOn:
+    point: "9%,10%"
 - waitForAnimationToEnd
 - scrollUntilVisible:
     element: "Écartée : fruits à coque"

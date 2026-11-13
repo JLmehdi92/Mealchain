@@ -114,6 +114,7 @@ jobs:
           for key in KeyboardAutocorrection KeyboardPrediction KeyboardAutocapitalization KeyboardCheckSpelling KeyboardSmartPunctuation; do
             xcrun simctl spawn "$UDID" defaults write com.apple.Preferences "$key" -bool false
           done
+          xcrun simctl spawn "$UDID" defaults write com.apple.keyboard.preferences DidShowContinuousPathIntroduction -bool true
           # The photo picker cannot be targeted by file name: fill the library so any cell near the middle is the recipe screenshot.
           mkdir -p "$RUNNER_TEMP/media"
           for i in $(seq -w 1 24); do cp e2e/assets/recipe-screenshot.png "$RUNNER_TEMP/media/recipe-screenshot-$i.png"; done
@@ -182,7 +183,7 @@ jobs:
             find "$out/screenshots" -name '*.png' -exec mv -n {} "$out/" \;
           }
           shoot en-US
-          shoot fr-FR -e APP_LANG=fr -e APP_LOCALE=fr_FR -e TAB_WEEK=Semaine -e TAB_RECIPES=Recettes -e TAB_LIST=Courses -e BACK=Retour
+          shoot fr-FR -e APP_LANG=fr -e APP_LOCALE=fr_FR -e TAB_WEEK=Semaine -e TAB_RECIPES=Recettes -e TAB_LIST=Courses
           sips -g pixelWidth -g pixelHeight build/store/*/*.png
 
       - name: Stop video and collect crash logs
