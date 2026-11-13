@@ -37,7 +37,8 @@ export const weekCopy = {
     addSamples: 'Add the sample recipes',
     composing: 'Composing…',
     allergySafe: 'No ingredient linked to your allergies ({list}) in these {count} meals.',
-    ready: '{meals}. {packs}, nothing left over.',
+    allergySafeOne: 'No ingredient linked to your allergies ({list}) in this meal.',
+    ready: '{meals}. {packs}.',
     failed: 'The plan could not be saved. Try again.',
   },
   fr: {
@@ -78,7 +79,8 @@ export const weekCopy = {
     addSamples: 'Ajouter les recettes d’exemple',
     composing: 'Composition…',
     allergySafe: 'Aucun ingrédient lié à vos allergies ({list}) dans ces {count} repas.',
-    ready: '{meals}. {packs}, aucun reste.',
+    allergySafeOne: 'Aucun ingrédient lié à vos allergies ({list}) dans ce repas.',
+    ready: '{meals}. {packs}.',
     failed: "Le plan n'a pas pu être enregistré. Réessayez.",
   },
 };

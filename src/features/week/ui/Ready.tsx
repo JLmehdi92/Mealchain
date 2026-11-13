@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { AccessibilityInfo, StyleSheet, View } from 'react-native';
 import Animated, { useReducedMotion } from 'react-native-reanimated';
 import { Path } from 'react-native-svg';
 
@@ -13,8 +14,9 @@ const VIEW = '0 0 40 40';
 export function Ready({ text }: { text: string }) {
   const c = useTheme();
   const reduced = useReducedMotion();
+  useEffect(() => AccessibilityInfo.announceForAccessibility(text), [text]);
   return (
-    <Animated.View entering={enterDown(reduced, 120)} style={styles.row} accessible accessibilityLiveRegion="polite">
+    <Animated.View entering={enterDown(reduced, 120)} style={styles.row} accessible>
       <View style={styles.mark}>
         <StaticLayer viewBox={VIEW}>
           <Path d={halfDisc(20, 20, 14, 'l')} fill={c.ink} />

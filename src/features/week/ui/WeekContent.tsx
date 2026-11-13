@@ -42,11 +42,19 @@ function readyLine(plan: WeekPlan, lunches: number): string {
   return fill(s.ready, { meals, packs: packs === 1 ? s.packsOne : fill(s.packs, { count: packs }) });
 }
 
+let loadingSamples = false;
+
 function trySamples(failed: string, pro: boolean) {
-  loadSamples(language(), Date.now(), pro).catch((error: unknown) => {
-    report(error);
-    Alert.alert(failed);
-  });
+  if (loadingSamples) return;
+  loadingSamples = true;
+  loadSamples(language(), Date.now(), pro)
+    .catch((error: unknown) => {
+      report(error);
+      Alert.alert(failed);
+    })
+    .finally(() => {
+      loadingSamples = false;
+    });
 }
 
 type Planned = { plan: WeekPlan; recipes: Recipe[]; household: Household; weekStart: string; composed: boolean; onSwap: (slot: number) => void };
@@ -63,7 +71,7 @@ function PlannedWeek({ plan, recipes, household, weekStart, composed, onSwap }: 
       {notes.allergyLeftOut.length > 0 ? <Banner icon="exclamationmark.triangle" tone="allergy">{fill(s.allergyLeftOut, { list: notes.allergyLeftOut.join(', ') })}</Banner> : null}
       {notes.repeats ? <Secondary muted>{s.repeats}</Secondary> : null}
       <PlanView plan={plan} recipes={recipes} household={household} weekStart={weekStart} animate={composed} onSwap={onSwap} onOpen={(id) => router.push({ pathname: '/recipe/[id]', params: { id } })} />
-      {allergySafe(plan, recipes, household) ? <Secondary testID="allergy-safe" muted>{fill(s.allergySafe, { list: allergies, count: plan.slots.length })}</Secondary> : null}
+      {allergySafe(plan, recipes, household) ? <Secondary testID="allergy-safe" muted>{fill(plan.slots.length === 1 ? s.allergySafeOne : s.allergySafe, { list: allergies, count: plan.slots.length })}</Secondary> : null}
     </>
   );
 }

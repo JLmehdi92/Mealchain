@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { router, Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { AccessibilityInfo, Alert } from 'react-native';
 import Animated, { useReducedMotion } from 'react-native-reanimated';
 
@@ -35,7 +35,10 @@ function SamplesSection() {
     setNotice(message);
     AccessibilityInfo.announceForAccessibility(message);
   };
+  const loading = useRef(false);
   const load = async () => {
+    if (loading.current) return;
+    loading.current = true;
     setNotice(null);
     try {
       const result = await loadSamples(language(), Date.now(), pro);
@@ -44,6 +47,8 @@ function SamplesSection() {
     } catch (error) {
       report(error);
       show(copy.error);
+    } finally {
+      loading.current = false;
     }
   };
   return (

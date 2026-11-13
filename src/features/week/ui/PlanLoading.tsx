@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
+import { AccessibilityInfo, StyleSheet, View } from 'react-native';
+import Animated, { cancelAnimation, FadeIn, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import type { Household } from '@/features/recipes/types';
 import { Skeleton } from '@/features/recipes/ui/parts';
@@ -30,11 +30,14 @@ export function PlanLoading({ household, weekStart }: { household: Household; we
   const reduced = useReducedMotion();
   const glow = useSharedValue(1);
   useEffect(() => {
-    if (!reduced) glow.set(withRepeat(withTiming(0.55, { duration: 900, easing: EASE_OUT }), -1, true));
+    if (reduced) glow.set(1);
+    else glow.set(withRepeat(withTiming(0.55, { duration: 900, easing: EASE_OUT }), -1, true));
+    return () => cancelAnimation(glow);
   }, [glow, reduced]);
   const s = pick(weekCopy);
   const days = Math.max(household.dinners, household.lunches);
   const title = household.lunches > 0 ? fill(s.planningMeals, { count: household.dinners + household.lunches }) : fill(s.planningDinners, { count: household.dinners });
+  useEffect(() => AccessibilityInfo.announceForAccessibility(title), [title]);
   return (
     <Animated.View entering={APPEAR} accessible accessibilityLabel={title} accessibilityState={{ busy: true }}>
       <Title>{title}</Title>
