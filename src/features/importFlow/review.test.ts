@@ -1,5 +1,5 @@
 import { line, recipe } from '../planner/fixtures';
-import { confirmIngredient, finalize, parseCount, recipeAllergens, reviewList, uncheckedCount } from './review';
+import { confirmAll, confirmIngredient, finalize, parseCount, recipeAllergens, reviewList, uncheckedCount } from './review';
 
 const unmatched = { raw: '1 knob secret butter', qty: 1, unit: 'piece' as const, ingredientId: null, status: 'unmatched' as const };
 
@@ -68,5 +68,13 @@ describe('reviewList', () => {
   });
   it('leaves out lines when every ingredient is matched', () => {
     expect(reviewList(recipe('a', [line('egg', 2, 'piece')], { needsReview: ['title'] }), names)).toBe('Name');
+  });
+});
+
+describe('confirmAll', () => {
+  it('confirms every recognised line to check and leaves unknown lines alone', () => {
+    const toCheck = { ...line('egg', 2, 'piece'), status: 'needsReview' as const };
+    const done = confirmAll(recipe('a', [toCheck, unmatched]));
+    expect(done.ingredients.map((l) => l.status)).toEqual(['matched', 'unmatched']);
   });
 });

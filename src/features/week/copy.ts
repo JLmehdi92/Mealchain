@@ -39,7 +39,7 @@ export const weekCopy = {
     composing: 'Composing…',
     allergySafe: 'No ingredient linked to your allergies ({list}) in these {count} meals.',
     allergySafeOne: 'No ingredient linked to your allergies ({list}) in this meal.',
-    ready: '{meals}. {packs}.',
+    ready: 'Your week is ready.',
     failed: 'The plan could not be saved. Try again.',
   },
   fr: {
@@ -82,7 +82,7 @@ export const weekCopy = {
     composing: 'Composition…',
     allergySafe: 'Aucun ingrédient lié à vos allergies ({list}) dans ces {count} repas.',
     allergySafeOne: 'Aucun ingrédient lié à vos allergies ({list}) dans ce repas.',
-    ready: '{meals}. {packs}.',
+    ready: 'Votre semaine est prête.',
     failed: "Le plan n'a pas pu être enregistré. Réessayez.",
   },
 };

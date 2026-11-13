@@ -20,6 +20,9 @@ export function confirmIngredient(draft: Recipe, index: number, ingredientId: st
   return finalize({ ...draft, ingredients: draft.ingredients.with(index, { ...line, ingredientId, status: 'matched' }) });
 }
 
+export const confirmAll = (draft: Recipe): Recipe =>
+  finalize({ ...draft, ingredients: draft.ingredients.map((line) => (line.status === 'needsReview' && line.ingredientId ? { ...line, status: 'matched' } : line)) });
+
 export function recipeAllergens(recipe: Recipe): Allergen[] {
   const found = new Set(recipe.ingredients.flatMap((line) => {
     const { contains, mayContain } = lineAllergens(line);

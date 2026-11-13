@@ -52,9 +52,12 @@ function unitAt(text: string): { unit: RecipeUnit; rest: string } | null {
   return null;
 }
 
+const DESCRIPTOR_COMMA = /\b(boneless|skinless|seedless|peeled|pitted|fresh|large|small|medium|ripe|lean|désossée?s?|sans peau),\s*/gi;
+
 const cleanName = (text: string): string =>
   text
     .replace(/\([^)]*\)/g, ' ')
+    .replace(DESCRIPTOR_COMMA, '$1 ')
     .replace(/,.*$/, '')
     .replace(new RegExp(TASTE, 'gi'), ' ')
     .replace(/\s+/g, ' ')

@@ -13,7 +13,7 @@ import type { Household } from '../recipes/types';
 import { saveEverywhere } from './account';
 import { EditSheet } from './EditSheet';
 import { AllergiesForm, DietsForm, HouseholdForm } from './forms';
-import { ALLERGEN_LABELS, DIET_LABELS } from './labels';
+import { ALLERGEN_LABELS, DIET_LABELS, EQUIPMENT_LABELS } from './labels';
 import { SETTINGS_COPY } from './settingsCopy';
 
 type Editing = 'people' | 'allergies' | 'diets' | null;
@@ -33,7 +33,7 @@ function HouseholdRows({ household, onEdit }: { household: Household; onEdit: (w
         onPress={() => onEdit('people')}
       />
       <Row label={copy.allergies} detail={join(household.allergens.map((a) => allergenLabels[a]))} trailing={chevron} onPress={() => onEdit('allergies')} />
-      <Row label={copy.dietsEquipment} detail={join(household.diets.map((d) => dietLabels[d]))} trailing={chevron} onPress={() => onEdit('diets')} />
+      <Row label={copy.dietsEquipment} detail={join([...household.diets.map((d) => dietLabels[d]), ...household.equipment.map((e) => pick(EQUIPMENT_LABELS)[e])])} trailing={chevron} onPress={() => onEdit('diets')} />
     </Group>
   );
 }

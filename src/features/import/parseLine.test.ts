@@ -122,3 +122,12 @@ describe('ambiguous quantities, review fixes', () => {
   });
 });
 
+
+describe('descriptor lists before the name', () => {
+  it('keeps the noun after a comma between descriptors', () => {
+    expect(parseIngredientLine('1 1/2 lb. boneless, skinless chicken breasts').name).toBe('boneless skinless chicken breasts');
+  });
+  it('still drops the preparation note after the name', () => {
+    expect(parseIngredientLine('2 boneless skinless chicken breasts, halved').name).toBe('boneless skinless chicken breasts');
+  });
+});

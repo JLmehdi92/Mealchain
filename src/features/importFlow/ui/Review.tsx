@@ -10,6 +10,7 @@ import { TextButton } from '@/features/recipes/ui/parts';
 import { fill, language, pick, t } from '@/lib/i18n';
 import { useHousehold } from '@/lib/store';
 import { Banner } from '@/ui/Banner';
+import { Button } from '@/ui/Button';
 import { Group } from '@/ui/Card';
 import { NavBar } from '@/ui/NavBar';
 import { Press } from '@/ui/Press';
@@ -18,7 +19,7 @@ import { Body, Caption, Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
 import { reviewCopy } from '../copy';
-import { confirmIngredient, finalize, recipeAllergens, reviewList, uncheckedCount } from '../review';
+import { confirmAll, confirmIngredient, finalize, recipeAllergens, reviewList, uncheckedCount } from '../review';
 import { IngredientPicker } from './IngredientPicker';
 import { ReviewFields, type Texts } from './ReviewFields';
 
@@ -48,7 +49,7 @@ function IngredientRow({ line, first, onPress }: { line: RecipeIngredient; first
 
 const textsOf = (recipe: Recipe): Texts => ({ title: recipe.title, servings: String(recipe.servings ?? ''), minutes: String(recipe.totalMinutes ?? '') });
 
-function ReviewIngredients({ draft, onPick }: { draft: Recipe; onPick: (index: number) => void }) {
+function ReviewIngredients({ draft, onPick, onConfirmAll }: { draft: Recipe; onPick: (index: number) => void; onConfirmAll: () => void }) {
   const s = pick(reviewCopy);
   const allergens = recipeAllergens(draft).map((a) => pick(ALLERGEN_LABELS)[a].toLocaleLowerCase());
   const unchecked = uncheckedCount(draft);
@@ -64,6 +65,9 @@ function ReviewIngredients({ draft, onPick }: { draft: Recipe; onPick: (index: n
           <IngredientRow key={i} line={line} first={i === 0} onPress={() => onPick(i)} />
         ))}
       </Group>
+      {draft.ingredients.some((line) => line.status === 'needsReview' && line.ingredientId) ? (
+        <Button testID="review-confirm-all" kind="secondary" label={s.confirmAll} onPress={onConfirmAll} />
+      ) : null}
       <Caption muted>{notes.join(' ')}</Caption>
     </>
   );
@@ -102,7 +106,7 @@ export function Review({ initial, onCancel, onSave }: Props) {
         ) : null}
         <ReviewFields draft={draft} texts={texts} onChange={(next, patch) => { setTexts(next); setDraft({ ...draft, ...patch }); setNameMissing(false); }} />
         {nameMissing ? <Caption style={{ color: c.chili }}>{s.nameRequired}</Caption> : null}
-        <ReviewIngredients draft={draft} onPick={setPicking} />
+        <ReviewIngredients draft={draft} onPick={setPicking} onConfirmAll={() => setDraft(confirmAll(draft))} />
       </ScrollView>
       <IngredientPicker
         line={picking === null ? null : (draft.ingredients[picking] ?? null)}
