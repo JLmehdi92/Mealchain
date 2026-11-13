@@ -1,0 +1,30 @@
+Half the cream on Monday, the other half on Wednesday. Demidemi plans your week from your own recipes so that every pack you open gets finished.
+
+ONE PACK, SEVERAL MEALS
+Most recipes call for part of a carton, a bag or a can. Demidemi picks dinners that share what you open: the leeks from the gratin go into Thursday's pie, the rest of the coconut milk finishes in the dal. Each plan shows which meal finishes which pack, and any leftover that no meal uses is shown with its amount, never hidden. Plans are worked out on your iPhone, the same way every time.
+
+YOUR RECIPES, WORD FOR WORD
+Paste a link to a public recipe page, paste a caption, or pick a screenshot. Demidemi keeps your recipe exactly as written and keeps the link to its source. It never rewrites a step or invents an ingredient. When a line is unclear, it is marked for you to check instead of being guessed.
+
+Links are read without AI, and the text of a screenshot is recognized on your iPhone. When a caption or a screenshot cannot be sorted into ingredients and steps on your iPhone, Demidemi asks before sending its text to Anthropic (Claude), which only sorts it. This needs an account.
+
+ALLERGIES AND DIETS ARE RULES
+Choose from the 14 major allergens and from vegetarian, vegan, pescatarian, gluten-free, lactose-free, halal or no pork, plus the equipment you have. A recipe that breaks a rule never reaches your plan, and an ingredient Demidemi cannot identify is never assumed safe. Filter based on the ingredients you enter, not medical advice. Always read the labels.
+
+A SHOPPING LIST IN REAL PACKS
+The list adds up the week and rounds to the packs sold in your shop, in US or French sizes: 1 carton of cream, not 3.4 fl oz. Items are grouped by aisle.
+
+ONE LIST FOR THE HOUSEHOLD
+Sign in with Apple to share the list with the people you live with. Tick an item and it is ticked for everyone. Demidemi works fully without an account; signing in is only for sharing.
+
+HONEST PRICING
+Free: up to 15 recipes and your first full week, plan and shopping list included.
+Demidemi Pro: unlimited recipes and a new plan and list every week.
+- Yearly: 34.99 USD, with a 7-day free trial. We remind you 2 days before the trial ends.
+- Monthly: 6.99 USD, no trial.
+There is no weekly plan. Family Sharing lets up to 6 people use one subscription.
+
+Payment is charged to your Apple Account. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings › Apple Account. Prices may vary by country.
+
+Terms of use: https://demidemi.app/terms
+Privacy policy: https://demidemi.app/privacy

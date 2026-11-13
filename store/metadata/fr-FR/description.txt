@@ -1,0 +1,30 @@
+La moitié de la crème lundi, l'autre moitié mercredi. Demidemi compose votre semaine à partir de vos recettes, pour que chaque paquet ouvert soit fini.
+
+UN PAQUET, PLUSIEURS REPAS
+La plupart des recettes demandent une partie d'une brique, d'un sachet ou d'une boîte. Demidemi choisit des dîners qui partagent ce que vous ouvrez : les poireaux du gratin finissent dans la tourte de jeudi, le reste du lait de coco dans le dal. Chaque plan montre quel repas finit quel paquet, et un reste qu'aucun repas n'utilise est affiché avec sa quantité, jamais caché. Les plans sont calculés sur votre iPhone, toujours de la même façon.
+
+VOS RECETTES, MOT POUR MOT
+Collez le lien d'une page de recette publique, collez une légende ou choisissez une capture d'écran. Demidemi garde votre recette telle qu'elle est écrite, avec le lien vers sa source. Il ne réécrit jamais une étape et n'invente jamais un ingrédient. Une ligne douteuse est signalée pour que vous la vérifiiez, au lieu d'être devinée.
+
+Les liens sont lus sans IA, et le texte d'une capture est reconnu sur votre iPhone. Quand une légende ou une capture ne peut pas être rangée en ingrédients et en étapes sur votre iPhone, Demidemi vous demande votre accord avant d'envoyer son texte à Anthropic (Claude), qui le range seulement. Un compte est alors nécessaire.
+
+ALLERGIES ET RÉGIMES : DES RÈGLES
+Choisissez parmi les 14 allergènes majeurs et parmi végétarien, végan, pescetarien, sans gluten, sans lactose, halal ou sans porc, ainsi que votre équipement. Une recette qui enfreint une règle n'arrive jamais dans votre plan, et un ingrédient que Demidemi ne reconnaît pas n'est jamais considéré comme sûr. Filtre basé sur les ingrédients saisis. Ne remplace pas un avis médical. Lisez toujours les étiquettes.
+
+UNE LISTE EN VRAIS CONDITIONNEMENTS
+La liste additionne la semaine et arrondit aux paquets vendus en magasin, en formats français ou américains : 1 brique de crème de 20 cl, pas 13 cl. Les articles sont rangés par rayon.
+
+UNE LISTE POUR TOUT LE FOYER
+Connectez-vous avec Apple pour partager la liste avec les personnes qui vivent avec vous. Un article coché l'est pour tout le monde. Demidemi fonctionne entièrement sans compte ; la connexion sert seulement au partage.
+
+DES PRIX CLAIRS
+Gratuit : jusqu'à 15 recettes et votre première semaine complète, plan et liste de courses compris.
+Demidemi Pro : recettes illimitées, un nouveau plan et une nouvelle liste chaque semaine.
+- Annuel : 29,99 €, avec 7 jours d'essai gratuit. Nous vous prévenons 2 jours avant la fin de l'essai.
+- Mensuel : 5,99 €, sans essai.
+Pas d'abonnement à la semaine. Le partage familial permet à 6 personnes d'utiliser un seul abonnement.
+
+Le paiement est débité sur votre compte Apple. L'abonnement se renouvelle automatiquement, sauf résiliation au moins 24 heures avant la fin de la période en cours. Gérez-le ou résiliez-le dans Réglages › Compte Apple. Les prix peuvent varier selon le pays.
+
+Conditions d'utilisation : https://demidemi.app/terms
+Politique de confidentialité : https://demidemi.app/privacy
