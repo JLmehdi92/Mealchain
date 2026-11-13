@@ -57,6 +57,7 @@ export default function RootLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.paper }, animation: reduced ? 'fade' : 'default' }}>
+      <Stack.Screen name="index" />
       <Stack.Protected guard={!!household}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="settings" />

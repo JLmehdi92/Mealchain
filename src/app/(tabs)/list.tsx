@@ -45,7 +45,7 @@ export default function List() {
     return (
       <Screen title={t('list.title')}>
         <Empty art={<BagScene />} title={copy.emptyTitle} body={copy.emptyBody}>
-          <Button kind="secondary" label={copy.planWeek} onPress={() => router.navigate('/')} />
+          <Button kind="secondary" label={copy.planWeek} onPress={() => router.navigate('/week')} />
         </Empty>
       </Screen>
     );
