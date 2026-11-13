@@ -1,21 +1,56 @@
 {
   "expo": {
-    "name": "Mealchain",
-    "slug": "mealchain",
+    "name": "Demidemi",
+    "slug": "demidemi",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mealchain",
+    "scheme": "demidemi",
     "userInterfaceStyle": "automatic",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.mealchain.ios"
+      "bundleIdentifier": "app.demidemi.ios",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Demidemi reads the recipe screenshots you choose so you can import them.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "plugins": [
       "expo-router",
-      ["expo-splash-screen", { "backgroundColor": "#FFFFFF", "image": "./assets/images/splash-icon.png", "imageWidth": 76 }]
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#EBE5E3",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76,
+          "dark": {
+            "backgroundColor": "#1D1A17",
+            "image": "./assets/images/splash-icon-dark.png"
+          }
+        }
+      ],
+      "expo-sqlite",
+      "expo-localization",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Urbanist_500Medium.ttf",
+            "./assets/fonts/Urbanist_600SemiBold.ttf",
+            "./assets/fonts/DMMono_400Regular.ttf"
+          ]
+        }
+      ],
+      "expo-secure-store",
+      "@sentry/react-native",
+      "expo-asset"
     ],
-    "experiments": { "typedRoutes": true, "reactCompiler": true }
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
   }
 }
