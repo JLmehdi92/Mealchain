@@ -1,22 +1,25 @@
-@font-face { font-family: "Bricolage"; src: url("brand/fonts/BricolageGrotesque_400Regular.ttf"); font-weight: 400; }
-@font-face { font-family: "Bricolage"; src: url("brand/fonts/BricolageGrotesque_500Medium.ttf"); font-weight: 500; }
-@font-face { font-family: "Bricolage"; src: url("brand/fonts/BricolageGrotesque_600SemiBold.ttf"); font-weight: 600; }
+@font-face { font-family: "Urbanist"; src: url("brand/fonts/Urbanist_500Medium.ttf"); font-weight: 500; }
+@font-face { font-family: "Urbanist"; src: url("brand/fonts/Urbanist_600SemiBold.ttf"); font-weight: 600; }
+@font-face { font-family: "DM Mono"; src: url("brand/fonts/DMMono_400Regular.ttf"); font-weight: 400; }
 @font-face { font-family: "InterFallback"; src: url("node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; }
 
 :root {
-  --paper: #F6F2EA; --surface: #ECE6DB; --sheet: #FFFDF9;
-  --ink: #1E1A16; --ink-2: #5E564B; --rule: rgba(30, 26, 22, .1);
-  --strand: #B5730C; --strand-ink: #8A5A0B; --chili: #B3261E; --chili-bg: #F7E3DF;
-  --on-ink: #F6F2EA; --scrim: rgba(30, 26, 22, .28);
+  --paper: #EBE5E3; --surface: #E1DAD7; --sheet: #FAF7F6;
+  --ink: #2B2622; --ink-2: #655C58; --rule: rgba(43, 38, 34, .1);
+  --strand: #0F7D45; --strand-ink: #0B6B3A; --chili: #B3261E; --chili-bg: #F5DEDA;
+  --action: #0F7D45; --on-action: #FFFFFF;
+  --on-ink: #EBE5E3; --scrim: rgba(43, 38, 34, .28);
   --sf: -apple-system, "SF Pro Text", "InterFallback", system-ui, sans-serif;
-  --display: "Bricolage", var(--sf);
-  --canvas: #DCD5C8; --canvas-ink: #2B251F;
+  --display: "Urbanist", var(--sf);
+  --mono: "DM Mono", ui-monospace, monospace;
+  --canvas: #D9D1CD; --canvas-ink: #2B2622;
 }
 .dark {
-  --paper: #16130F; --surface: #211D18; --sheet: #2A251F;
-  --ink: #F4EEE2; --ink-2: #B5AB9B; --rule: rgba(244, 238, 226, .12);
-  --strand: #E5A23A; --strand-ink: #E5A23A; --chili: #FF6B5E; --chili-bg: #3A1D19;
-  --on-ink: #16130F; --scrim: rgba(0, 0, 0, .5);
+  --paper: #1D1A17; --surface: #2B2622; --sheet: #36312D;
+  --ink: #EBE5E3; --ink-2: #A29C99; --rule: rgba(235, 229, 227, .12);
+  --strand: #3DBB7A; --strand-ink: #3DBB7A; --chili: #FF6B5E; --chili-bg: #3A1D19;
+  --action: #EBE5E3; --on-action: #2B2622;
+  --on-ink: #1D1A17; --scrim: rgba(0, 0, 0, .5);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,7 +73,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .chev { color: var(--ink-2); opacity: .6; }
 
 .btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: 26px; font: 500 17px var(--sf); width: 100%; }
-.btn.primary { background: var(--ink); color: var(--on-ink); }
+.btn.primary { background: var(--action); color: var(--on-action); }
 .btn.secondary { background: var(--surface); color: var(--ink); }
 .btn.quiet { height: 44px; color: var(--ink-2); font-weight: 400; font-size: 15px; }
 .btn.danger { background: var(--chili-bg); color: var(--chili); }
@@ -123,12 +126,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .gauge i { display: block; height: 100%; background: var(--strand); }
 .gauge i.b { background: color-mix(in srgb, var(--strand) 55%, var(--sheet)); }
 .gauge i.rest { background: repeating-linear-gradient(135deg, var(--surface) 0 3px, color-mix(in srgb, var(--ink) 18%, transparent) 3px 4px); }
-.gauge-legend { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+.gauge-legend { font-family: var(--mono); display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); margin-top: 6px; }
 
 .list-row { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: start; padding: 12px 16px; position: relative; }
 .list-row + .list-row::before { content: ""; position: absolute; top: 0; left: 52px; right: 0; height: .5px; background: var(--rule); }
 .list-row .item { font-size: 17px; }
-.list-row .qty { font-size: 17px; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.list-row .qty { font: 15px/1.5 var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .list-row .why { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
 .list-row .why.used { color: var(--ink-2); }
 .list-row.done .item, .list-row.done .qty { color: var(--ink-2); text-decoration: line-through; text-decoration-thickness: 1.5px; }

@@ -9,7 +9,7 @@ const css = read('canvas.css').toString().replace(/url\("([^"]+)"\)/g, (_, p) =>
 const html = read('canvas.html').toString()
   .replace('<link rel="stylesheet" href="canvas.css">', () => `<style>${css}</style>`)
   .replace(/<script src="([^"]+)"><\/script>/g, (_, p) => `<script>${read(p).toString().replace(/<\/script/g, '<\\/script')}</script>`)
-  .replace('src="brand/wordmark-light.svg"', () => `src="${dataUrl('brand/wordmark-light.svg', 'image/svg+xml')}"`);
+  .replace('src="brand/logo-light.svg"', () => `src="${dataUrl('brand/logo-light.svg', 'image/svg+xml')}"`);
 
 writeFileSync(new URL('canvas-standalone.html', import.meta.url), html);
 console.log(`canvas-standalone.html ${(html.length / 1024).toFixed(0)} KB`);
