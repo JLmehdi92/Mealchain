@@ -15,9 +15,9 @@ const unitRule = (alias: string, unit: RecipeUnit, flags = 'iu'): [RegExp, Recip
 
 const UNIT_RULES = [
   unitRule(String.raw`fl\.?\s*oz|fluid\s+ounces?`, 'fl_oz'),
-  unitRule(String.raw`tablespoons?|tbsps?|tbs|c\.?\s*à\.?\s*s|cuill[eè]res?\s+à\s+soupe|cs`, 'tbsp'),
+  unitRule(String.raw`tablespoons?|tbsps?|tbs|c\.?\s*à\.?\s*s(?:oupe)?|cuill[eè]res?\s+à\s+soupe|cs`, 'tbsp'),
   unitRule('T', 'tbsp', 'u'),
-  unitRule(String.raw`teaspoons?|tsps?|c\.?\s*à\.?\s*c|cuill[eè]res?\s+à\s+caf[ée]|cc`, 'tsp'),
+  unitRule(String.raw`teaspoons?|tsps?|c\.?\s*à\.?\s*c(?:af[ée])?|cuill[eè]res?\s+à\s+caf[ée]|cc`, 'tsp'),
   unitRule('t', 'tsp', 'u'),
   unitRule('cups?|c', 'cup'),
   unitRule('ounces?|oz', 'oz'),

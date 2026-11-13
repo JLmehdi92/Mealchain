@@ -6,7 +6,7 @@ import { isToTaste, parseIngredientLine } from './parseLine';
 
 const EQUIPMENT_RULES: Record<Equipment, RegExp> = {
   oven: /\b(?:oven|preheat\w*|bak(?:e|ed|es|ing)|préchauff\w*|(?:au|le|du) four)\b/i,
-  stovetop: /\b(?:skillet|pans?|poêle|casserole|simmer\w*|boil\w*)\b/i,
+  stovetop: /\b(?:skillet|(?<!(?:sheet|baking|cake|loaf|roasting|muffin|tart) )pans?|poêle|casserole|sauteuse|faitout|wok|feu|revenir|saisir|saut[ée]\w*|simmer\w*|boil\w*)\b/i,
   microwave: /\b(?:microwave\w*|micro-ondes?)\b/i,
   blender: /\b(?:blender|blend|blended|mixeur)\b/i,
   food_processor: /\b(?:food processor|robot)\b/i,
@@ -18,10 +18,14 @@ const EQUIPMENT_RULES: Record<Equipment, RegExp> = {
 export const detectEquipment = (steps: string[]): Equipment[] =>
   EQUIPMENT.filter((equipment) => steps.some((step) => EQUIPMENT_RULES[equipment].test(step)));
 
+const namesSeveral = (name: string) =>
+  new Set(name.split(/\s(?:and|or|et|ou|&)\s/i).map((part) => matchIngredient(part)?.id).filter(Boolean)).size > 1;
+
 function toIngredient(raw: string): RecipeIngredient {
   const { qty, unit, name } = parseIngredientLine(raw);
   const ingredient = matchIngredient(name);
   if (!ingredient) return { raw, qty, unit, ingredientId: null, status: 'unmatched' };
+  if (namesSeveral(name)) return { raw, qty, unit, ingredientId: ingredient.id, status: 'needsReview' };
   const usable = qty === null || unit === null ? isToTaste(raw) : toBase(qty, unit, ingredient) !== null;
   return { raw, qty, unit, ingredientId: ingredient.id, status: usable ? 'matched' : 'needsReview' };
 }

@@ -81,3 +81,14 @@ describe('isToTaste', () => {
     expect(isToTaste(raw)).toBe(expected);
   });
 });
+
+describe('French spoon units written in full', () => {
+  it.each([
+    ["1 c. à soupe d'huile d'olive", 1, 'tbsp'],
+    ['1 c. à café de sel', 1, 'tsp'],
+    ['2 c à soupe de sucre', 2, 'tbsp'],
+    ['1 c.à.c de cumin', 1, 'tsp'],
+  ] as const)('reads "%s" as %d %s, never as cups', (raw, qty, unit) => {
+    expect(parseIngredientLine(raw)).toMatchObject({ qty, unit });
+  });
+});

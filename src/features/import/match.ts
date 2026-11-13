@@ -22,7 +22,7 @@ const phrases = catalog
       .filter(Boolean)
       .map((phrase) => ({ phrase: ` ${phrase} `, ingredient })),
   )
-  .sort((a, b) => b.phrase.length - a.phrase.length || a.ingredient.id.localeCompare(b.ingredient.id));
+  .sort((a, b) => b.phrase.length - a.phrase.length || (a.ingredient.id < b.ingredient.id ? -1 : a.ingredient.id > b.ingredient.id ? 1 : 0));
 
 export function matchIngredient(name: string): Ingredient | null {
   const haystack = ` ${normalize(name)} `;

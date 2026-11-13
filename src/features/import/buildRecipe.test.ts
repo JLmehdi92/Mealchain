@@ -89,3 +89,20 @@ describe('detectEquipment', () => {
     expect(detectEquipment(['Grill the peppers.', 'Preheat oven.', 'Bake 10 min.'])).toEqual(['oven', 'grill']);
   });
 });
+
+describe('equipment and multi-ingredient lines, review fixes', () => {
+  it('detects French stovetop wording', () => {
+    expect(detectEquipment(["Faire revenir l'oignon à feu moyen dans une sauteuse"])).toEqual(['stovetop']);
+    expect(detectEquipment(['Saisir le poulet au wok'])).toEqual(['stovetop']);
+  });
+
+  it('does not read a sheet pan or baking pan as a stovetop', () => {
+    expect(detectEquipment(['Spread on a sheet pan and bake for 20 minutes'])).toEqual(['oven']);
+    expect(detectEquipment(['Pour into a baking pan and bake'])).toEqual(['oven']);
+  });
+
+  it('flags a line that names two different ingredients for review', () => {
+    const recipe = buildRecipe({ title: 'T', servings: 2, totalMinutes: 10, ingredients: ['1 cup milk or almond milk'], steps: ['Mix.'], sourceUrl: 'https://x.example' }, 'web', 'id', 0);
+    expect(recipe.ingredients[0]?.status).toBe('needsReview');
+  });
+});
