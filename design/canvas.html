@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brin — canvas des écrans</title>
+<meta name="description" content="Tous les écrans de Brin, planificateur de repas zéro gaspi pour iPhone, en anglais et en français, avec les prototypes animés.">
+<link rel="stylesheet" href="canvas.css">
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/MotionPathPlugin.min.js"></script>
+</head>
+<body>
+<header class="canvas-head">
+  <img src="brand/wordmark-light.svg" alt="Brin">
+  <p>Canvas des écrans de la V1, dans l'ordre du parcours, à taille réelle (iPhone 393 × 852 pt). Chaque écran existe en anglais (US) puis en français. Les prototypes en tête montrent les six moments animés ; « Rejouer » relance chacun.</p>
+</header>
+<nav class="canvas-nav" id="nav"><a href="#prototypes">Prototypes</a></nav>
+
+<section class="flow" id="prototypes">
+  <h2>Prototypes animés</h2>
+  <p>Ressorts sans rebond partout, un seul dépassement : la pose du brin. Avec « Réduire les animations », chaque prototype devient un fondu.</p>
+  <div class="lane" id="proto-lane"></div>
+</section>
+<main id="flows"></main>
+<section class="flow" id="dark">
+  <h2>Mode sombre</h2>
+  <p>Mêmes rôles, fond fonte. Le brin garde son safran, plus lumineux.</p>
+  <div class="lane" id="dark-lane"></div>
+</section>
+
+<script src="icons.js"></script>
+<script src="screens.js"></script>
+<script src="render.js"></script>
+<script src="prototypes.js"></script>
+</body>
+</html>

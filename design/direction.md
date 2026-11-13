@@ -195,3 +195,23 @@ Audit de la DA avec `unslop/references/signs.md`, puis corrections :
 | Conflit entre les ressorts Apple et la règle Unslop « pas de rebond » | Ressorts sans rebond partout, un seul dépassement : la pose du brin |
 
 Pas de dégradé, de lueur, d'émoji, de capitale espacée ni de badge dans la DA.
+
+## Revue Unslop du canvas (13/11/2026)
+
+Revue de designer sur les 46 écrans rendus dans Chromium (`design/shots.mjs`) et sur les 6 prototypes
+(`design/proto-shots.mjs`, captures à intervalles réguliers), avec `unslop/references/signs.md` :
+
+| Signe relevé | Écran | Correction |
+|---|---|---|
+| Accent partout : 5 lignes sur 7 en safran dans la liste | Courses | « Tout utilisé » en texte secondaire, seul le glyphe du brin reste safran |
+| Départ et arrivée des brins tous deux en safran | Semaine | Safran sur le paquet qui part ; l'arrivée en texte secondaire |
+| Coches safran sur le paywall | Paywall | Coches encre |
+| Étiquette « Cette semaine » répétée sur 5 lignes | Recettes | Métadonnée discrète, sans pastille |
+| Recette exclue cachée sous la barre d'onglets | Recettes | Remontée en tête, avec la recette à vérifier |
+| Icône de réglages qui ressemble à un soleil | Partout | Vrai engrenage |
+| Nom d'un blog réel cité comme source | Lecture en cours | « Lien d'un blog de cuisine » |
+| Légendes qui élargissent les cadres | Canvas | Cadres à la largeur de l'iPhone |
+| Prototype « le plan se compose » vide au 2e lancement | Prototypes | Valeurs d'arrivée explicites (`fromTo`) |
+
+Restent volontairement : les vignettes pictogrammes de la boîte à recettes (aucune image générée ni
+photo de stock ; la photo de la page source les remplacera quand elle existe).
