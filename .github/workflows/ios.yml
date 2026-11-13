@@ -1,0 +1,130 @@
+name: iOS simulator
+
+on:
+  push:
+    branches: [claude/zero-waste-meal-planner-egqcie]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    runs-on: macos-26
+    timeout-minutes: 90
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+      EXPO_PUBLIC_REVENUECAT_IOS_KEY: ${{ secrets.EXPO_PUBLIC_REVENUECAT_IOS_KEY }}
+      EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+      EXPO_PUBLIC_POSTHOG_KEY: ${{ secrets.EXPO_PUBLIC_POSTHOG_KEY }}
+      # No Sentry auth token in CI: the Sentry Xcode build phase would otherwise fail the build.
+      SENTRY_DISABLE_AUTO_UPLOAD: "true"
+      APP_NAME: Demidemi
+      BUNDLE_ID: app.demidemi.ios
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select newest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run check
+
+      - run: npx expo prebuild --platform ios --clean --no-install
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-${{ runner.os }}-${{ hashFiles('package-lock.json', 'app.json') }}
+          restore-keys: pods-${{ runner.os }}-
+
+      - run: pod install
+        working-directory: ios
+
+      - name: Build Release simulator app
+        run: |
+          WORKSPACE=$(ls -d ios/*.xcworkspace | head -1)
+          SCHEME=$(xcodebuild -list -json -project "${WORKSPACE%.xcworkspace}.xcodeproj" \
+            | node -e 'console.log(JSON.parse(require("fs").readFileSync(0)).project.schemes[0])')
+          echo "Workspace: $WORKSPACE, scheme: $SCHEME"
+          mkdir -p build
+          xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" \
+            -configuration Release -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build > build/xcodebuild.log 2>&1 \
+            || { grep -E 'error:' build/xcodebuild.log | head -50; tail -40 build/xcodebuild.log; exit 1; }
+          tail -3 build/xcodebuild.log
+          APP_PATH=$(ls -d build/Build/Products/Release-iphonesimulator/*.app | head -1)
+          test -d "$APP_PATH"
+          echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+
+      - name: Boot simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | node -e '
+            const d=JSON.parse(require("fs").readFileSync(0)).devices;
+            const ios=Object.keys(d).filter(r=>r.includes("iOS")).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+            const all=ios.flatMap(r=>d[r].map(x=>({...x,r})));
+            const pick=all.filter(x=>x.name==="iPhone 17 Pro").pop()||all.filter(x=>x.name.startsWith("iPhone")).pop();
+            console.error("Simulator:",pick.name,pick.r);console.log(pick.udid)')
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          mkdir -p build/screens build/logs
+
+      - name: Launch smoke test
+        run: |
+          xcrun simctl install booted "$APP_PATH"
+          xcrun simctl io booted recordVideo --codec=h264 build/run.mp4 &
+          echo "VIDEO_PID=$!" >> "$GITHUB_ENV"
+          sleep 2
+          PID=$(xcrun simctl launch booted "$BUNDLE_ID" | awk '{print $NF}')
+          sleep 15
+          xcrun simctl io booted screenshot build/screens/launch-15s.png
+          xcrun simctl spawn booted log show --last 5m --style compact \
+            --predicate "process == \"$APP_NAME\"" > build/logs/app.log || true
+          if grep -E 'RCTFatal|Unhandled JS Exception|RedBox|Terminating app due to' build/logs/app.log; then
+            echo "::error::JS fatal error / crash marker found in app log"; exit 1
+          fi
+          if ! ps -p "$PID" > /dev/null; then
+            echo "::error::App is not running 15 s after launch"; exit 1
+          fi
+
+      - name: Maestro flows
+        run: |
+          if ! ls e2e/maestro/*.yaml > /dev/null 2>&1; then echo "No Maestro flows"; exit 0; fi
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          export PATH="$HOME/.maestro/bin:$PATH"
+          maestro --device "$UDID" test e2e/maestro --format junit --output build/maestro.xml \
+            --test-output-dir build/screens
+
+      - name: Stop video and collect crash logs
+        if: always()
+        run: |
+          [ -n "$VIDEO_PID" ] && kill -INT "$VIDEO_PID" && sleep 3 || true
+          cp ~/Library/Logs/DiagnosticReports/${APP_NAME}* build/logs/ 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-simulator-${{ github.run_number }}
+          retention-days: 7
+          if-no-files-found: ignore
+          path: |
+            build/screens
+            build/logs
+            build/run.mp4
+            build/maestro.xml
+            build/xcodebuild.log

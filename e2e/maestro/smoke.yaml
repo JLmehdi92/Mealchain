@@ -1,0 +1,6 @@
+appId: app.demidemi.ios
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Your recipes, planned so every pack gets finished"
+- takeScreenshot: "01-welcome"
