@@ -131,12 +131,12 @@ jobs:
           mv build/screens/launch-15s.png build/screens/launch/ 2>/dev/null || true
           run_flow() {
             local name=$1 out="$GITHUB_WORKSPACE/build/screens/$1"
-            mkdir -p "$out"
-            # Run from the output folder so screenshots and recordings land there whatever the Maestro version.
+            # Maestro 2 writes screenshots and recordings into ./screenshots but only creates it on takeScreenshot.
+            mkdir -p "$out/screenshots"
             ( cd "$out" && maestro --device "$UDID" test "$GITHUB_WORKSPACE/e2e/maestro/$name.yaml" \
                 --format junit --output "$GITHUB_WORKSPACE/build/maestro/$name.xml" --test-output-dir "$out" )
             local status=$?
-            find "$out" -mindepth 2 \( -name '*.png' -path '*takeScreenshot*' -o -name '*.mp4' \) -exec mv -n {} "$out/" \;
+            find "$out/screenshots" -type f \( -name '*.png' -o -name '*.mp4' \) -exec mv -n {} "$out/" \;
             return $status
           }
           run_flow smoke; SMOKE=$?
