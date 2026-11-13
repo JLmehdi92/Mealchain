@@ -5,15 +5,16 @@ import { pick } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { supabase } from '@/lib/supabase';
 import { Group } from '@/ui/Card';
+import { Icon } from '@/ui/Icon';
 import { Row } from '@/ui/Row';
+import { SectionLabel } from '@/ui/SectionLabel';
 import { Secondary } from '@/ui/Text';
 import { radius, space, touch, type as typography, useTheme } from '@/ui/theme';
 
 import { shareList } from '../list/share';
-import { accountAvailable, appleCancelled, joinHousehold, signedIn, signInWithApple, signOut, validInvite } from './account';
-import { Chevron } from './Chevron';
-import { SectionLabel } from './controls';
+import { accountAvailable, joinHousehold, signedIn, signInWithApple, signOut, validInvite } from './account';
 import { EditSheet } from './EditSheet';
+import { signInFailed } from './signInError';
 import { SETTINGS_COPY } from './settingsCopy';
 
 function JoinSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
@@ -39,7 +40,7 @@ function JoinSheet({ visible, onClose }: { visible: boolean; onClose: () => void
         onChangeText={(text) => setCode(text.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
         autoCapitalize="characters"
         autoCorrect={false}
-        maxLength={8}
+        maxLength={12}
         onSubmitEditing={join}
         style={[styles.input, typography.mono, { backgroundColor: c.sheet, color: c.ink, borderColor: c.rule }]}
       />
@@ -57,20 +58,15 @@ export function SharingSection() {
     return () => subscription?.data.subscription.unsubscribe();
   }, []);
   if (!accountAvailable) return null;
-  const signIn = () =>
-    signInWithApple().catch((error: unknown) => {
-      if (appleCancelled(error)) return;
-      report(error);
-      Alert.alert(copy.error);
-    });
+  const signIn = () => signInWithApple().catch((error: unknown) => signInFailed(error, copy.error));
   return (
     <>
       <SectionLabel>{copy.sharing}</SectionLabel>
       <Group>
         {session ? (
           <>
-            <Row label={copy.sharedWith} trailing={<Chevron />} onPress={shareList} />
-            <Row label={copy.join} trailing={<Chevron />} onPress={() => setJoining(true)} />
+            <Row label={copy.sharedWith} trailing={<Icon name="chevron.right" size={14} muted />} onPress={shareList} />
+            <Row label={copy.join} trailing={<Icon name="chevron.right" size={14} muted />} onPress={() => setJoining(true)} />
             <Row label={copy.signOut} onPress={() => signOut().catch(report)} />
           </>
         ) : (

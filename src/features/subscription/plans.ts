@@ -1,41 +1,49 @@
-import { useEffect, useState } from 'react';
-import Purchases, { type PurchasesPackage } from 'react-native-purchases';
+import { useCallback, useEffect, useState } from 'react';
+import Purchases, { INTRO_ELIGIBILITY_STATUS, type PurchasesPackage } from 'react-native-purchases';
 
-import { market } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 
 import { purchasesEnabled } from './purchase';
 
-export type Plan = { id: 'yearly' | 'monthly'; price: string; perMonth: string | null; trial: boolean; pkg: PurchasesPackage | null };
+export type Plan = { id: 'yearly' | 'monthly'; price: string; perMonth: string | null; trial: boolean; pkg: PurchasesPackage };
+export type Offer = { status: 'loading' | 'failed' | 'unavailable' } | { status: 'ready'; plans: Plan[] };
 
-const FALLBACK: Record<'us' | 'fr', Plan[]> = {
-  us: [
-    { id: 'yearly', price: '$34.99', perMonth: '$2.92', trial: true, pkg: null },
-    { id: 'monthly', price: '$6.99', perMonth: null, trial: false, pkg: null },
-  ],
-  fr: [
-    { id: 'yearly', price: '29,99 €', perMonth: '2,50 €', trial: true, pkg: null },
-    { id: 'monthly', price: '5,99 €', perMonth: null, trial: false, pkg: null },
-  ],
-};
+async function trialEligible(pkg: PurchasesPackage): Promise<boolean> {
+  if (pkg.product.introPrice?.price !== 0) return false;
+  const id = pkg.product.identifier;
+  const status = await Purchases.checkTrialOrIntroductoryPriceEligibility([id]).then((result) => result[id]?.status, () => undefined);
+  return status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
+}
 
-const fromPackage = (id: Plan['id'], pkg: PurchasesPackage): Plan => ({
-  id,
-  price: pkg.product.priceString,
-  perMonth: id === 'yearly' ? pkg.product.pricePerMonthString : null,
-  trial: pkg.product.introPrice?.price === 0,
-  pkg,
-});
+export async function loadPlans(): Promise<Plan[] | null> {
+  const { current } = await Purchases.getOfferings();
+  if (!current?.annual || !current.monthly) return null;
+  const { annual, monthly } = current;
+  return [
+    { id: 'yearly', price: annual.product.priceString, perMonth: annual.product.pricePerMonthString, trial: await trialEligible(annual), pkg: annual },
+    { id: 'monthly', price: monthly.product.priceString, perMonth: null, trial: false, pkg: monthly },
+  ];
+}
 
-export function usePlans(): Plan[] {
-  const [plans, setPlans] = useState(() => FALLBACK[market()]);
-  useEffect(() => {
-    if (!purchasesEnabled) return;
-    Purchases.getOfferings()
-      .then(({ current }) => {
-        if (current?.annual && current.monthly) setPlans([fromPackage('yearly', current.annual), fromPackage('monthly', current.monthly)]);
-      })
-      .catch(report);
+export function usePlans(): { offer: Offer; retry: () => void } {
+  const [offer, setOffer] = useState<Offer>({ status: purchasesEnabled ? 'loading' : 'unavailable' });
+  const fetchPlans = useCallback(() => {
+    if (!purchasesEnabled) return () => {};
+    let alive = true;
+    loadPlans()
+      .then((plans) => alive && setOffer(plans ? { status: 'ready', plans } : { status: 'failed' }))
+      .catch((error: unknown) => {
+        report(error);
+        if (alive) setOffer({ status: 'failed' });
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
-  return plans;
+  useEffect(fetchPlans, [fetchPlans]);
+  const retry = () => {
+    setOffer({ status: 'loading' });
+    fetchPlans();
+  };
+  return { offer, retry };
 }

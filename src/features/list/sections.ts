@@ -1,3 +1,5 @@
+import type { Language } from '@/lib/i18n';
+
 import { ingredientById } from '../ingredients/catalog';
 import { AISLES, type Market } from '../ingredients/schema';
 import type { ShoppingItem, ShoppingList } from '../planner/shopping';
@@ -5,22 +7,23 @@ import { packLabel, whyLine } from './format';
 
 type Aisle = (typeof AISLES)[number];
 export type ListRow = { id: string; name: string; qty: string; detail: string; used: boolean; ratio: number | null; checked: boolean };
-export type ListSections = { aisles: { aisle: Aisle; rows: ListRow[] }[]; toCheck: ListRow[]; cart: ListRow[]; packCount: number };
+type ListSections = { aisles: { aisle: Aisle; rows: ListRow[] }[]; toCheck: ListRow[]; cart: ListRow[]; packCount: number };
 type Input = {
   list: ShoppingList;
   days: number[];
   titles: Map<string, string>;
   checks: Record<string, boolean>;
   market: Market;
-  lang: 'en' | 'fr';
+  lang: Language;
+  weekStart: string;
 };
 
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
-function itemRow(item: ShoppingItem, { days, checks, market, lang }: Input): ListRow {
+function itemRow(item: ShoppingItem, { days, checks, market, lang, weekStart }: Input): ListRow {
   const ingredient = ingredientById.get(item.ingredientId);
   const usedDays = item.usedBy.map((slot) => days[slot] ?? slot);
-  const why = whyLine({ ingredientId: item.ingredientId, need: item.need, leftover: item.leftover, days: usedDays }, market, lang);
+  const why = whyLine({ ingredientId: item.ingredientId, need: item.need, leftover: item.leftover, days: usedDays, weekStart }, market, lang);
   return {
     id: item.ingredientId,
     name: capitalize(ingredient?.name[lang] ?? item.ingredientId),

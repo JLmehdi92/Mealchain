@@ -1,5 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 
+import type { Check } from '@/features/list/merge';
 import type { WeekPlan } from '@/features/planner/plan';
 import type { Household, Recipe } from '@/features/recipes/types';
 
@@ -7,14 +8,18 @@ import { db } from './client';
 import { household, plans, recipes, settings, shoppingChecks } from './schema';
 import { decode, householdSchema, planSchema, recipeSchema } from './schemas';
 
-export type SettingKey =
+type SettingKey =
   | 'ai_consent'
   | 'onboarded'
   | 'first_plan_seen'
   | 'first_list_seen'
   | 'paywall_offered'
   | 'installed'
-  | 'remote_household';
+  | 'remote_household'
+  | 'remote_profile_seen'
+  | 'profile_sync_pending'
+  | 'tracked_first_import'
+  | 'tracked_first_plan';
 
 export async function getHousehold(): Promise<Household | null> {
   const [row] = await db.select().from(household).where(eq(household.id, 1));
@@ -53,13 +58,12 @@ export async function savePlan(weekStart: string, value: WeekPlan): Promise<void
   await db.insert(plans).values({ weekStart, data }).onConflictDoUpdate({ target: plans.weekStart, set: { data } });
 }
 
-export async function getChecks(weekStart: string): Promise<Record<string, boolean>> {
+export async function getChecks(weekStart: string): Promise<Check[]> {
   const rows = await db.select().from(shoppingChecks).where(eq(shoppingChecks.weekStart, weekStart));
-  return Object.fromEntries(rows.map((row) => [row.itemId, row.checked]));
+  return rows.map(({ itemId, checked, updatedAt }) => ({ itemId, checked, updatedAt }));
 }
 
-export async function setCheck(weekStart: string, itemId: string, checked: boolean): Promise<void> {
-  const updatedAt = Date.now();
+export async function setCheck(weekStart: string, itemId: string, checked: boolean, updatedAt = Date.now()): Promise<void> {
   await db
     .insert(shoppingChecks)
     .values({ weekStart, itemId, checked, updatedAt })

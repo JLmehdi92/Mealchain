@@ -3,13 +3,15 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
+import { AppState } from 'react-native';
 
 import migrations from '../../drizzle/migrations';
+import { useProfileSync } from '@/features/household/useProfileSync';
 import { initPurchases } from '@/features/subscription/purchase';
 import { trackFirstLaunch } from '@/lib/analytics';
 import { db } from '@/lib/db/client';
 import { initMonitoring, report } from '@/lib/monitoring';
-import { load, useHousehold, useReady } from '@/lib/store';
+import { load, refreshWeek, useHousehold, useReady } from '@/lib/store';
 import { useTheme } from '@/ui/theme';
 
 export { ErrorBoundary } from 'expo-router';
@@ -37,6 +39,14 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready && fontsLoaded) SplashScreen.hide();
   }, [ready, fontsLoaded]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const subscription = AppState.addEventListener('change', (state) => state === 'active' && refreshWeek().catch(report));
+    return () => subscription.remove();
+  }, [ready]);
+
+  useProfileSync(ready && !!household);
 
   if (migrated.error) throw migrated.error;
   if (fontError) throw fontError;

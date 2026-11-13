@@ -32,3 +32,5 @@ export function parseCount(text: string, max: number): number | null {
   const value = Number(text.trim());
   return /^\d+$/.test(text.trim()) && value >= 1 && value <= max ? value : null;
 }
+
+export const uncheckedCount = (recipe: Recipe): number => recipe.ingredients.filter((line) => line.status !== 'matched').length;

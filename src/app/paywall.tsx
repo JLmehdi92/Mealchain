@@ -7,9 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LegalSheet } from '@/features/household/LegalPage';
 import { PRIVACY, TERMS } from '@/features/household/legalText';
 import { PAYWALL_COPY } from '@/features/subscription/copy';
-import { Benefits, PaywallFooter, PaywallNav } from '@/features/subscription/PaywallParts';
+import { Benefits, OfferState, PaywallFooter, PaywallNav } from '@/features/subscription/PaywallParts';
 import { PlanCard } from '@/features/subscription/PlanCard';
-import { usePlans } from '@/features/subscription/plans';
+import { usePlans, type Plan } from '@/features/subscription/plans';
 import { purchase } from '@/features/subscription/purchase';
 import { track } from '@/lib/analytics';
 import { pick } from '@/lib/i18n';
@@ -17,31 +17,37 @@ import { report } from '@/lib/monitoring';
 import { Body, Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
+async function buyPlan(plan: Plan) {
+  const copy = pick(PAYWALL_COPY);
+  try {
+    const result = await purchase(plan.pkg);
+    if (result === 'pending') Alert.alert(copy.pendingTitle, copy.pending);
+    if (result === 'active') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
+    }
+  } catch (error) {
+    report(error);
+    Alert.alert(copy.error);
+  }
+}
+
 export default function Paywall() {
   const c = useTheme();
   const copy = pick(PAYWALL_COPY);
-  const plans = usePlans();
+  const { offer, retry } = usePlans();
+  const plans = offer.status === 'ready' ? offer.plans : [];
   const [selected, setSelected] = useState<'yearly' | 'monthly'>('yearly');
   const [busy, setBusy] = useState(false);
   const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null);
-  const plan = plans.find((p) => p.id === selected) ?? plans[0]!;
+  const plan = plans.find((p) => p.id === selected) ?? plans[0] ?? null;
 
   useEffect(() => track('paywall_viewed'), []);
 
-  const buy = async () => {
-    if (!plan.pkg) return Alert.alert(copy.unavailable);
+  const buy = () => {
+    if (!plan) return;
     setBusy(true);
-    try {
-      if (await purchase(plan.pkg)) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.back();
-      }
-    } catch (error) {
-      report(error);
-      Alert.alert(copy.error);
-    } finally {
-      setBusy(false);
-    }
+    buyPlan(plan).finally(() => setBusy(false));
   };
 
   return (
@@ -51,8 +57,9 @@ export default function Paywall() {
         <Title>{copy.title}</Title>
         <Body muted>{copy.subtitle}</Body>
         <Benefits />
+        {offer.status === 'ready' ? null : <OfferState offer={offer} onRetry={retry} />}
         {plans.map((p) => (
-          <PlanCard key={p.id} plan={p} selected={p.id === selected} onSelect={() => setSelected(p.id)} />
+          <PlanCard key={p.id} plan={p} selected={p.id === plan?.id} onSelect={() => setSelected(p.id)} />
         ))}
       </ScrollView>
       <PaywallFooter plan={plan} busy={busy} onBuy={buy} onLegal={setLegal} />

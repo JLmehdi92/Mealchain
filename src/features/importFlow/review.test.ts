@@ -1,5 +1,5 @@
 import { line, recipe } from '../planner/fixtures';
-import { confirmIngredient, finalize, parseCount, recipeAllergens } from './review';
+import { confirmIngredient, finalize, parseCount, recipeAllergens, uncheckedCount } from './review';
 
 const unmatched = { raw: '1 knob secret butter', qty: 1, unit: 'piece' as const, ingredientId: null, status: 'unmatched' as const };
 
@@ -35,6 +35,14 @@ describe('recipeAllergens', () => {
   it('lists allergens and traces once, in label order', () => {
     const lines = [line('heavy_cream', 1, 'cup'), line('burger_bun', 1, 'piece'), unmatched];
     expect(recipeAllergens(recipe('a', lines))).toEqual(['gluten', 'eggs', 'milk', 'sesame']);
+  });
+});
+
+describe('uncheckedCount', () => {
+  it('counts lines not matched yet, so the screen never claims there are no allergens', () => {
+    const waiting = { ...line('egg', 1, 'piece'), status: 'needsReview' as const };
+    expect(uncheckedCount(recipe('a', [line('egg', 1, 'piece'), unmatched, waiting]))).toBe(2);
+    expect(uncheckedCount(recipe('a', [line('egg', 1, 'piece')]))).toBe(0);
   });
 });
 

@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { accountAvailable, appleCancelled, signInWithApple } from '@/features/household/account';
+import { accountAvailable, signInWithApple } from '@/features/household/account';
+import { signInFailed } from '@/features/household/signInError';
 import { WelcomeScene } from '@/features/household/WelcomeScene';
 import { pick, t } from '@/lib/i18n';
-import { report } from '@/lib/monitoring';
 import { getState } from '@/lib/store';
 import { Button } from '@/ui/Button';
 import { Body, Title } from '@/ui/Text';
@@ -23,10 +23,7 @@ export default function Welcome() {
       await signInWithApple();
       if (!getState().household) router.push('/how');
     } catch (error) {
-      if (!appleCancelled(error)) {
-        report(error);
-        Alert.alert(pick(ERROR));
-      }
+      signInFailed(error, pick(ERROR));
     } finally {
       setBusy(false);
     }

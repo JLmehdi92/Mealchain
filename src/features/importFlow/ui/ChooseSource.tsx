@@ -1,9 +1,9 @@
-import type { SymbolViewProps } from 'expo-symbols';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Icon, IconButton } from '@/features/recipes/ui/parts';
 import { remoteAvailable } from '@/lib/importApi';
-import { pick } from '@/lib/i18n';
+import { pick, t } from '@/lib/i18n';
+import { Icon, type IconName } from '@/ui/Icon';
+import { IconButton } from '@/ui/IconButton';
 import { Body, Caption, H2 } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
 
@@ -11,7 +11,7 @@ import { importCopy } from '../copy';
 
 type Props = { onLink: () => void; onText: () => void; onShot: () => void; onClose: () => void };
 
-function Option({ icon, label, hint, onPress }: { icon: SymbolViewProps['name']; label: string; hint: string; onPress: () => void }) {
+function Option({ icon, label, hint, onPress }: { icon: IconName; label: string; hint: string; onPress: () => void }) {
   const c = useTheme();
   return (
     <Pressable
@@ -27,7 +27,7 @@ function Option({ icon, label, hint, onPress }: { icon: SymbolViewProps['name'];
         <Body>{label}</Body>
         <Caption muted>{hint}</Caption>
       </View>
-      <Icon name="chevron.right" size={16} color={c.ink2} />
+      <Icon name="chevron.right" size={16} muted />
     </Pressable>
   );
 }
@@ -38,7 +38,7 @@ export function ChooseSource({ onLink, onText, onShot, onClose }: Props) {
     <View style={styles.sheet}>
       <View style={styles.head}>
         <H2>{s.title}</H2>
-        <IconButton name="xmark" label={s.close} onPress={onClose} />
+        <IconButton name="xmark" label={t('common.close')} onPress={onClose} />
       </View>
       <Option icon="link" label={s.link} hint={s.linkHint} onPress={onLink} />
       <Option icon="doc.text" label={s.text} hint={s.textHint} onPress={onText} />

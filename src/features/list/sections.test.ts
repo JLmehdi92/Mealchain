@@ -19,7 +19,7 @@ const titles = new Map([['gratin', 'Chicken and leek gratin']]);
 
 describe('listSections', () => {
   it('groups unchecked items by aisle in shop order', () => {
-    const sections = listSections({ list, days, titles, checks: {}, market: 'fr', lang: 'en' });
+    const sections = listSections({ list, days, titles, checks: {}, market: 'fr', lang: 'en', weekStart: '2026-11-09' });
     expect(sections.aisles.map((group) => group.aisle)).toEqual(['produce', 'dairy']);
     expect(sections.aisles[1]!.rows.map((row) => row.name)).toEqual(['Heavy cream', 'Egg']);
     expect(sections.aisles[1]!.rows[0]).toMatchObject({ id: 'heavy_cream', qty: '1 carton (20 cl)', detail: 'All used · Mon, Wed', used: true, ratio: null });
@@ -27,7 +27,7 @@ describe('listSections', () => {
   });
 
   it('moves checked items to the cart', () => {
-    const sections = listSections({ list, days, titles, checks: { leek: true, egg: false }, market: 'fr', lang: 'en' });
+    const sections = listSections({ list, days, titles, checks: { leek: true, egg: false }, market: 'fr', lang: 'en', weekStart: '2026-11-09' });
     expect(sections.aisles.map((group) => group.aisle)).toEqual(['dairy']);
     expect(sections.cart.map((row) => row.id)).toEqual(['leek']);
     expect(sections.cart[0]!.checked).toBe(true);
@@ -35,14 +35,14 @@ describe('listSections', () => {
 
   it('lists lines it could not price, with their recipe, under to check', () => {
     const id = 'u:gratin:a pinch of saffron';
-    const sections = listSections({ list, days, titles, checks: {}, market: 'fr', lang: 'fr' });
+    const sections = listSections({ list, days, titles, checks: {}, market: 'fr', lang: 'fr', weekStart: '2026-11-09' });
     expect(sections.toCheck).toEqual([{ id, name: 'a pinch of saffron', qty: '', detail: 'Chicken and leek gratin', used: false, ratio: null, checked: false }]);
-    const checked = listSections({ list, days, titles, checks: { [id]: true }, market: 'fr', lang: 'fr' });
+    const checked = listSections({ list, days, titles, checks: { [id]: true }, market: 'fr', lang: 'fr', weekStart: '2026-11-09' });
     expect(checked.toCheck).toEqual([]);
     expect(checked.cart.map((row) => row.id)).toEqual([id]);
   });
 
   it('counts the packs to buy', () => {
-    expect(listSections({ list, days, titles, checks: {}, market: 'fr', lang: 'en' }).packCount).toBe(5);
+    expect(listSections({ list, days, titles, checks: {}, market: 'fr', lang: 'en', weekStart: '2026-11-09' }).packCount).toBe(5);
   });
 });

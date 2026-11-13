@@ -4,13 +4,14 @@ import { Linking, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { detailCopy } from '@/features/recipes/copy';
-import { IconButton, NavBar } from '@/features/recipes/ui/parts';
 import { RecipeBody } from '@/features/recipes/ui/RecipeBody';
 import { SwapSheet } from '@/features/week/ui/SwapSheet';
 import { isAllowedUrl } from '@/lib/importApi';
-import { pick } from '@/lib/i18n';
+import { pick, t } from '@/lib/i18n';
 import { useHousehold, usePlan, useRecipes } from '@/lib/store';
 import { Button } from '@/ui/Button';
+import { IconButton } from '@/ui/IconButton';
+import { NavBar } from '@/ui/NavBar';
 import { Secondary } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
@@ -24,7 +25,7 @@ export default function RecipeDetail() {
   const [swapping, setSwapping] = useState<number | null>(null);
   const slot = plan?.slots.findIndex((entry) => entry.recipeId === id) ?? -1;
   const source = recipe?.sourceUrl ? isAllowedUrl(recipe.sourceUrl) : null;
-  const back = <IconButton name="chevron.left" label={s.back} onPress={router.back} />;
+  const back = <IconButton name="chevron.left" label={t('common.back')} onPress={router.back} />;
 
   return (
     <SafeAreaView style={[styles.fill, { backgroundColor: c.paper }]}>

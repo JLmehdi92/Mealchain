@@ -15,7 +15,7 @@ const textSource = (input: ImportInput): TextSource => (input.kind === 'text' ? 
 
 export default function Import() {
   const c = useTheme();
-  const { phase, setPhase, text, setText, close, run, fromScreenshot, save } = useImportFlow();
+  const { phase, setPhase, text, setText, close, run, fromScreenshot, signInAndRun, save } = useImportFlow();
   const [link, setLink] = useState('');
   const choose = () => setPhase({ name: 'choose' });
 
@@ -36,6 +36,7 @@ export default function Import() {
             fromLink={phase.input.kind === 'url'}
             onClose={close}
             onRetry={() => run(phase.input)}
+            onSignIn={() => signInAndRun(phase.input)}
             onLink={() => setPhase({ name: 'link' })}
             onText={() => setPhase({ name: 'text', source: textSource(phase.input) })}
           />

@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { alternativesFor, replaceSlot, type Alternative } from '@/features/planner/swap';
-import { Icon, IconButton } from '@/features/recipes/ui/parts';
-import { fill, language, pick } from '@/lib/i18n';
-import { getState, useHousehold, usePlan, useRecipes } from '@/lib/store';
+import { fill, language, pick, t } from '@/lib/i18n';
+import { useHousehold, usePlan, useRecipes, useWeekStart } from '@/lib/store';
 import { Button } from '@/ui/Button';
+import { Icon } from '@/ui/Icon';
+import { IconButton } from '@/ui/IconButton';
 import { Body, Caption, H2, Secondary } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
 
@@ -28,7 +29,7 @@ function Option({ title, detail, best, onPress }: { title: string; detail: strin
         <Body>{title}</Body>
         <Caption style={{ color: best ? c.strandInk : c.ink2 }}>{detail}</Caption>
       </View>
-      <Icon name="chevron.right" size={16} color={c.ink2} />
+      <Icon name="chevron.right" size={16} muted />
     </Pressable>
   );
 }
@@ -53,6 +54,7 @@ function SwapList({ slot, onClose }: { slot: number; onClose: () => void }) {
   const recipes = useRecipes();
   const household = useHousehold();
   const detail = useDetail(slot);
+  const weekStart = useWeekStart();
   const [all, setAll] = useState(false);
   const options = plan && household ? alternativesFor(plan, slot, recipes, household) : [];
   const titles = new Map(recipes.map((recipe) => [recipe.id, recipe.title]));
@@ -60,13 +62,13 @@ function SwapList({ slot, onClose }: { slot: number; onClose: () => void }) {
     swapSlot(slot, recipeId)
       .then(onClose)
       .catch(() => Alert.alert(s.failed));
-  const day = dayLabel(getState().weekStart, plan?.slots[slot]?.day ?? 0, language(), 'long');
+  const day = dayLabel(weekStart, plan?.slots[slot]?.day ?? 0, language(), 'long');
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.head}>
         <H2 style={styles.grow}>{fill(s.swapTitle, { day })}</H2>
-        <IconButton name="xmark" label={s.close} onPress={onClose} />
+        <IconButton name="xmark" label={t('common.close')} onPress={onClose} />
       </View>
       <Secondary muted>{s.swapBody}</Secondary>
       {options.length === 0 ? <Secondary muted>{s.noAlternative}</Secondary> : null}

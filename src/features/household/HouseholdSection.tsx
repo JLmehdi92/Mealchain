@@ -5,12 +5,12 @@ import { fill, pick } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { useHousehold } from '@/lib/store';
 import { Group } from '@/ui/Card';
+import { Icon } from '@/ui/Icon';
 import { Row } from '@/ui/Row';
+import { SectionLabel } from '@/ui/SectionLabel';
 
 import type { Household } from '../recipes/types';
 import { saveEverywhere } from './account';
-import { Chevron } from './Chevron';
-import { SectionLabel } from './controls';
 import { EditSheet } from './EditSheet';
 import { AllergiesForm, DietsForm, HouseholdForm } from './forms';
 import { ALLERGEN_LABELS, DIET_LABELS } from './labels';
@@ -23,16 +23,17 @@ function HouseholdRows({ household, onEdit }: { household: Household; onEdit: (w
   const join = (items: string[]) => (items.length ? items.join(', ') : copy.none);
   const allergenLabels = pick(ALLERGEN_LABELS);
   const dietLabels = pick(DIET_LABELS);
+  const chevron = <Icon name="chevron.right" size={14} muted />;
   return (
     <Group>
       <Row
         label={copy.peopleMeals}
         detail={fill(copy.peopleDetail, { people: household.people, dinners: household.dinners })}
-        trailing={<Chevron />}
+        trailing={chevron}
         onPress={() => onEdit('people')}
       />
-      <Row label={copy.allergies} detail={join(household.allergens.map((a) => allergenLabels[a]))} trailing={<Chevron />} onPress={() => onEdit('allergies')} />
-      <Row label={copy.dietsEquipment} detail={join(household.diets.map((d) => dietLabels[d]))} trailing={<Chevron />} onPress={() => onEdit('diets')} />
+      <Row label={copy.allergies} detail={join(household.allergens.map((a) => allergenLabels[a]))} trailing={chevron} onPress={() => onEdit('allergies')} />
+      <Row label={copy.dietsEquipment} detail={join(household.diets.map((d) => dietLabels[d]))} trailing={chevron} onPress={() => onEdit('diets')} />
     </Group>
   );
 }

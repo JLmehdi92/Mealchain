@@ -4,14 +4,12 @@ import { useEffect } from 'react';
 import { getSetting, setSetting } from '@/lib/db/repo';
 import { report } from '@/lib/monitoring';
 
-import { proEntitlement, purchasesEnabled } from './purchase';
 import { shouldOfferPaywall } from './rules';
-import { useCustomerInfo } from './useCustomerInfo';
+import { usePro } from './useIsPro';
 
 export function useOfferPaywall(firstListSeen: boolean) {
-  const info = useCustomerInfo();
-  const known = !purchasesEnabled || info !== null;
-  const pro = !!proEntitlement(info);
+  const { known, entitlement } = usePro();
+  const pro = entitlement !== null;
   useEffect(() => {
     if (!firstListSeen || !known) return;
     let alive = true;

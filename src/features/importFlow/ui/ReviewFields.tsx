@@ -58,7 +58,7 @@ export function ReviewFields({ draft, texts, onChange }: Props) {
           onChange={(servings) => onChange({ ...texts, servings }, { servings: parseCount(servings, 100) })}
         />
         <Field
-          label={`${s.time} (${s.minutes.toLowerCase()})`}
+          label={`${s.time} (${s.minutes.toLocaleLowerCase()})`}
           note={draft.totalMinutes === null ? s.missing : undefined}
           value={texts.minutes}
           placeholder={s.addTime}

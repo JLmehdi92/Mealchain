@@ -1,14 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { fill, pick, t } from '@/lib/i18n';
+import { pick, t } from '@/lib/i18n';
+import { Banner } from '@/ui/Banner';
 import { Group } from '@/ui/Card';
 import { Chip } from '@/ui/Chip';
+import { SectionLabel } from '@/ui/SectionLabel';
 import { Caption } from '@/ui/Text';
 import { space } from '@/ui/theme';
 
 import { DIETS, type Market } from '../ingredients/schema';
 import { EQUIPMENT, type Household } from '../recipes/types';
-import { Banner, Segmented, SectionLabel, StepperRow, ToggleRow } from './controls';
+import { Segmented, StepperRow, ToggleRow } from './controls';
 import { ALLERGEN_LABELS, ALLERGEN_ORDER, COPY, DIET_LABELS, EQUIPMENT_LABELS } from './labels';
 
 type FormProps = { value: Household; onChange: (patch: Partial<Household>) => void };
@@ -30,7 +32,7 @@ export function HouseholdForm({ value, onChange }: FormProps) {
       </Group>
       <SectionLabel>{t('household.maxPrep')}</SectionLabel>
       <Segmented
-        options={PREP.map((m) => ({ value: m, label: fill(pick(COPY).minutes, { n: m ?? '60+' }) }))}
+        options={PREP.map((m) => ({ value: m, label: t('common.minutes', { n: m ?? '60+' }) }))}
         value={PREP.includes(value.maxMinutes) ? value.maxMinutes : null}
         onChange={(maxMinutes) => onChange({ maxMinutes })}
       />

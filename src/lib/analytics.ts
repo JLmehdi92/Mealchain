@@ -3,7 +3,7 @@ import Storage from 'expo-sqlite/kv-store';
 
 import { getSetting, setSetting } from './db/repo';
 
-export type FunnelEvent = 'app_installed' | 'first_import' | 'first_plan' | 'paywall_viewed' | 'trial_started';
+type FunnelEvent = 'app_installed' | 'first_import' | 'first_plan' | 'paywall_viewed' | 'trial_started';
 
 const key = process.env.EXPO_PUBLIC_POSTHOG_KEY;
 const client = key
@@ -28,4 +28,11 @@ export async function trackFirstLaunch() {
   if (await getSetting('installed')) return;
   await setSetting('installed', 'yes');
   track('app_installed');
+}
+
+export async function trackOnce(event: 'first_import' | 'first_plan') {
+  const key = `tracked_${event}` as const;
+  if (await getSetting(key)) return;
+  await setSetting(key, 'yes');
+  track(event);
 }

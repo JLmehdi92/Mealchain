@@ -1,4 +1,4 @@
-import { formatAmount, formatQty, quarters } from './format';
+import { formatQty, quarters } from './format';
 
 describe('quarters', () => {
   it.each([
@@ -9,30 +9,6 @@ describe('quarters', () => {
     [0.05, '¼'],
   ])('writes %d as %s', (n, text) => {
     expect(quarters(n)).toBe(text);
-  });
-});
-
-describe('formatAmount', () => {
-  it('writes millilitres as fl oz in the US', () => {
-    expect(formatAmount(118, 'ml', 'us')).toBe('4 fl oz');
-  });
-
-  it('writes millilitres as is in France', () => {
-    expect(formatAmount(100.4, 'ml', 'fr')).toBe('100 ml');
-  });
-
-  it('writes grams as oz, then lb, in the US', () => {
-    expect(formatAmount(85, 'g', 'us')).toBe('3 oz');
-    expect(formatAmount(567, 'g', 'us')).toBe('1¼ lb');
-  });
-
-  it('writes grams, then kg, in France', () => {
-    expect(formatAmount(90, 'g', 'fr')).toBe('90 g');
-    expect(formatAmount(1250, 'g', 'fr')).toBe('1,3 kg');
-  });
-
-  it('writes pieces as a count', () => {
-    expect(formatAmount(3, 'piece', 'us')).toBe('3');
   });
 });
 

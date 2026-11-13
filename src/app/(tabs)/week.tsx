@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useIsPro } from '@/features/recipes/pro';
-import { IconButton, NavBar } from '@/features/recipes/ui/parts';
+import { useIsPro } from '@/features/subscription/useIsPro';
 import { markPlanSeen, startPlan } from '@/features/week/actions';
 import { weekCopy } from '@/features/week/copy';
 import { SwapSheet } from '@/features/week/ui/SwapSheet';
@@ -12,6 +11,8 @@ import { WeekContent } from '@/features/week/ui/WeekContent';
 import { pick } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { usePlan } from '@/lib/store';
+import { IconButton } from '@/ui/IconButton';
+import { NavBar } from '@/ui/NavBar';
 import { space, useTheme } from '@/ui/theme';
 
 export default function Week() {

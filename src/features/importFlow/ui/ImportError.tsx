@@ -1,20 +1,35 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { PageScene } from '@/features/recipes/ui/illustrations';
-import { Empty, Icon, NavBar, TextButton } from '@/features/recipes/ui/parts';
-import type { ImportError as ErrorKind } from '@/lib/importApi';
-import { pick } from '@/lib/i18n';
+import { TextButton } from '@/features/recipes/ui/parts';
+import { pick, t } from '@/lib/i18n';
 import { Button } from '@/ui/Button';
+import { Empty } from '@/ui/Empty';
+import { Icon } from '@/ui/Icon';
+import { NavBar } from '@/ui/NavBar';
 import { space, useTheme } from '@/ui/theme';
 
-import { errorCopy, importCopy } from '../copy';
+import { errorCopy } from '../copy';
+import type { ImportFailure } from '../importRecipe';
 
 type Action = { label: string; onPress: () => void };
-type Props = { error: ErrorKind; fromLink: boolean; onClose: () => void; onText: () => void; onLink: () => void; onRetry: () => void };
+type Content = { title: string; body: string; primary: Action; quiet?: Action };
+type Props = {
+  error: ImportFailure;
+  fromLink: boolean;
+  onClose: () => void;
+  onText: () => void;
+  onLink: () => void;
+  onRetry: () => void;
+  onSignIn: () => void;
+};
 
-function content({ error, fromLink, onClose, onText, onLink, onRetry }: Props) {
+function content({ error, fromLink, onClose, onText, onLink, onRetry, onSignIn }: Props): Content {
   const s = pick(errorCopy);
   if (error === 'daily_limit') return { title: s.limit, body: s.limitBody, primary: { label: s.ok, onPress: onClose } };
+  if (error === 'sign_in') {
+    return { title: s.signInTitle, body: s.signInBody, primary: { label: s.signInApple, onPress: onSignIn }, quiet: { label: s.editText, onPress: onText } };
+  }
   if (error === 'unreachable') {
     return { title: s.unreachable, body: s.unreachableBody, primary: { label: s.tryAgain, onPress: onRetry }, quiet: { label: s.pasteText, onPress: onText } };
   }
@@ -25,11 +40,11 @@ function content({ error, fromLink, onClose, onText, onLink, onRetry }: Props) {
 
 export function ImportError(props: Props) {
   const c = useTheme();
-  const { title, body, primary, quiet }: { title: string; body: string; primary: Action; quiet?: Action } = content(props);
+  const { title, body, primary, quiet } = content(props);
   const art = props.error === 'daily_limit' ? <Icon name="clock" size={44} color={c.ink2} /> : <PageScene />;
   return (
     <View style={styles.fill}>
-      <NavBar left={<TextButton label={pick(importCopy).close} onPress={props.onClose} />} />
+      <NavBar left={<TextButton label={t('common.close')} onPress={props.onClose} />} />
       <ScrollView contentContainerStyle={styles.content}>
         <Empty art={art} title={title} body={body} />
       </ScrollView>

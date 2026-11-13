@@ -16,7 +16,6 @@ export const weekCopy = {
     packs: '{count} packs finished',
     nothingFits: 'No recipe fits your household yet',
     nothingFitsBody: 'Each recipe breaks an allergy, diet, equipment or time rule, or has ingredients to check. Recipes shows why.',
-    minutes: '{minutes} min',
     to: 'to {days}',
     finishes: 'Finishes the {name}',
     uses: 'Uses the {name}',
@@ -30,7 +29,6 @@ export const weekCopy = {
     extra: '+{count} packs',
     all: 'Choose from all recipes',
     noAlternative: 'No other recipe fits your household.',
-    close: 'Close',
     failed: 'The plan could not be saved. Try again.',
   },
   fr: {
@@ -50,7 +48,6 @@ export const weekCopy = {
     packs: '{count} paquets finis',
     nothingFits: 'Aucune recette ne convient encore à votre foyer',
     nothingFitsBody: 'Chaque recette enfreint une allergie, un régime, l’équipement ou le temps, ou a des ingrédients à vérifier. Recettes indique pourquoi.',
-    minutes: '{minutes} min',
     to: 'vers {days}',
     finishes: 'Finit : {name}',
     uses: 'Utilise : {name}',
@@ -64,7 +61,6 @@ export const weekCopy = {
     extra: '+{count} paquets',
     all: 'Choisir parmi toutes les recettes',
     noAlternative: 'Aucune autre recette ne convient à votre foyer.',
-    close: 'Fermer',
     failed: "Le plan n'a pas pu être enregistré. Réessayez.",
   },
 };

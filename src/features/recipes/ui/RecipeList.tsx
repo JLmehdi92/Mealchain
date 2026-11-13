@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import { FREE_RECIPE_LIMIT } from '@/features/subscription/rules';
 import { fill, pick } from '@/lib/i18n';
-import { getState, useHousehold, usePlan, useRecipes } from '@/lib/store';
+import { useHousehold, usePlan, useRecipes, useWeekStart } from '@/lib/store';
 import { Secondary, Title } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
 
@@ -19,6 +19,7 @@ export function RecipeList({ pro }: { pro: boolean }) {
   const recipes = useRecipes();
   const household = useHousehold();
   const plan = usePlan();
+  const weekStart = useWeekStart();
   const [query, setQuery] = useState('');
   const shown = recipes.filter((recipe) => fold(recipe.title).includes(fold(query.trim())));
   const header = (
@@ -42,7 +43,7 @@ export function RecipeList({ pro }: { pro: boolean }) {
       renderItem={({ item, index }) =>
         household ? (
           <View style={[{ backgroundColor: c.sheet }, index === 0 && styles.top, index === shown.length - 1 && styles.bottom]}>
-            <RecipeCard recipe={item} household={household} plan={plan} weekStart={getState().weekStart} first={index === 0} />
+            <RecipeCard recipe={item} household={household} plan={plan} weekStart={weekStart} first={index === 0} />
           </View>
         ) : null
       }

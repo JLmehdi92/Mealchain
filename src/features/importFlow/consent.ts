@@ -16,8 +16,7 @@ function confirm(): Promise<boolean> {
 }
 
 export async function askConsent(): Promise<boolean> {
-  if ((await getSetting('ai_consent')) === 'yes') return true;
-  const granted = await confirm();
-  if (granted) await setSetting('ai_consent', 'yes');
-  return granted;
+  return (await getSetting('ai_consent')) === 'yes' || confirm();
 }
+
+export const rememberConsent = () => setSetting('ai_consent', 'yes');

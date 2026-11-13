@@ -1,8 +1,10 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Icon, NavBar, Skeleton, TextButton } from '@/features/recipes/ui/parts';
+import { Skeleton, TextButton } from '@/features/recipes/ui/parts';
 import { isAllowedUrl } from '@/lib/importApi';
-import { fill, pick } from '@/lib/i18n';
+import { fill, pick, t } from '@/lib/i18n';
+import { Icon } from '@/ui/Icon';
+import { NavBar } from '@/ui/NavBar';
 import { Body, Caption, Title } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
 
@@ -35,7 +37,7 @@ export function ImportLoading({ input, step, count, onCancel }: Props) {
   const steps = [input.kind === 'url' ? s.foundPage : s.foundText, fill(s.count, { count }), s.matching, s.checking];
   return (
     <View style={styles.fill}>
-      <NavBar left={<TextButton label={s.cancel} onPress={onCancel} />} />
+      <NavBar left={<TextButton label={t('common.cancel')} onPress={onCancel} />} />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.source}>
           <Icon name={source.icon} size={14} color={c.ink2} />

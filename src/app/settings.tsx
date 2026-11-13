@@ -3,22 +3,22 @@ import { router, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
-import { deleteRemoteAccount } from '@/features/household/account';
-import { Chevron } from '@/features/household/Chevron';
-import { SectionLabel, ToggleRow } from '@/features/household/controls';
+import { deleteAccount } from '@/features/household/account';
+import { ToggleRow } from '@/features/household/controls';
 import { plainHeader } from '@/features/household/header';
 import { HouseholdSection } from '@/features/household/HouseholdSection';
 import { SETTINGS_COPY } from '@/features/household/settingsCopy';
 import { SharingSection } from '@/features/household/SharingSection';
-import { wipeAll } from '@/features/household/wipe';
 import { SubscriptionSection } from '@/features/subscription/SubscriptionSection';
 import { getSetting, setSetting } from '@/lib/db/repo';
 import { fill, pick, t } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
 import { Button } from '@/ui/Button';
 import { Group } from '@/ui/Card';
+import { Icon } from '@/ui/Icon';
 import { Row } from '@/ui/Row';
 import { Screen } from '@/ui/Screen';
+import { SectionLabel } from '@/ui/SectionLabel';
 import { Caption } from '@/ui/Text';
 import { useTheme } from '@/ui/theme';
 
@@ -30,6 +30,7 @@ function PrivacySection() {
       .then((value) => setAsk(value !== 'yes'))
       .catch(report);
   }, []);
+  const chevron = <Icon name="chevron.right" size={14} muted />;
   const change = (value: boolean) => {
     setAsk(value);
     setSetting('ai_consent', value ? 'ask' : 'yes').catch(report);
@@ -39,9 +40,9 @@ function PrivacySection() {
       <SectionLabel>{copy.privacy}</SectionLabel>
       <Group>
         <ToggleRow label={copy.askAi} detail={copy.askAiDetail} value={ask} onChange={change} />
-        <Row label={copy.terms} trailing={<Chevron />} onPress={() => router.push('/legal/terms')} />
-        <Row label={copy.privacyPolicy} trailing={<Chevron />} onPress={() => router.push('/legal/privacy')} />
-        <Row label={copy.allergyNotice} trailing={<Chevron />} onPress={() => router.push('/legal/allergies')} />
+        <Row label={copy.terms} trailing={chevron} onPress={() => router.push('/legal/terms')} />
+        <Row label={copy.privacyPolicy} trailing={chevron} onPress={() => router.push('/legal/privacy')} />
+        <Row label={copy.allergyNotice} trailing={chevron} onPress={() => router.push('/legal/allergies')} />
       </Group>
     </>
   );
@@ -51,15 +52,14 @@ function confirmDelete() {
   const copy = pick(SETTINGS_COPY);
   const erase = async () => {
     try {
-      await deleteRemoteAccount();
-      wipeAll();
+      await deleteAccount();
     } catch (error) {
       report(error);
       Alert.alert(copy.deleteError);
     }
   };
   Alert.alert(copy.deleteTitle, copy.deleteBody, [
-    { text: copy.cancel, style: 'cancel' },
+    { text: t('common.cancel'), style: 'cancel' },
     { text: copy.delete, style: 'destructive', onPress: erase },
   ]);
 }

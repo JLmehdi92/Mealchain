@@ -7,11 +7,16 @@ jest.mock('@/lib/importApi', () => ({ readPage: jest.fn(), importRemotely: jest.
 const raw = { title: 'Dal', ingredients: ['1 cup red lentils'], steps: ['Simmer.'], sourceUrl: 'https://example.com/dal' };
 const onStep = jest.fn();
 const askConsent = jest.fn();
-const options = { id: 'r1', now: 7, onStep, askConsent };
+const rememberConsent = jest.fn();
+const signedIn = jest.fn();
+const isCancelled = jest.fn();
+const options = { id: 'r1', now: 7, onStep, askConsent, rememberConsent, signedIn, isCancelled };
 
 beforeEach(() => {
   jest.clearAllMocks();
   jest.mocked(remoteAvailable).mockReturnValue(true);
+  signedIn.mockResolvedValue(true);
+  isCancelled.mockReturnValue(false);
 });
 
 describe('importRecipe from a link', () => {
@@ -34,6 +39,13 @@ describe('importRecipe from a link', () => {
     jest.mocked(remoteAvailable).mockReturnValue(false);
     jest.mocked(readPage).mockResolvedValue({ error: 'unreachable' });
     await expect(importRecipe({ kind: 'url', url: 'https://example.com/dal' }, options)).resolves.toEqual({ error: 'unreachable' });
+    expect(importRemotely).not.toHaveBeenCalled();
+  });
+
+  it('never calls the server once the import is cancelled', async () => {
+    jest.mocked(readPage).mockResolvedValue({ error: 'no_recipe' });
+    isCancelled.mockReturnValue(true);
+    await expect(importRecipe({ kind: 'url', url: 'https://example.com/dal' }, options)).resolves.toEqual({ cancelled: true });
     expect(importRemotely).not.toHaveBeenCalled();
   });
 
@@ -61,10 +73,44 @@ describe('importRecipe from text', () => {
     expect(importRemotely).toHaveBeenCalledWith({ kind: 'text', text: chatter.text, consent: true });
   });
 
+  it('remembers consent only once the text was actually sent', async () => {
+    askConsent.mockResolvedValue(true);
+    jest.mocked(importRemotely).mockImplementation(async () => {
+      expect(rememberConsent).not.toHaveBeenCalled();
+      return { error: 'no_recipe' };
+    });
+    await importRecipe(chatter, options);
+    expect(rememberConsent).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks to sign in before asking consent, and sends nothing', async () => {
+    signedIn.mockResolvedValue(false);
+    await expect(importRecipe(chatter, options)).resolves.toEqual({ error: 'sign_in' });
+    expect(askConsent).not.toHaveBeenCalled();
+    expect(importRemotely).not.toHaveBeenCalled();
+  });
+
+  it('does not ask consent once the import is cancelled', async () => {
+    isCancelled.mockReturnValue(true);
+    await expect(importRecipe(chatter, options)).resolves.toEqual({ cancelled: true });
+    expect(askConsent).not.toHaveBeenCalled();
+  });
+
+  it('sends nothing when the import is cancelled while consent was asked', async () => {
+    askConsent.mockImplementation(async () => {
+      isCancelled.mockReturnValue(true);
+      return true;
+    });
+    await expect(importRecipe(chatter, options)).resolves.toEqual({ cancelled: true });
+    expect(importRemotely).not.toHaveBeenCalled();
+    expect(rememberConsent).not.toHaveBeenCalled();
+  });
+
   it('keeps the text on the device when consent is refused', async () => {
     askConsent.mockResolvedValue(false);
     await expect(importRecipe(chatter, options)).resolves.toEqual({ error: 'no_recipe' });
     expect(importRemotely).not.toHaveBeenCalled();
+    expect(rememberConsent).not.toHaveBeenCalled();
   });
 
   it.each([['too short', 'egg'], ['too long', 'a'.repeat(20_001)]])('never sends text that is %s', async (_, value) => {

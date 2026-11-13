@@ -2,16 +2,21 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ingredientById } from '@/features/ingredients/catalog';
+import { ALLERGEN_LABELS } from '@/features/household/labels';
 import { labels } from '@/features/recipes/copy';
 import { reviewCount } from '@/features/recipes/meta';
 import type { Recipe, RecipeIngredient } from '@/features/recipes/types';
-import { Banner, NavBar, Tag, TextButton } from '@/features/recipes/ui/parts';
-import { fill, language, pick } from '@/lib/i18n';
+import { TextButton } from '@/features/recipes/ui/parts';
+import { fill, language, pick, t } from '@/lib/i18n';
+import { Banner } from '@/ui/Banner';
+import { Group } from '@/ui/Card';
+import { NavBar } from '@/ui/NavBar';
+import { Tag } from '@/ui/Tag';
 import { Body, Caption, Title } from '@/ui/Text';
-import { radius, space, useTheme } from '@/ui/theme';
+import { space, useTheme } from '@/ui/theme';
 
-import { importCopy, reviewCopy } from '../copy';
-import { confirmIngredient, finalize, recipeAllergens } from '../review';
+import { reviewCopy } from '../copy';
+import { confirmIngredient, finalize, recipeAllergens, uncheckedCount } from '../review';
 import { IngredientPicker } from './IngredientPicker';
 import { ReviewFields, type Texts } from './ReviewFields';
 
@@ -41,18 +46,22 @@ function IngredientRow({ line, first, onPress }: { line: RecipeIngredient; first
 const textsOf = (recipe: Recipe): Texts => ({ title: recipe.title, servings: String(recipe.servings ?? ''), minutes: String(recipe.totalMinutes ?? '') });
 
 function ReviewIngredients({ draft, onPick }: { draft: Recipe; onPick: (index: number) => void }) {
-  const c = useTheme();
   const s = pick(reviewCopy);
-  const allergens = recipeAllergens(draft).map((a) => pick(labels).allergens[a]);
+  const allergens = recipeAllergens(draft).map((a) => pick(ALLERGEN_LABELS)[a].toLocaleLowerCase());
+  const unchecked = uncheckedCount(draft);
+  const notes = [
+    ...(allergens.length > 0 ? [fill(s.allergens, { list: allergens.join(', ') })] : unchecked > 0 ? [] : [s.noAllergens]),
+    ...(unchecked === 0 ? [] : [unchecked === 1 ? s.oneNotChecked : fill(s.notChecked, { count: unchecked })]),
+  ];
   return (
     <>
       <Caption muted style={styles.section}>{fill(s.ingredients, { count: draft.ingredients.length })}</Caption>
-      <View style={[styles.group, { backgroundColor: c.sheet, borderColor: c.rule }]}>
+      <Group>
         {draft.ingredients.map((line, i) => (
           <IngredientRow key={i} line={line} first={i === 0} onPress={() => onPick(i)} />
         ))}
-      </View>
-      <Caption muted>{allergens.length > 0 ? fill(s.allergens, { list: allergens.join(', ') }) : s.noAllergens}</Caption>
+      </Group>
+      <Caption muted>{notes.join(' ')}</Caption>
     </>
   );
 }
@@ -71,9 +80,9 @@ export function Review({ initial, onCancel, onSave }: Props) {
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.fill}>
       <NavBar
-        left={<TextButton label={pick(importCopy).cancel} onPress={onCancel} />}
+        left={<TextButton label={t('common.cancel')} onPress={onCancel} />}
         center={<Caption muted>{pick(labels).fromSource[draft.source]}</Caption>}
-        right={<TextButton label={pick(importCopy).save} strong onPress={save} />}
+        right={<TextButton label={t('common.save')} strong onPress={save} />}
       />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Title>{s.title}</Title>
@@ -98,7 +107,6 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   content: { paddingHorizontal: space.xl, paddingBottom: space.xxxl * 2, gap: space.sm },
   section: { marginTop: space.lg },
-  group: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md, minHeight: 52, paddingVertical: 10, paddingHorizontal: space.lg },
   grow: { flex: 1, minWidth: 0 },
 });

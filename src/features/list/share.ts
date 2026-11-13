@@ -1,23 +1,19 @@
 import { Alert, Share } from 'react-native';
 
-import { fill, pick } from '@/lib/i18n';
-import { report } from '@/lib/monitoring';
+import { fill, pick, t } from '@/lib/i18n';
 
-import { accountAvailable, appleCancelled, createInvite, signedIn, signInWithApple } from '../household/account';
+import { accountAvailable, createInvite, signedIn, signInWithApple } from '../household/account';
+import { signInFailed } from '../household/signInError';
 import { LIST_COPY } from './copy';
 
-function failed(error: unknown) {
-  if (appleCancelled(error)) return;
-  report(error);
-  Alert.alert(pick(LIST_COPY).shareError);
-}
+const failed = (error: unknown) => signInFailed(error, pick(LIST_COPY).shareError);
 
 export async function shareList() {
   const copy = pick(LIST_COPY);
   if (!accountAvailable) return Alert.alert(copy.needAccount, copy.needAccountBody);
   if (!(await signedIn())) {
     return Alert.alert(copy.needAccount, copy.signInBody, [
-      { text: copy.cancel, style: 'cancel' },
+      { text: t('common.cancel'), style: 'cancel' },
       { text: copy.signIn, onPress: () => signInWithApple().then(shareList).catch(failed) },
     ]);
   }

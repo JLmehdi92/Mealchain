@@ -1,10 +1,9 @@
-import type { Allergen, Market } from '../ingredients/schema';
+import type { Allergen, Ingredient, Market } from '../ingredients/schema';
 import { catalogIngredient } from '../planner/needs';
 import type { Reason } from '../planner/filter';
 import type { Recipe, RecipeIngredient } from './types';
 
-export const THUMBS = ['carton', 'can', 'jar', 'eggs', 'bunch', 'bag', 'tray', 'block'] as const;
-export type Thumb = (typeof THUMBS)[number];
+export type Thumb = 'carton' | 'can' | 'jar' | 'eggs' | 'bunch' | 'bag' | 'tray' | 'block';
 
 const CONTAINER_THUMB: Record<string, Thumb> = {
   carton: 'carton', can: 'can', jar: 'jar', bottle: 'jar', tub: 'jar', bag: 'bag', bunch: 'bunch', tray: 'tray', block: 'block',
@@ -12,15 +11,16 @@ const CONTAINER_THUMB: Record<string, Thumb> = {
 const REASON_ORDER: Reason['kind'][] = ['allergen', 'diet', 'equipment', 'time', 'unverified'];
 const HEADER_FIELDS = new Set(['title', 'servings', 'totalMinutes']);
 
-function thumbOf(line: RecipeIngredient, market: Market): Thumb | null {
-  const ingredient = line.status === 'matched' ? catalogIngredient(line) : undefined;
+export function thumbOfIngredient(ingredient: Ingredient | undefined, market: Market): Thumb | null {
   if (!ingredient) return null;
   if (ingredient.id === 'egg') return 'eggs';
   return CONTAINER_THUMB[ingredient.packs[market][0]?.container ?? ''] ?? null;
 }
 
 export const thumbFor = (recipe: Recipe, market: Market): Thumb | null =>
-  recipe.ingredients.map((line) => thumbOf(line, market)).find((thumb) => thumb !== null) ?? null;
+  recipe.ingredients
+    .map((line) => thumbOfIngredient(line.status === 'matched' ? catalogIngredient(line) : undefined, market))
+    .find((thumb) => thumb !== null) ?? null;
 
 export const reviewCount = (recipe: Recipe): number =>
   recipe.needsReview.filter((field) => HEADER_FIELDS.has(field)).length +

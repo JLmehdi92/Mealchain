@@ -1,5 +1,6 @@
 import { line, recipe } from '../planner/fixtures';
-import { lineAllergens, mainReason, reviewCount, thumbFor } from './meta';
+import { ingredientById } from '../ingredients/catalog';
+import { lineAllergens, mainReason, reviewCount, thumbFor, thumbOfIngredient } from './meta';
 
 describe('thumbFor', () => {
   it('draws the first ingredient that has a pack picture', () => {
@@ -22,6 +23,14 @@ describe('thumbFor', () => {
   it('ignores unmatched lines and packs without a picture', () => {
     const lines = [{ ...line('heavy_cream', 1, 'cup'), status: 'unmatched' as const }, line('butter', 1, 'tbsp'), line('banana', 1, 'piece')];
     expect(thumbFor(recipe('a', lines), 'us')).toBeNull();
+  });
+});
+
+describe('thumbOfIngredient', () => {
+  it('draws an ingredient by its first pack in the market, and nothing for an unknown one', () => {
+    expect(thumbOfIngredient(ingredientById.get('heavy_cream'), 'fr')).toBe('carton');
+    expect(thumbOfIngredient(ingredientById.get('egg'), 'us')).toBe('eggs');
+    expect(thumbOfIngredient(undefined, 'us')).toBeNull();
   });
 });
 

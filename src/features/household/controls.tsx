@@ -1,37 +1,17 @@
 import * as Haptics from 'expo-haptics';
-import { SymbolView, type SFSymbol } from 'expo-symbols';
-import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { fill, pick } from '@/lib/i18n';
+import { Icon, type IconName } from '@/ui/Icon';
 import { Row } from '@/ui/Row';
-import { Body, Caption, Secondary } from '@/ui/Text';
+import { Body, Secondary } from '@/ui/Text';
 import { radius, space, touch, useTheme } from '@/ui/theme';
 
 import { COPY } from './labels';
 
-export function SectionLabel({ children }: { children: string }) {
-  return (
-    <Caption muted accessibilityRole="header" style={styles.section}>
-      {children}
-    </Caption>
-  );
-}
-
-export function Banner({ icon, tone = 'plain', children }: { icon: SFSymbol; tone?: 'plain' | 'allergy'; children: ReactNode }) {
-  const c = useTheme();
-  const color = tone === 'allergy' ? c.chili : c.ink;
-  return (
-    <View style={[styles.banner, { backgroundColor: tone === 'allergy' ? c.chiliBg : c.surface }]}>
-      <SymbolView name={icon} size={20} tintColor={color} />
-      <Secondary style={[styles.grow, { color }]}>{children}</Secondary>
-    </View>
-  );
-}
-
 type StepperProps = { label: string; value: number; min: number; max: number; onChange: (value: number) => void };
 
-export function Stepper({ label, value, min, max, onChange }: StepperProps) {
+function Stepper({ label, value, min, max, onChange }: StepperProps) {
   const c = useTheme();
   const copy = pick(COPY);
   const step = (delta: number) => {
@@ -40,16 +20,16 @@ export function Stepper({ label, value, min, max, onChange }: StepperProps) {
     Haptics.selectionAsync();
     onChange(next);
   };
-  const button = (delta: number, icon: SFSymbol, a11y: string) => (
+  const button = (delta: number, icon: IconName, a11y: string) => (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={fill(a11y, { label: label.toLowerCase() })}
+      accessibilityLabel={fill(a11y, { label: label.toLocaleLowerCase() })}
       accessibilityState={{ disabled: delta < 0 ? value <= min : value >= max }}
       hitSlop={6}
       onPress={() => step(delta)}
       style={styles.stepButton}
     >
-      <SymbolView name={icon} size={16} tintColor={c.ink} />
+      <Icon name={icon} size={16} />
     </Pressable>
   );
   return (
@@ -115,9 +95,6 @@ export function ToggleRow({ label, detail, value, onChange }: ToggleProps) {
 }
 
 const styles = StyleSheet.create({
-  section: { marginTop: space.xxl, marginBottom: -space.xs },
-  banner: { flexDirection: 'row', gap: 10, padding: space.md, borderRadius: 12, alignItems: 'flex-start' },
-  grow: { flex: 1 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: space.xs, borderRadius: radius.control, padding: 2 },
   stepButton: { width: 40, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   stepValue: { minWidth: 28, textAlign: 'center', fontWeight: '500', fontVariant: ['tabular-nums'] },

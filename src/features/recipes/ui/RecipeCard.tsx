@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { ALLERGEN_LABELS, EQUIPMENT_LABELS } from '@/features/household/labels';
 import { checkRecipe, type Reason } from '@/features/planner/filter';
 import type { WeekPlan } from '@/features/planner/plan';
 import { dayLabel } from '@/features/week/chains';
-import { fill, language, pick } from '@/lib/i18n';
+import { fill, language, pick, t } from '@/lib/i18n';
+import { Tag } from '@/ui/Tag';
 import { Body, Caption, H2 } from '@/ui/Text';
 import { fonts, space, useTheme } from '@/ui/theme';
 
@@ -12,7 +14,6 @@ import { boxCopy, labels } from '../copy';
 import { mainReason, reviewCount, thumbFor } from '../meta';
 import type { Household, Recipe } from '../types';
 import { PackThumb } from './illustrations';
-import { Tag } from './parts';
 
 type Props = { recipe: Recipe; household: Household; plan: WeekPlan | null; weekStart: string; first: boolean };
 
@@ -24,13 +25,13 @@ function reasonText(reason: Reason): string {
   const [, code = ''] = reason.detail.split(':');
   switch (reason.kind) {
     case 'allergen':
-      return lookup(l.allergens, code);
+      return lookup(pick(ALLERGEN_LABELS), code).toLocaleLowerCase();
     case 'diet':
       return lookup(l.dietConflict, code);
     case 'equipment':
-      return fill(s.equipment, { name: lookup(l.equipment, reason.detail).toLowerCase() });
+      return fill(s.equipment, { name: lookup(pick(EQUIPMENT_LABELS), reason.detail).toLocaleLowerCase() });
     case 'time':
-      return fill(s.time, { minutes: reason.detail.split('>')[0] ?? '' });
+      return t('common.minutes', { n: reason.detail.split('>')[0] ?? '' });
     case 'unverified':
       return s.unverified;
   }

@@ -2,10 +2,11 @@ import * as Clipboard from 'expo-clipboard';
 import { useState } from 'react';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
-import { NavBar, TextButton } from '@/features/recipes/ui/parts';
+import { TextButton } from '@/features/recipes/ui/parts';
 import { isAllowedUrl } from '@/lib/importApi';
-import { pick } from '@/lib/i18n';
+import { pick, t } from '@/lib/i18n';
 import { Button } from '@/ui/Button';
+import { NavBar } from '@/ui/NavBar';
 import { Caption, Title } from '@/ui/Text';
 import { radius, space, type as typography, useTheme } from '@/ui/theme';
 
@@ -51,7 +52,7 @@ export function SourceInput({ kind, value, onChange, onSubmit, onBack }: Props) 
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.fill}>
-      <NavBar left={<TextButton label={s.cancel} onPress={onBack} />} right={<TextButton label={s.pasteClipboard} onPress={paste} />} />
+      <NavBar left={<TextButton label={t('common.cancel')} onPress={onBack} />} right={<TextButton label={s.pasteClipboard} onPress={paste} />} />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Title>{link ? s.link : s.text}</Title>
         <SourceField link={link} value={value} onChange={onChange} onSubmit={submit} />

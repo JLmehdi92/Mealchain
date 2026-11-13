@@ -1,6 +1,5 @@
 export const PAYWALL_COPY = {
   en: {
-    close: 'Close',
     restore: 'Restore',
     title: 'Keep planning after this week',
     subtitle: 'Your first plan and list stay yours. Demidemi Pro plans every week from here.',
@@ -26,9 +25,13 @@ export const PAYWALL_COPY = {
     restored: 'Demidemi Pro is active again.',
     nothingToRestore: 'No subscription found for this Apple Account.',
     restoreError: "Couldn't reach the App Store. Try again in a moment.",
+    loading: 'Loading prices from the App Store',
+    pricesFallback: 'Prices load from the App Store.',
+    retry: 'Try again',
+    pendingTitle: 'Waiting for approval',
+    pending: 'Your purchase is waiting for approval in Ask to Buy. Demidemi Pro turns on as soon as it is approved.',
   },
   fr: {
-    close: 'Fermer',
     restore: 'Restaurer',
     title: 'Continuez après cette semaine',
     subtitle: 'Votre premier plan et sa liste restent à vous. Demidemi Pro compose toutes les semaines suivantes.',
@@ -54,5 +57,10 @@ export const PAYWALL_COPY = {
     restored: 'Demidemi Pro est de nouveau actif.',
     nothingToRestore: 'Aucun abonnement trouvé pour ce compte Apple.',
     restoreError: "Impossible de joindre l'App Store. Réessayez dans un instant.",
+    loading: "Chargement des prix depuis l'App Store",
+    pricesFallback: "Les prix s'affichent depuis l'App Store.",
+    retry: 'Réessayer',
+    pendingTitle: "En attente d'approbation",
+    pending: "Votre achat attend l'approbation de « Demander l'autorisation d'achat ». Demidemi Pro s'active dès qu'il est approuvé.",
   },
 };

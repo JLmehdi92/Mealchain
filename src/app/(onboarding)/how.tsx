@@ -1,15 +1,15 @@
 import { router } from 'expo-router';
-import { SymbolView, type SFSymbol } from 'expo-symbols';
 import { StyleSheet, View } from 'react-native';
 
-import { Banner } from '@/features/household/controls';
 import { t, type StringKey } from '@/lib/i18n';
+import { Banner } from '@/ui/Banner';
 import { Button } from '@/ui/Button';
+import { Icon, type IconName } from '@/ui/Icon';
 import { Screen } from '@/ui/Screen';
 import { H2, Secondary } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
-const STEPS: [SFSymbol, StringKey, StringKey][] = [
+const STEPS: [IconName, StringKey, StringKey][] = [
   ['book', 'onboarding.how.recipes.title', 'onboarding.how.recipes.body'],
   ['person.2', 'onboarding.how.people.title', 'onboarding.how.people.body'],
   ['checklist', 'onboarding.how.list.title', 'onboarding.how.list.body'],
@@ -22,7 +22,7 @@ export default function How() {
       {STEPS.map(([icon, title, body]) => (
         <View key={title} style={styles.step}>
           <View style={[styles.icon, { backgroundColor: c.surface }]}>
-            <SymbolView name={icon} size={22} tintColor={c.ink} />
+            <Icon name={icon} />
           </View>
           <View style={styles.grow}>
             <H2>{t(title)}</H2>

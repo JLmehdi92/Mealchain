@@ -1,9 +1,11 @@
 import { planWeek } from '@/features/planner/plan';
 import { replaceSlot } from '@/features/planner/swap';
 import { canPlanWeek } from '@/features/subscription/rules';
+import { trackOnce } from '@/lib/analytics';
 import { db } from '@/lib/db/client';
 import { setSetting } from '@/lib/db/repo';
 import { plans } from '@/lib/db/schema';
+import { report } from '@/lib/monitoring';
 import { getState, savePlan } from '@/lib/store';
 
 const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
@@ -20,6 +22,7 @@ export async function startPlan(pro: boolean): Promise<'planned' | 'paywall' | '
   await nextFrame();
   const { recipes } = getState();
   await savePlan(planWeek(recipes, household));
+  trackOnce('first_plan').catch(report);
   return 'planned';
 }
 

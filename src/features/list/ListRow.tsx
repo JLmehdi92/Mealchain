@@ -1,8 +1,8 @@
 import * as Haptics from 'expo-haptics';
-import { SymbolView } from 'expo-symbols';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';
 
+import { Icon } from '@/ui/Icon';
 import { Body, Caption, Mono } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
@@ -49,7 +49,7 @@ export function ListRow({ row, onToggle }: { row: Row; onToggle: (id: string) =>
       style={({ pressed }) => [styles.row, { borderTopColor: c.rule }, pressed && { backgroundColor: c.surface }]}
     >
       <View style={[styles.check, row.checked ? { backgroundColor: c.ink } : { borderColor: c.ink2 }]}>
-        {row.checked ? <SymbolView name="checkmark" size={13} weight="bold" tintColor={c.onInk} /> : null}
+        {row.checked ? <Icon name="checkmark" size={13} weight="bold" color={c.onInk} /> : null}
       </View>
       <View style={styles.grow}>
         <Body style={done}>{row.name}</Body>

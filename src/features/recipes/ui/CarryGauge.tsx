@@ -16,10 +16,9 @@ type Props = { gauge: Gauge; slot: number; slotDays: number[]; weekStart: string
 export function CarryGauge({ gauge, slot, slotDays, weekStart, market }: Props) {
   const c = useTheme();
   const s = pick(detailCopy);
-  const chain = { ingredientId: gauge.ingredientId, fromSlot: gauge.fromSlot, toSlots: [], amount: 0 };
   const day = (index: number, style: 'short' | 'long') => dayLabel(weekStart, slotDays[index] ?? 0, language(), style);
-  const thumb = chainThumb(chain, market);
-  const title = fill(s.usesRest, { day: day(gauge.fromSlot, 'long'), name: ingredientName(gauge.ingredientId).toLowerCase() });
+  const thumb = chainThumb(gauge.ingredientId, market);
+  const title = fill(s.usesRest, { day: day(gauge.fromSlot, 'long'), name: ingredientName(gauge.ingredientId).toLocaleLowerCase() });
   return (
     <View style={[styles.box, { backgroundColor: c.sheet, borderColor: c.rule }]} accessible accessibilityLabel={title}>
       <View style={styles.head}>
@@ -34,7 +33,7 @@ export function CarryGauge({ gauge, slot, slotDays, weekStart, market }: Props) 
       <View style={styles.legend}>
         {gauge.segments.map((segment, i) => (
           <Body key={i} style={[styles.mono, { color: c.ink2 }]}>
-            {`${day(segment.slot, 'short')} · ${segment.slot === slot ? `${s.here} ` : ''}${amountOf(chain, segment.amount, market)}`}
+            {`${day(segment.slot, 'short')} · ${segment.slot === slot ? `${s.here} ` : ''}${amountOf(gauge.ingredientId, segment.amount, market)}`}
           </Body>
         ))}
       </View>

@@ -1,6 +1,6 @@
 import { household, line, recipe } from './fixtures';
 import { planWeek } from './plan';
-import { alternativesFor, replaceSlot, unsafeSlots } from './swap';
+import { alternativesFor, replaceSlot, rescale, unsafeSlots } from './swap';
 
 const recipes = [
   recipe('a_gratin', [line('heavy_cream', 10, 'cl')]),
@@ -49,5 +49,13 @@ describe('unsafeSlots', () => {
     expect(unsafeSlots(plan, recipes, { ...h, allergens: ['milk'] })).toEqual([0, 1]);
     expect(unsafeSlots(replaceSlot(plan, 1, 'c_salad', recipes, h), recipes, { ...h, allergens: ['milk'] })).toEqual([0]);
     expect(unsafeSlots(plan, recipes.slice(2), h)).toEqual([0, 1]);
+  });
+});
+
+describe('rescale', () => {
+  it('keeps the chosen recipes and recomputes carries for a new head count', () => {
+    const next = rescale(plan, recipes, { ...h, people: 4 });
+    expect(next.slots).toEqual(plan.slots);
+    expect(next.carries.map((carry) => carry.amount)).not.toEqual(plan.carries.map((carry) => carry.amount));
   });
 });

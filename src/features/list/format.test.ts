@@ -61,32 +61,32 @@ describe('amountLabel', () => {
 
 describe('whyLine', () => {
   it('says the pack is all used, on which days', () => {
-    const line = whyLine({ ingredientId: 'heavy_cream', need: 200, leftover: 0, days: [2, 0, 2] }, 'fr', 'en');
+    const line = whyLine({ ingredientId: 'heavy_cream', need: 200, leftover: 0, days: [2, 0, 2], weekStart: '2026-11-09' }, 'fr', 'en');
     expect(line).toEqual({ text: 'All used · Mon, Wed', used: true, ratio: 1 });
-    expect(whyLine({ ingredientId: 'heavy_cream', need: 200, leftover: 0, days: [0] }, 'fr', 'fr').text).toBe('Tout utilisé · lun.');
+    expect(whyLine({ ingredientId: 'heavy_cream', need: 200, leftover: 0, days: [0], weekStart: '2026-11-09' }, 'fr', 'fr').text).toBe('Tout utilisé · lun.');
   });
 
   it('rounds pieces up and shows what is left', () => {
-    const line = whyLine({ ingredientId: 'egg', need: 3.36, leftover: 2.64, days: [4] }, 'fr', 'en');
+    const line = whyLine({ ingredientId: 'egg', need: 3.36, leftover: 2.64, days: [4], weekStart: '2026-11-09' }, 'fr', 'en');
     expect(line).toEqual({ text: '4 for Fri · 2 left over', used: false, ratio: 4 / 6 });
-    expect(whyLine({ ingredientId: 'egg', need: 3.36, leftover: 2.64, days: [4] }, 'fr', 'fr').text).toBe('4 pour ven. · reste 2');
+    expect(whyLine({ ingredientId: 'egg', need: 3.36, leftover: 2.64, days: [4], weekStart: '2026-11-09' }, 'fr', 'fr').text).toBe('4 pour ven. · reste 2');
   });
 
   it('treats a leftover under a whole piece as all used', () => {
-    expect(whyLine({ ingredientId: 'egg', need: 5.5, leftover: 0.5, days: [1] }, 'fr', 'en').used).toBe(true);
+    expect(whyLine({ ingredientId: 'egg', need: 5.5, leftover: 0.5, days: [1], weekStart: '2026-11-09' }, 'fr', 'en').used).toBe(true);
   });
 
   it('shows a measured leftover with its unit', () => {
-    const line = whyLine({ ingredientId: 'feta', need: 150, leftover: 50, days: [6, 5] }, 'fr', 'en');
+    const line = whyLine({ ingredientId: 'feta', need: 150, leftover: 50, days: [6, 5], weekStart: '2026-11-09' }, 'fr', 'en');
     expect(line.text).toBe('150 g for Sat, Sun · 50 g left over');
     expect(line.ratio).toBeCloseTo(0.75);
   });
 
   it('treats a leftover that rounds to nothing as all used', () => {
-    expect(whyLine({ ingredientId: 'feta', need: 199.7, leftover: 0.3, days: [0] }, 'fr', 'en').used).toBe(true);
+    expect(whyLine({ ingredientId: 'feta', need: 199.7, leftover: 0.3, days: [0], weekStart: '2026-11-09' }, 'fr', 'en').used).toBe(true);
   });
 
   it('handles an unknown ingredient', () => {
-    expect(whyLine({ ingredientId: 'nope', need: 1, leftover: 0, days: [0] }, 'fr', 'en').text).toBe('All used · Mon');
+    expect(whyLine({ ingredientId: 'nope', need: 1, leftover: 0, days: [0], weekStart: '2026-11-09' }, 'fr', 'en').text).toBe('All used · Mon');
   });
 });

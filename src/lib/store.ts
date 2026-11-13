@@ -37,11 +37,18 @@ export const useReady = () => useStore((s) => s.ready);
 export const useHousehold = () => useStore((s) => s.household);
 export const useRecipes = () => useStore((s) => s.recipes);
 export const usePlan = () => useStore((s) => s.plan);
+export const useWeekStart = () => useStore((s) => s.weekStart);
 
 export async function load() {
   const weekStart = weekStartOf(new Date());
   const [household, recipes, plan] = await Promise.all([repo.getHousehold(), repo.listRecipes(), repo.getPlan(weekStart)]);
   setState({ ready: true, household, recipes, plan, weekStart });
+}
+
+export async function refreshWeek() {
+  const weekStart = weekStartOf(new Date());
+  if (weekStart === state.weekStart) return;
+  setState({ weekStart, plan: await repo.getPlan(weekStart) });
 }
 
 export async function saveHousehold(household: Household) {

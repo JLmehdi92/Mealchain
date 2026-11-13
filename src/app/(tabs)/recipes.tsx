@@ -3,14 +3,16 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { boxCopy } from '@/features/recipes/copy';
-import { useIsPro } from '@/features/recipes/pro';
 import { BoxScene } from '@/features/recipes/ui/illustrations';
-import { Empty, IconButton, NavBar } from '@/features/recipes/ui/parts';
 import { RecipeList } from '@/features/recipes/ui/RecipeList';
 import { canAddRecipe } from '@/features/subscription/rules';
+import { useIsPro } from '@/features/subscription/useIsPro';
 import { pick } from '@/lib/i18n';
 import { useRecipes } from '@/lib/store';
 import { Button } from '@/ui/Button';
+import { Empty } from '@/ui/Empty';
+import { IconButton } from '@/ui/IconButton';
+import { NavBar } from '@/ui/NavBar';
 import { Title } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 

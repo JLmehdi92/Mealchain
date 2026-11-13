@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { FlatList, Modal, StyleSheet, View } from 'react-native';
 
 import { ingredientById } from '@/features/ingredients/catalog';
-import { IconButton, SearchField } from '@/features/recipes/ui/parts';
+import { SearchField } from '@/features/recipes/ui/parts';
 import type { RecipeIngredient } from '@/features/recipes/types';
-import { language, pick } from '@/lib/i18n';
+import { language, pick, t } from '@/lib/i18n';
+import { IconButton } from '@/ui/IconButton';
 import { Row } from '@/ui/Row';
 import { Caption, H2 } from '@/ui/Text';
 import { space, useTheme } from '@/ui/theme';
 
-import { importCopy, reviewCopy } from '../copy';
+import { reviewCopy } from '../copy';
 import { searchCatalog } from '../searchCatalog';
 
 type Props = { line: RecipeIngredient | null; onPick: (ingredientId: string) => void; onClose: () => void };
@@ -34,7 +35,7 @@ export function IngredientPicker({ line, onPick, onClose }: Props) {
             <H2>{s.pickerTitle}</H2>
             <Caption muted numberOfLines={2}>{line?.raw}</Caption>
           </View>
-          <IconButton name="xmark" label={pick(importCopy).close} onPress={close} />
+          <IconButton name="xmark" label={t('common.close')} onPress={close} />
         </View>
         <View style={styles.searchBox}>
           <SearchField label={s.pickerSearch} value={query} onChange={setQuery} />

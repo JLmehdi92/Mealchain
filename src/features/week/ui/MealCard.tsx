@@ -3,8 +3,9 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { Recipe } from '@/features/recipes/types';
 import { PackThumb } from '@/features/recipes/ui/illustrations';
-import { Icon, Tag } from '@/features/recipes/ui/parts';
-import { fill, pick } from '@/lib/i18n';
+import { pick, t } from '@/lib/i18n';
+import { Icon } from '@/ui/Icon';
+import { Tag } from '@/ui/Tag';
 import { Body, Caption } from '@/ui/Text';
 import { radius, space, useTheme } from '@/ui/theme';
 
@@ -72,8 +73,8 @@ export function MealCard({ recipe, pills, label, unsafe, body, onMeasure, onOpen
       <Body style={styles.name}>{recipe?.title ?? ''}</Body>
       {recipe?.totalMinutes ? (
         <View style={styles.meta}>
-          <Icon name="clock" size={13} color={c.ink2} />
-          <Caption muted>{fill(s.minutes, { minutes: recipe.totalMinutes })}</Caption>
+          <Icon name="clock" size={13} muted />
+          <Caption muted>{t('common.minutes', { n: recipe.totalMinutes })}</Caption>
         </View>
       ) : null}
       {unsafe ? <Tag kind="excluded" label={s.unsafe} /> : null}

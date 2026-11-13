@@ -3,10 +3,10 @@ import { StyleSheet, View } from 'react-native';
 
 import type { WeekPlan } from '@/features/planner/plan';
 import { BoxScene } from '@/features/recipes/ui/illustrations';
-import { Empty } from '@/features/recipes/ui/parts';
 import { fill, language, pick } from '@/lib/i18n';
-import { getState, useHousehold, usePlan, useRecipes } from '@/lib/store';
+import { useHousehold, usePlan, useRecipes, useWeekStart } from '@/lib/store';
 import { Button } from '@/ui/Button';
+import { Empty } from '@/ui/Empty';
 import { Secondary, Title } from '@/ui/Text';
 import { space } from '@/ui/theme';
 
@@ -31,7 +31,7 @@ export function WeekContent({ planning, onPlan, onSwap }: Props) {
   const plan = usePlan();
   const recipes = useRecipes();
   const household = useHousehold();
-  const { weekStart } = getState();
+  const weekStart = useWeekStart();
   if (!household) return null;
   if (planning) return <PlanLoading household={household} weekStart={weekStart} />;
   if (plan && plan.slots.length > 0) {

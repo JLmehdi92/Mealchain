@@ -3,7 +3,7 @@ import { act, renderHook } from '@testing-library/react-native';
 import { household, recipe } from '@/features/planner/fixtures';
 
 import * as repo from './db/repo';
-import { deleteRecipe, load, saveHousehold, savePlan, saveRecipe, useHousehold, usePlan, useReady, useRecipes } from './store';
+import { deleteRecipe, load, refreshWeek, saveHousehold, savePlan, saveRecipe, useHousehold, usePlan, useReady, useRecipes, useWeekStart } from './store';
 
 jest.mock('./db/client', () => ({ db: {} }));
 jest.mock('./db/repo');
@@ -55,4 +55,29 @@ it('saves the plan under the current week', async () => {
   await act(() => savePlan(plan));
   expect(mocked.savePlan).toHaveBeenCalledWith(expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/), plan);
   expect(await current(usePlan)).toEqual(plan);
+});
+
+describe('refreshWeek', () => {
+  afterEach(() => jest.useRealTimers());
+
+  it('moves to the new week and its plan when the week turns', async () => {
+    jest.useFakeTimers({ now: new Date(2026, 10, 15, 20), advanceTimers: true });
+    await load();
+    mocked.getPlan.mockResolvedValue(plan);
+    jest.setSystemTime(new Date(2026, 10, 16, 8));
+    await act(() => refreshWeek());
+    expect(mocked.getPlan).toHaveBeenLastCalledWith('2026-11-16');
+    expect(await current(useWeekStart)).toBe('2026-11-16');
+    expect(await current(usePlan)).toEqual(plan);
+  });
+
+  it('does nothing within the same week', async () => {
+    jest.useFakeTimers({ now: new Date(2026, 10, 10), advanceTimers: true });
+    await load();
+    mocked.getPlan.mockClear();
+    jest.setSystemTime(new Date(2026, 10, 12));
+    await act(() => refreshWeek());
+    expect(mocked.getPlan).not.toHaveBeenCalled();
+    expect(await current(useWeekStart)).toBe('2026-11-09');
+  });
 });

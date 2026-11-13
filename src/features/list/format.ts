@@ -1,9 +1,11 @@
+import type { Language } from '@/lib/i18n';
+
 import { ingredientById } from '../ingredients/catalog';
 import type { PackItem } from '../ingredients/packs';
 import type { Ingredient, Market } from '../ingredients/schema';
 import { toBase, type BaseUnit, type RecipeUnit } from '../ingredients/units';
+import { dayLabel } from '../week/chains';
 
-type Language = 'en' | 'fr';
 type Container = PackItem['pack']['container'];
 
 const CONTAINERS: Record<Language, Record<Container, [string, string]>> = {
@@ -20,10 +22,6 @@ const CONTAINERS: Record<Language, Record<Container, [string, string]>> = {
 };
 
 const UNIT_LABEL: Partial<Record<RecipeUnit, string>> = { fl_oz: 'fl oz' };
-const DAYS: Record<Language, string[]> = {
-  en: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  fr: ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'],
-};
 const WHY = {
   en: { used: 'All used · {days}', rest: '{need} for {days} · {left} left over' },
   fr: { used: 'Tout utilisé · {days}', rest: '{need} pour {days} · reste {left}' },
@@ -72,11 +70,11 @@ export function packLabel(items: PackItem[], ingredient: Ingredient, market: Mar
   return items.map((item) => onePack(item, ingredient, market, lang)).join(' + ');
 }
 
-type WhyInput = { ingredientId: string; need: number; leftover: number; days: number[] };
+type WhyInput = { ingredientId: string; need: number; leftover: number; days: number[]; weekStart: string };
 export type Why = { text: string; used: boolean; ratio: number };
 
-export function whyLine({ ingredientId, need, leftover, days }: WhyInput, market: Market, lang: Language): Why {
-  const dayList = [...new Set(days)].sort((a, b) => a - b).map((day) => DAYS[lang][day] ?? '').join(', ');
+export function whyLine({ ingredientId, need, leftover, days, weekStart }: WhyInput, market: Market, lang: Language): Why {
+  const dayList = [...new Set(days)].sort((a, b) => a - b).map((day) => dayLabel(weekStart, day, lang, 'short')).join(', ');
   const ingredient = ingredientById.get(ingredientId);
   const total = need + leftover;
   const pieces = ingredient?.baseUnit === 'piece';

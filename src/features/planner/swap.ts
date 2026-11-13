@@ -30,6 +30,9 @@ export function replaceSlot(plan: WeekPlan, slotIndex: number, recipeId: string,
   return toPlan(plan.slots, ids.with(slotIndex, recipeId), contextOf(plan, recipes, household));
 }
 
+export const rescale = (plan: WeekPlan, recipes: Recipe[], household: Household): WeekPlan =>
+  toPlan(plan.slots, recipeIds(plan), contextOf(plan, recipes, household));
+
 export function unsafeSlots(plan: WeekPlan, recipes: Recipe[], household: Household): number[] {
   const allowed = new Set(allowedIds(recipes, household));
   return plan.slots.flatMap((slot, i) => (allowed.has(slot.recipeId) ? [] : [i]));

@@ -1,4 +1,5 @@
 import { planWeek } from '@/features/planner/plan';
+import { trackOnce } from '@/lib/analytics';
 import { replaceSlot } from '@/features/planner/swap';
 import { db } from '@/lib/db/client';
 import { setSetting } from '@/lib/db/repo';
@@ -7,6 +8,8 @@ import { getState, savePlan } from '@/lib/store';
 import { household, line, recipe } from '../planner/fixtures';
 import { markPlanSeen, startPlan, swapSlot } from './actions';
 
+jest.mock('@/lib/analytics', () => ({ trackOnce: jest.fn(() => Promise.resolve()) }));
+jest.mock('@/lib/monitoring', () => ({ report: jest.fn() }));
 jest.mock('@/lib/db/client', () => ({ db: { select: jest.fn() } }));
 jest.mock('@/lib/db/repo', () => ({ setSetting: jest.fn() }));
 jest.mock('@/lib/store', () => ({ getState: jest.fn(), savePlan: jest.fn() }));
@@ -30,6 +33,7 @@ describe('startPlan', () => {
     await expect(startPlan(false)).resolves.toBe('planned');
     expect(planWeek).toHaveBeenCalledWith(recipes, home);
     expect(savePlan).toHaveBeenCalledWith(PLAN);
+    expect(trackOnce).toHaveBeenCalledWith('first_plan');
   });
 
   it('sends a free household to the paywall for a new week', async () => {

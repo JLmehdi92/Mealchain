@@ -1,7 +1,8 @@
+import type { Language } from '@/lib/i18n';
+
 import type { WeekPlan } from '../planner/plan';
 
 export type Chain = { ingredientId: string; fromSlot: number; toSlots: number[]; amount: number };
-type Language = 'en' | 'fr';
 
 const LOCALE: Record<Language, string> = { en: 'en-US', fr: 'fr-FR' };
 
