@@ -1,0 +1,105 @@
+appId: app.demidemi.ios
+name: App Store screenshots
+tags:
+  - store
+env:
+  APP_LANG: en
+  APP_LOCALE: en_US
+  TAB_WEEK: Week
+  TAB_RECIPES: Recipes
+  TAB_LIST: List
+  BACK: Back
+---
+- launchApp:
+    clearState: true
+    arguments:
+      AppleLanguages: "(${APP_LANG})"
+      AppleLocale: ${APP_LOCALE}
+- extendedWaitUntil:
+    visible:
+      id: welcome-start
+    timeout: 20000
+- waitForAnimationToEnd
+- takeScreenshot: 06-welcome
+- tapOn:
+    id: welcome-start
+- scrollUntilVisible:
+    element:
+      id: how-continue
+    direction: DOWN
+- tapOn:
+    id: how-continue
+- scrollUntilVisible:
+    element:
+      id: household-next
+    direction: DOWN
+- tapOn:
+    id: household-next
+- tapOn:
+    id: allergen-peanuts
+- tapOn:
+    id: allergen-nuts
+- waitForAnimationToEnd
+- takeScreenshot: 05-allergies
+- scrollUntilVisible:
+    element:
+      id: allergies-next
+    direction: DOWN
+- tapOn:
+    id: allergies-next
+- scrollUntilVisible:
+    element:
+      id: diets-save
+    direction: DOWN
+- tapOn:
+    id: diets-save
+- extendedWaitUntil:
+    visible:
+      id: open-settings
+    timeout: 10000
+- tapOn:
+    id: open-settings
+- scrollUntilVisible:
+    element:
+      id: load-samples
+    direction: DOWN
+- tapOn:
+    id: load-samples
+- tapOn: "OK"
+- tapOn: ${BACK}
+- tapOn:
+    id: plan-week
+- extendedWaitUntil:
+    visible:
+      id: meal-0
+    timeout: 30000
+- waitForAnimationToEnd
+- takeScreenshot: 01-plan
+- tapOn: ${TAB_LIST}
+- waitForAnimationToEnd
+- takeScreenshot: 02-list
+- tapOn: ${TAB_RECIPES}
+- waitForAnimationToEnd
+- takeScreenshot: 03-recipes
+- tapOn:
+    id: "recipe-.*"
+    index: 0
+- waitForAnimationToEnd
+- takeScreenshot: 04-recipe
+- tapOn:
+    id: recipe-back
+- tapOn: ${TAB_WEEK}
+- tapOn:
+    id: open-settings
+- scrollUntilVisible:
+    element:
+      id: subscription-pro
+    direction: DOWN
+- tapOn:
+    id: subscription-pro
+- extendedWaitUntil:
+    visible:
+      id: paywall-close
+    timeout: 10000
+- waitForAnimationToEnd
+- takeScreenshot: 07-paywall

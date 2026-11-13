@@ -161,6 +161,30 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit "$SMOKE"
 
+      - name: App Store screenshots (6.9-inch)
+        continue-on-error: true
+        run: |
+          export PATH="$RUNNER_TEMP/maestro/bin:$PATH"
+          MAX=$(xcrun simctl list devices available -j | node -e '
+            const d=JSON.parse(require("fs").readFileSync(0)).devices;
+            const all=Object.keys(d).filter(r=>r.includes("iOS")).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).flatMap(r=>d[r]);
+            const pick=all.filter(x=>x.name==="iPhone 17 Pro Max").pop()||all.filter(x=>x.name.endsWith("Pro Max")).pop();
+            console.error("Store simulator:",pick.name);console.log(pick.udid)')
+          xcrun simctl boot "$MAX"
+          xcrun simctl bootstatus "$MAX" -b
+          xcrun simctl install "$MAX" "$APP_PATH"
+          xcrun simctl status_bar "$MAX" override --time 9:41 --dataNetwork wifi --wifiMode active --wifiBars 3 \
+            --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+          shoot() {
+            local out="$GITHUB_WORKSPACE/build/store/$1"; shift
+            mkdir -p "$out/screenshots"
+            ( cd "$out" && maestro --device "$MAX" test "$@" "$GITHUB_WORKSPACE/e2e/maestro/store.yaml" --test-output-dir "$out" )
+            find "$out/screenshots" -name '*.png' -exec mv -n {} "$out/" \;
+          }
+          shoot en-US
+          shoot fr-FR -e APP_LANG=fr -e APP_LOCALE=fr_FR -e TAB_WEEK=Semaine -e TAB_RECIPES=Recettes -e TAB_LIST=Courses -e BACK=Retour
+          sips -g pixelWidth -g pixelHeight build/store/*/*.png
+
       - name: Stop video and collect crash logs
         if: always()
         run: |
@@ -175,6 +199,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/screens
+            build/store
             build/logs
             build/run.mp4
             build/maestro.xml

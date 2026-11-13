@@ -123,13 +123,9 @@ tableau 4. Le build App Store, lui, passe par EAS (étape 5) ; la CI ne signe ri
 Format exigé : iPhone 6,9 pouces (1320 × 2868), en-US et fr-FR, 3 à 10 par langue. La première montre le
 mécanisme : le plan de la semaine avec le fil vert entre le repas qui ouvre la crème et celui qui la finit.
 
-1. Simulateur iPhone 17 Pro Max, langue et région réglées (English/United States, puis Français/France).
-2. Build Release : `npx expo run:ios --configuration Release`.
-3. Accueil, puis Réglages › Load sample recipes / Charger des recettes d'exemple, puis créer le plan.
-4. `xcrun simctl status_bar booted override --time 9:41 --batteryState charged --batteryLevel 100`.
-5. Capturer : `xcrun simctl io booted screenshot store/screenshots/<langue>/01-plan.png`, puis la liste,
-   une recette importée avec son lien source, les allergies, le paywall.
-6. Les flux Maestro peuvent rejouer le parcours (`maestro test e2e/maestro --test-output-dir build/screens`,
-   simulateur en en-US) ; la CI publie ces captures en artefacts, à vérifier avant de les reprendre.
-7. Aucun texte marketing incrusté qui promette plus que l'app : pas de « sans allergène », pas d'image
-   générée par IA.
+La CI les produit à chaque run : étape « App Store screenshots (6.9-inch) », parcours `e2e/maestro/store.yaml`
+rejoué en en-US puis fr-FR sur un iPhone 17 Pro Max, barre d'état 9:41, recettes d'exemple, allergies
+arachides et fruits à coque. Résultat dans l'artefact, dossier `store/<langue>/`, numérotés dans l'ordre de la
+fiche (01-plan, 02-list, 03-recipes, 04-recipe, 05-allergies, 06-welcome, 07-paywall). Les relire avant de
+les déposer. Aucun texte marketing incrusté qui promette plus que l'app : pas de « sans allergène », pas
+d'image générée par IA.
