@@ -67,11 +67,11 @@ export function useShoppingList() {
   // Native tabs mount every tab at launch: the list only counts as seen once its tab is on screen.
   const focused = useIsFocused();
   useEffect(() => {
-    if (empty || !focused) return;
+    if (empty || !focused || listSeen) return;
     setSetting('first_list_seen', 'yes')
       .then(() => setListSeen(true))
       .catch(report);
-  }, [empty, focused]);
+  }, [empty, focused, listSeen]);
 
   return { sections, empty, toggle, shared, listSeen };
 }

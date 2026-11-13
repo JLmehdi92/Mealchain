@@ -11,7 +11,9 @@ const MAX_TITLE = 60;
 
 const headerOf = (line: string): Section | null => (INGREDIENTS.test(line) ? 'ingredients' : STEPS.test(line) ? 'steps' : null);
 const hasQuantity = (line: string) => parseIngredientLine(line).qty !== null;
-const isNoise = (line: string) => !/[aeiouyàâäéèêëîïôöùûüœæ]/i.test(line);
+const CLOCK = /^\d{1,2}:\d{2}$/;
+const isNoise = (line: string) =>
+  CLOCK.test(line) || (!/[aeiouyàâäéèêëîïôöùûüœæ]/i.test(line) && /[^\p{L}\p{N}\s]/u.test(line) && !hasQuantity(line));
 
 function titleOf(first: string | undefined): string | undefined {
   if (!first || first.length > MAX_TITLE || headerOf(first) || NUMBERED.test(first) || first.startsWith('#')) return undefined;
