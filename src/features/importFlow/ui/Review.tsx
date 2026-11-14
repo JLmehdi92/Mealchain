@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native
 import { ingredientById } from '@/features/ingredients/catalog';
 import { ALLERGEN_LABELS } from '@/features/household/labels';
 import { labels } from '@/features/recipes/copy';
-import { reviewCount } from '@/features/recipes/meta';
+import { allergenName, lineAllergens, reviewCount } from '@/features/recipes/meta';
 import type { Recipe, RecipeIngredient } from '@/features/recipes/types';
 import { TextButton } from '@/features/recipes/ui/parts';
 import { fill, language, pick, t } from '@/lib/i18n';
@@ -82,7 +82,13 @@ export function Review({ initial, onCancel, onSave }: Props) {
   const [nameMissing, setNameMissing] = useState(false);
   const count = reviewCount(finalize(draft));
   const household = useHousehold();
-  const clashes = recipeAllergens(draft).filter((a) => household?.allergens.includes(a)).map((a) => pick(ALLERGEN_LABELS)[a].toLocaleLowerCase());
+  const clashes = [
+    ...new Set(
+      draft.ingredients.flatMap((line) =>
+        lineAllergens(line).contains.filter((a) => household?.allergens.includes(a)).map((a) => allergenName(`${line.ingredientId ?? ''}:${a}`, language())),
+      ),
+    ),
+  ];
 
   const save = () => (draft.title.trim() === '' ? setNameMissing(true) : onSave(finalize(draft)));
 

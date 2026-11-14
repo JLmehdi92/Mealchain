@@ -110,6 +110,16 @@ onFlowComplete:
 - waitForAnimationToEnd
 - assertNotVisible: "Poulet sauté aux noix de cajou"
 - takeScreenshot: nadia-10-semaine-sans-noix-de-cajou
+- scrollUntilVisible:
+    element:
+      id: allergy-safe
+    direction: DOWN
+    visibilityPercentage: 50
+- takeScreenshot: nadia-11-fin-de-semaine-recap-allergies
+- scrollUntilVisible:
+    element:
+      id: open-settings
+    direction: UP
 
 - tapOn: "Courses"
 - waitForAnimationToEnd
