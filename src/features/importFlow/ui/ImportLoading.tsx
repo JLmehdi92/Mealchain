@@ -47,7 +47,7 @@ export function ImportLoading({ input, step, count, onCancel }: Props) {
   const c = useTheme();
   const source = sourceLine(input, s);
   const title = input.kind === 'url' ? s.readingPage : input.source === 'screenshot' ? s.readingShot : s.readingText;
-  const steps = [input.kind === 'url' ? s.foundPage : s.foundText, fill(s.count, { count }), s.matching, s.checking];
+  const steps = [input.kind === 'url' ? s.foundPage : s.foundText, count > 0 ? fill(s.count, { count }) : s.readingIngredients, s.matching, s.checking];
   return (
     <View style={styles.fill}>
       <NavBar left={<TextButton label={t('common.cancel')} onPress={onCancel} />} />
