@@ -1,6 +1,7 @@
 import { getState, saveRecipe } from '@/lib/store';
 
 import { recipe } from '../planner/fixtures';
+import { FREE_RECIPE_LIMIT } from '../subscription/rules';
 import { loadSamples } from './loadSamples';
 import { sampleRecipes } from './samples';
 
@@ -16,7 +17,7 @@ beforeEach(() => jest.clearAllMocks());
 describe('loadSamples', () => {
   it('saves every sample in the chosen language, dated now', async () => {
     box([]);
-    await expect(loadSamples('fr', NOW, false)).resolves.toEqual({ added: 8 });
+    await expect(loadSamples('fr', NOW, false)).resolves.toEqual({ added: sampleRecipes('fr').length });
     const expected = sampleRecipes('fr').map((sample) => ({ ...sample, createdAt: NOW }));
     expect(jest.mocked(saveRecipe).mock.calls.map(([saved]) => saved)).toEqual(expected);
   });
@@ -24,7 +25,7 @@ describe('loadSamples', () => {
   it('skips samples already in the box', async () => {
     const [first, second] = sampleRecipes('en');
     box([first!, second!]);
-    await expect(loadSamples('en', NOW, false)).resolves.toEqual({ added: 6 });
+    await expect(loadSamples('en', NOW, false)).resolves.toEqual({ added: sampleRecipes('en').length - 2 });
     expect(savedIds()).not.toContain(first!.id);
     expect(savedIds()).not.toContain(second!.id);
   });
@@ -33,6 +34,11 @@ describe('loadSamples', () => {
     box(sampleRecipes('en'));
     await expect(loadSamples('en', NOW, false)).resolves.toEqual({ added: 0 });
     expect(saveRecipe).not.toHaveBeenCalled();
+  });
+
+  it('counts samples toward the free limit, which an empty box can hold in full', () => {
+    expect(sampleRecipes('en').length).toBeLessThanOrEqual(FREE_RECIPE_LIMIT);
+    expect(sampleRecipes('fr').length).toBeLessThanOrEqual(FREE_RECIPE_LIMIT);
   });
 
   it('stops a free household at the recipe limit', async () => {
@@ -48,6 +54,6 @@ describe('loadSamples', () => {
 
   it('lets Pro add every sample past the limit', async () => {
     box(boxOf(15));
-    await expect(loadSamples('en', NOW, true)).resolves.toEqual({ added: 8 });
+    await expect(loadSamples('en', NOW, true)).resolves.toEqual({ added: sampleRecipes('en').length });
   });
 });

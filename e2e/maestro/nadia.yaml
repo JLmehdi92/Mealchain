@@ -87,7 +87,7 @@ onFlowComplete:
 - tapOn:
     id: load-samples
 - extendedWaitUntil:
-    visible: "8 recettes d'exemple ajoutées à votre boîte."
+    visible: "5 recettes d'exemple ajoutées à votre boîte."
     timeout: 10000
 - takeScreenshot: nadia-08-exemples-charges
 - tapOn:

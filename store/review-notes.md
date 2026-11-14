@@ -9,8 +9,9 @@ No account is needed. Demidemi is local-first: recipes, household settings, plan
 on the device, and every core feature works signed out.
 
 1. Launch and go through the welcome screens: household (people and dinners), allergies, diets.
-2. Open Settings (gear icon on the Week tab) › Load sample recipes. Eight recipes written for Demidemi are
-   added to the recipe box. They share packs on purpose (cream, coconut milk, spinach, eggs, feta, leeks).
+2. Open Settings (gear icon on the Week tab) › Load sample recipes. Seven recipes in English (five in French)
+   from the Wikibooks Cookbook / Wikilivres are added to the recipe box, shown word for word under
+   CC BY-SA 4.0, with the source and license credited on each recipe and in Terms of use › Recipe credits.
 3. Open the Week tab and create the plan. The green line links the meal that opens a pack to the meal that
    finishes it, with the amount carried over.
 4. Open the List tab: quantities are rounded to real packs, grouped by aisle.
@@ -26,8 +27,8 @@ The first screenshot shows the mechanism no other planner has: one opened pack s
 of the week ("The other 10 cl of cream goes into Wednesday's gratin"). The planner is our own deterministic
 algorithm that runs on the device. It chooses dinners from the user's own recipes so that what one recipe
 opens, another one finishes, then rounds the shopping list to the pack sizes sold in US or French shops.
-Demidemi ships no recipe catalogue of its own beyond the optional samples, and no AI-generated recipes or
-images.
+Demidemi ships no recipe catalogue of its own beyond the optional samples (community recipes from Wikibooks,
+CC BY-SA 4.0, credited), and no AI-generated recipes or images.
 
 ## Guideline 3.1.2: subscriptions
 

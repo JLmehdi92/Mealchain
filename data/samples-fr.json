@@ -1,0 +1,135 @@
+[
+ {
+  "title": "Potage aux lentilles corail",
+  "servings": null,
+  "totalMinutes": null,
+  "ingredients": [
+   "300 g de lentilles corail",
+   "2 l de bouillon de légumes",
+   "1 oignon",
+   "1 gousse d’ail",
+   "3 carottes",
+   "sel, poivre, thym, huile d’olive"
+  ],
+  "steps": [
+   "Rissoler l’oignon émincé, l’ail écrasé et les carottes en rondelles, leur ajouter les lentilles, le bouillon et l’assaisonnement. Porter à ébullition, cuire 30 min à la casserole à pression",
+   "Servir chaud avec des croûtons de pain"
+  ],
+  "sourceUrl": "https://fr.wikibooks.org/wiki/Livre_de_cuisine/Potage_aux_lentilles_corail",
+  "sourceName": "Wikilivres (Livre de cuisine)",
+  "license": "CC BY-SA 4.0",
+  "author": "Contributeurs de Wikilivres",
+  "confirmed": []
+ },
+ {
+  "title": "Soupe méditerranéenne de tomates",
+  "servings": null,
+  "totalMinutes": null,
+  "ingredients": [
+   "1 kg de tomates bien mûres, pelées, épépinées et coupées en morceaux",
+   "2 blancs de poireaux taillés en fines lamelles",
+   "2 gousses d'ail, 1 bouquet garni, 3 branches de basilic,",
+   "2 cuillères à soupe d'huile d'olive, sel de cuisine et poivre"
+  ],
+  "steps": [
+   "Dans une cocotte à fond épais, mettez les blancs de poireaux en fines lamelles, les tomates coupées en morceaux, le bouquet garni, ail, salez et poivrez, puis faites cuire à feu moyen, jusqu'à ce que cela commence à bouillir.",
+   "Ajoutez 1 litre d'eau et laissez cuire à feu moyen durant trois-quart d'heure.",
+   "Ajoutez dans la préparation 3 branches de basilic et 2 cuillers à soupe d'huile d'olive, puis mixez la préparation",
+   "Placez au réfrigérateur votre soupe pendant au moins 12 heures avant de servir."
+  ],
+  "sourceUrl": "https://fr.wikibooks.org/wiki/Livre_de_cuisine/Soupe_m%C3%A9diterran%C3%A9enne_de_tomates",
+  "sourceName": "Wikilivres (Livre de cuisine)",
+  "license": "CC BY-SA 4.0",
+  "author": "Contributeurs de Wikilivres",
+  "confirmed": [
+   "1 kg de tomates bien mûres, pelées, épépinées et coupées en morceaux",
+   "2 blancs de poireaux taillés en fines lamelles"
+  ]
+ },
+ {
+  "title": "Poêlée de champignons au fromage à l'ail et fines herbes",
+  "servings": 4,
+  "totalMinutes": null,
+  "ingredients": [
+   "250 g de champignons de saisons (cèpes, girolles, chanterelles... ou champignons de Paris)",
+   "100 g de fromage frais à l'ail et aux fines herbes (type Boursin)",
+   "1 échalote",
+   "20 cl de vin blanc sec",
+   "sel et poivre du moulin",
+   "100 g de lardons"
+  ],
+  "steps": [
+   "Dans la casserole faites revenir l'échalote.",
+   "Déglacez-la avec le vin blanc et incorporez le fromage à l'ail et aux fines herbes afin d'obtenir une sauce, salez et poivrez, et réservez-la.",
+   "Dans la poêle, faites revenir le mélange de champignons de saison, en fin de cuisson, rajoutez la sauce."
+  ],
+  "sourceUrl": "https://fr.wikibooks.org/wiki/Livre_de_cuisine/Po%C3%AAl%C3%A9e_de_champignons_au_fromage_%C3%A0_l'ail_et_fines_herbes",
+  "sourceName": "Wikilivres (Livre de cuisine)",
+  "license": "CC BY-SA 4.0",
+  "author": "Contributeurs de Wikilivres",
+  "confirmed": [
+   "250 g de champignons de saisons (cèpes, girolles, chanterelles... ou champignons de Paris)",
+   "100 g de fromage frais à l'ail et aux fines herbes (type Boursin)",
+   "sel et poivre du moulin"
+  ]
+ },
+ {
+  "title": "Soufflé au Bleu de Gex",
+  "servings": 6,
+  "totalMinutes": null,
+  "ingredients": [
+   "70 g de beurre",
+   "1/4 l de lait",
+   "40 g de farine",
+   "150 g de Bleu de Gex très persillé",
+   "5 œufs entiers",
+   "2 blancs d’œufs"
+  ],
+  "steps": [
+   "Préparer les six moules à soufflé pour la cuisson avec 20 g de beurre.",
+   "Faire fondre les 50 g de beurre restant dans un moule et incorporer la farine. Faire chauffer le tout jusqu'à obtenir un roux.",
+   "Ajouter le lait et porter à ébullition.",
+   "Retirer du feu et ajouter le Bleu de Gex petit à petit. Laisser fondre.",
+   "Séparer les jaunes des blancs d'œufs et mélanger les 5 jaunes un à un avec la préparation.",
+   "Monter les 7 blancs en neige et les incorporer à la préparation.",
+   "Garnir les moules de la préparation et mettre au four à 200°C.",
+   "Servir très chaud, aussitôt le soufflé monté."
+  ],
+  "sourceUrl": "https://fr.wikibooks.org/wiki/Livre_de_cuisine/Souffl%C3%A9_au_Bleu_de_Gex",
+  "sourceName": "Wikilivres (Livre de cuisine)",
+  "license": "CC BY-SA 4.0",
+  "author": "Contributeurs de Wikilivres",
+  "confirmed": [
+   "150 g de Bleu de Gex très persillé",
+   "2 blancs d’œufs"
+  ]
+ },
+ {
+  "title": "Tarte provençale",
+  "servings": null,
+  "totalMinutes": null,
+  "ingredients": [
+   "1 pâte brisée,",
+   "1 aubergine,",
+   "2 poivrons,",
+   "4 tomates,",
+   "olives noires,",
+   "herbes de Provence,",
+   "huile d'olive,",
+   "sel, poivre."
+  ],
+  "steps": [
+   "Coupez l'aubergine et la tomate en fines rondelles, les poivrons en lamelles.",
+   "Faites revenir l'aubergine et les poivrons dans un peu d'huile d'olive pendant 5 minutes.",
+   "Disposez la pâte dans un moule à tarte et piquez-la. Répartissez les légumes en rosace ou en couches, au choix.",
+   "Salez, poivrez au goût, et parsemez généreusement d'herbes de Provence.",
+   "Disposez enfin les olives sur la surface, puis arrosez d'un filet d'huile d'olive.",
+   "Enfournez pour environ 40 minutes, four préchauffé à 200°."
+  ],
+  "sourceUrl": "https://fr.wikibooks.org/wiki/Livre_de_cuisine/Tarte_proven%C3%A7ale",
+  "sourceName": "Wikilivres (Livre de cuisine)",
+  "license": "CC BY-SA 4.0",
+  "author": "Contributeurs de Wikilivres",
+  "confirmed": []
+ }
+]

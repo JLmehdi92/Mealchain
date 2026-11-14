@@ -34,14 +34,23 @@ describe('buildRecipe', () => {
   });
 
   it('flags missing quantities, unconvertible units and unknown ingredients', () => {
-    const recipe = buildRecipe({ ...raw, ingredients: ['sel, poivre', '1 can crushed tomatoes', '2 dragon fruits'] }, 'web', 'r2', 0);
+    const recipe = buildRecipe({ ...raw, ingredients: ['2 ou 3 œufs', '1 can crushed tomatoes', '2 dragon fruits'] }, 'web', 'r2', 0);
     expect(recipe.ingredients.map((i) => [i.ingredientId, i.status])).toEqual([
-      ['salt', 'needsReview'],
+      ['egg', 'needsReview'],
       ['crushed_tomatoes', 'needsReview'],
       [null, 'unmatched'],
     ]);
     expect(recipe.ingredients[2]).toMatchObject({ qty: 2, unit: 'piece' });
     expect(recipe.needsReview).toEqual(['ingredients']);
+  });
+
+  it('reads a bare spice or condiment line as to taste, but not a bare fresh ingredient', () => {
+    const recipe = buildRecipe({ ...raw, ingredients: ['Salt', 'Olive oil', 'Butter'] }, 'web', 'r4', 0);
+    expect(recipe.ingredients.map((i) => [i.raw, i.ingredientId, i.qty, i.status])).toEqual([
+      ['Salt', 'salt', null, 'matched'],
+      ['Olive oil', 'olive_oil', null, 'matched'],
+      ['Butter', 'butter', null, 'needsReview'],
+    ]);
   });
 
   it('never invents missing fields and lists them for review', () => {
