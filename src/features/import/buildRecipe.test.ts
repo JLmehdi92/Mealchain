@@ -45,12 +45,18 @@ describe('buildRecipe', () => {
   });
 
   it('reads a bare spice or condiment line as to taste, but not a bare fresh ingredient', () => {
-    const recipe = buildRecipe({ ...raw, ingredients: ['Salt', 'Olive oil', 'Butter'] }, 'web', 'r4', 0);
+    const recipe = buildRecipe({ ...raw, ingredients: ['Salt', 'Olive oil,', 'Butter'] }, 'web', 'r4', 0);
     expect(recipe.ingredients.map((i) => [i.raw, i.ingredientId, i.qty, i.status])).toEqual([
       ['Salt', 'salt', null, 'matched'],
-      ['Olive oil', 'olive_oil', null, 'matched'],
+      ['Olive oil,', 'olive_oil', null, 'matched'],
       ['Butter', 'butter', null, 'needsReview'],
     ]);
+  });
+
+  it('keeps a seasoning line listing several items for review, so a hidden allergen is never passed', () => {
+    const lines = ['Salt, sesame oil', 'Salt, pepper and fish sauce', 'Sel, poivre et sauce de poisson', 'Black pepper; soy sauce', 'Salt/pepper'];
+    const recipe = buildRecipe({ ...raw, ingredients: lines }, 'web', 'r5', 0);
+    expect(recipe.ingredients.map((i) => i.status)).toEqual(lines.map(() => 'needsReview'));
   });
 
   it('never invents missing fields and lists them for review', () => {

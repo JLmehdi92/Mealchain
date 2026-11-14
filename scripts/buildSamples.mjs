@@ -6,6 +6,8 @@ import { selectSamples } from './selectSamples.ts';
 
 // Each line below was read by a person and its catalog match checked against the source wording.
 const REVIEWED = new Set([
+  'sel, poivre.',
+  'sel, poivre, thym, huile d’olive',
   '1 top sirloin steak (also known as a top butt and center cut sirloin steak)',
   '300 ml chicken stock or water',
   '6 medium-sized potatoes',

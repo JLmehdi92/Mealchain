@@ -7,6 +7,6 @@ const WIKIS: Record<string, Attribution> = {
 };
 
 export function attributionFor(sourceUrl: string | null): Attribution | null {
-  if (!sourceUrl || !URL.canParse(sourceUrl)) return null;
-  return WIKIS[new URL(sourceUrl).hostname] ?? null;
+  const host = sourceUrl?.match(/^https?:\/\/([^/?#@:]+)(?:[/?#]|$)/i)?.[1]?.toLowerCase();
+  return (host && WIKIS[host]) || null;
 }

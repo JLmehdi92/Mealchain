@@ -19,7 +19,9 @@
   "sourceName": "Wikilivres (Livre de cuisine)",
   "license": "CC BY-SA 4.0",
   "author": "Contributeurs de Wikilivres",
-  "confirmed": []
+  "confirmed": [
+   "sel, poivre, thym, huile d’olive"
+  ]
  },
  {
   "title": "Soupe méditerranéenne de tomates",
@@ -130,6 +132,8 @@
   "sourceName": "Wikilivres (Livre de cuisine)",
   "license": "CC BY-SA 4.0",
   "author": "Contributeurs de Wikilivres",
-  "confirmed": []
+  "confirmed": [
+   "sel, poivre."
+  ]
  }
 ]

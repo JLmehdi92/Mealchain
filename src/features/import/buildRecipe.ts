@@ -22,6 +22,7 @@ const UNSAFE_QUALIFIER =
   /\b(?:free|sans|without|v[ée]gan|v[ée]g[ée]tal\w*|plant[- ]based|non[- ]dairy|lactose|gluten|substitut\w*|imitation|alternativ\w*|milk chocolate|peanut oil|nut milk)\b/i;
 
 const SEASONING_AISLES = new Set(['spices', 'condiments']);
+const SEVERAL_ITEMS = /[,;/&+]|\b(?:and|et|or|ou|with|avec)\b/i;
 
 function toIngredient(raw: string): RecipeIngredient {
   const { qty, unit, name } = parseIngredientLine(raw);
@@ -29,7 +30,7 @@ function toIngredient(raw: string): RecipeIngredient {
   if (!match) return { raw, qty, unit, ingredientId: null, status: 'unmatched' };
   const { ingredient, whole } = match;
   if (!whole || UNSAFE_QUALIFIER.test(raw)) return { raw, qty, unit, ingredientId: ingredient.id, status: 'needsReview' };
-  const usable = qty === null || unit === null ? isToTaste(raw) || SEASONING_AISLES.has(ingredient.aisle) : toBase(qty, unit, ingredient) !== null;
+  const usable = qty === null || unit === null ? isToTaste(raw) || (SEASONING_AISLES.has(ingredient.aisle) && !SEVERAL_ITEMS.test(raw.replace(/[\s,.;]+$/, ''))) : toBase(qty, unit, ingredient) !== null;
   return { raw, qty, unit, ingredientId: ingredient.id, status: usable ? 'matched' : 'needsReview' };
 }
 
