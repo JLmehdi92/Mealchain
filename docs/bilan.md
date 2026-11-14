@@ -74,52 +74,92 @@ Avant le dépôt, il reste aussi la recherche de marque « Demidemi » (USPTO, I
 - Le serveur d'import revérifie l'adresse après le téléchargement (réassociation DNS), mais un risque résiduel demeure.
 - Le Maestro 2.0.0 de la CI est épinglé par sa version, sans somme de contrôle vérifiée.
 
-## Tests utilisateurs (4 personas, 3 itérations)
+## Tests utilisateurs (4 personas, 5 tours)
 
-Notes sur 10, itérations 1 → 2 → 3 :
+Notes sur 10 au 5e tour, avec entre parenthèses celles du 1er tour :
 
 | | Facilité | Design | Animations | Confiance | Payer | En parler |
 |---|---|---|---|---|---|---|
-| Jess (US) | 6 → 6 → 7 | 8 → 7 → 8 | 4 → 4 → 6 | 5 → 4 → 6 | 3 → 3 → 4 | 4 → 4 → 5 |
-| Marcus (US) | 5 → 7 → 7 | 7 → 6 → 7 | 4 → 4 → 6 | 5 → 5 → 7 | 3 → 3 → 4 | 4 → 4 → 5 |
-| Nadia (FR) | 7 → 7 → 7 | 8 → 7 → 7 | 5 → 5 → 4 | 6 → 7 → 7 | 3 → 3 → 4 | 4 → 5 → 6 |
-| Théo (FR) | 6 → 6 → 7 | 7 → 7 → 7 | 4 → 4 → 4 | 5 → 5 → 5 | 2 → 2 → 2 | 3 → 4 → 3 |
+| Jess (US) | 6 (6) | 8 (8) | 6 (4) | 6 (5) | 4 (3) | 5 (4) |
+| Marcus (US) | 7 (5) | 7 (7) | 4 (4) | 5 (5) | 4 (3) | 5 (4) |
+| Nadia (FR) | 7 (7) | 7 (8) | 5 (5) | 7 (6) | 4 (3) | 5 (4) |
+| Théo (FR) | 7 (6) | 7 (7) | 5 (4) | 6 (5) | 2 (2) | 3 (3) |
 
-Objectif non atteint : au moins 8 en facilité, design et animations pour chacun, et 10 en confiance pour Nadia.
+L'objectif n'est pas atteint : il demandait au moins 8 en facilité, en design et en animations, et 10 en confiance pour Nadia. Plusieurs corrections faites après le 5e tour n'ont pas encore été notées :
+- l'en-tête du plan sans doublon ;
+- le bandeau d'import qui nomme l'ingrédient ;
+- le récapitulatif allergies visible en bas de la semaine ;
+- le bouton « Tout est juste » ;
+- l'équipement affiché dans les réglages ;
+- la suppression d'une recette ;
+- la synchronisation du foyer fiabilisée.
 
-### Corrigé grâce à eux
+### Ce que les tests ont fait corriger
 
-- Bugs bloquants :
-  - page « Unmatched Route » après l'onboarding ;
-  - bouton d'import caché par le clavier ;
+- **Bugs bloquants :**
+  - page « Unmatched Route » ;
+  - bouton d'import sous le clavier ;
   - paywall qui recouvrait le premier plan ;
-  - toucher d'un repas sans effet ;
+  - repas qui ne s'ouvrait pas ;
   - feuille « Changer ce repas » vide ;
-  - « 36 paquets de 1 » tomates cerises.
-- Partage de la liste en texte sans compte, et recettes d'exemple accessibles depuis la semaine vide.
-- Allergies :
-  - bandeau rouge à l'import ;
-  - « Jamais dans ce plan, allergie du foyer : … » sur la semaine ;
-  - étiquette qui nomme l'allergie du foyer.
-- Message honnête quand un site bloque la lecture, points à vérifier nommés, restes minuscules masqués, prix affichés sur le paywall de test.
+  - « 36 paquets de 1 » tomates cerises ;
+  - blancs de poulet non reconnus ;
+  - réglages qui affichaient « aucun équipement ».
+- **Allergies dites partout :** bandeau rouge à l'import qui nomme l'ingrédient, « Jamais dans ce plan » sur la semaine, récapitulatif vérifié en bas, étiquette « Écartée : noix de cajou (fruits à coque), allergie du foyer ».
+- **Usage :**
+  - partage de la liste en texte sans compte ;
+  - recettes d'exemple dès la semaine vide ;
+  - alerte de variété avant de composer ;
+  - unités lisibles (« 10 gousses ») ;
+  - quantités de la recette étiquetées (« Recette d'origine / Pour vos 2 ») ;
+  - suppression d'une recette ;
+  - paywall seulement aux limites du gratuit, avec la valeur de la semaine.
+- **Vie :** cascade du plan, célébration « Votre semaine est prête », squelette qui respire, onboarding par étapes, repas remplacé qui s'allume, annonces VoiceOver.
 
-### Restant, par ordre d'impact (recommandations)
+### Pourquoi les notes plafonnent (recommandations)
 
-1. **Animations (4 à 6/10).** Il manque :
-   - un retour visible dès « Planifier ma semaine » ;
-   - une célébration « semaine prête » (haptique `success` et les deux moitiés de la marque qui se rejoignent, déjà prévues dans la DA) ;
-   - l'entrée du contenu de l'onboarding ;
-   - un toast à la place de l'alerte système des recettes d'exemple.
+1. **Animations (4 à 6).** Les preuves sont des images prises toutes les 0,25 s sur un simulateur de CI très lent : un ressort de moins de 250 ms, l'haptique et la fluidité réelle ne s'y voient pas. Il faut les juger sur un vrai iPhone avant d'investir davantage.
+2. **Payer (2 à 4).** Les testeurs veulent voir des économies chiffrées en euros ou en dollars. Il faudrait de vraies données de prix (V2) : aucun montant n'est inventé. Théo demande aussi un prix étudiant : c'est une décision commerciale.
+3. **Variété.** Avec 2 recettes pour 5 dîners, la répétition est inévitable. L'app le dit avant de composer et propose les recettes d'exemple.
+4. **Sites qui bloquent la lecture** (Taste of Home) : l'app propose de coller le texte. Une extension de partage iOS depuis Safari réglerait le cas (V2).
 
-   À juger sur un vrai iPhone : le simulateur de la CI, très lent, et la capture à 4 images par seconde sous-estiment le mouvement.
-2. **Variété avec peu de recettes.** Jess et Théo, avec 2 recettes, mangent le même plat 3 fois. Pistes :
-   - prévenir avant de composer (« ajoutez au moins N recettes ») ;
-   - proposer les recettes d'exemple en complément.
-3. **Unités sans libellé** dans la liste : « Ail 10 », « Poireau 1 ». Il faut « 10 gousses », « 1 poireau ».
-4. **Confiance de Nadia (7/10)** :
-   - nommer l'ingrédient en cause (« Écartée : noix de cajou (fruits à coque) ») ;
-   - un récapitulatif « aucun ingrédient de vos allergies dans ce plan » en bas de la semaine ;
-   - expliquer l'écart entre la quantité dans le plan (ce repas) et dans la liste (toute la semaine) ;
-   - à terme, des allergies par personne.
-5. **Paywall.** Avec la vraie clé RevenueCat, il affiche les deux offres et l'essai. Il reste à décider s'il doit apparaître dès que le premier plan et la liste ont été vus (règle actuelle, conforme au brief) ou plus tard.
-6. **Le simulateur de la CI démarre parfois en anglais**, avant que le robot force la langue : c'est un artefact des tests, pas de l'app.
+## Captures App Store
+
+6,9 pouces (1320 × 2868), barre d'état à 9:41, dans `store/screenshots/en-US/` et `store/screenshots/fr-FR/` (6 chacune) :
+1. le plan de la semaine ;
+2. la liste en paquets ;
+3. les recettes ;
+4. une fiche recette ;
+5. les allergies ;
+6. l'accueil.
+
+La capture du paywall est à refaire avec RevenueCat branché : en version de test, elle affiche « achats indisponibles ».
+
+## Audits finaux
+
+- **Sécurité :** aucun point critique ni élevé. Les points moyens et bas sont corrigés :
+  - suppression de compte rejouable ;
+  - redirections revalidées ;
+  - limites de taille en base ;
+  - interrupteur des statistiques, désactivé par défaut en français ;
+  - nettoyage du jeton Apple.
+- **Ponytail :** les 4 points « à corriger » sont faits :
+  - une allergie retirée ressuscitée par la synchro du foyer ;
+  - des coches écrasées à l'aveugle ;
+  - la table `shopping_items` sans plafond ;
+  - une limite d'import différente entre l'app et le serveur.
+
+  Les points « devrait être corrigé » sont faits aussi :
+  - suppression d'une recette ;
+  - table inutilisée retirée ;
+  - doublon fusionné ;
+  - double toucher sur la liste.
+- **Contrôles :** typecheck 0, lint 0 avertissement, 677 tests, 19 tests RLS, expo-doctor 20/20, 4 parcours Maestro verts sur iPhone 17 Pro Max.
+
+## Points ouverts
+
+- Bouton « Appliquer le retrait » quand un autre membre du foyer retire une allergie : le retrait est détecté et gardé par prudence, mais pas encore proposé à l'écran.
+- Une coche plus ancienne refusée par le serveur n'est corrigée sur l'appareil qu'à la synchronisation suivante.
+- La semaine gratuite se récupère en effaçant l'app (`docs/shortcuts.md`).
+- `MAESTRO_SHA256` à renseigner dans la CI.
+- Les règles serveur (triggers, limites, suppression de compte) n'ont été testées que sur une base locale, pas encore sur un projet Supabase réel.
