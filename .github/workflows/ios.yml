@@ -84,7 +84,7 @@ jobs:
             const d=JSON.parse(require("fs").readFileSync(0)).devices;
             const ios=Object.keys(d).filter(r=>r.includes("iOS")).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
             const all=ios.flatMap(r=>d[r].map(x=>({...x,r})));
-            const pick=all.filter(x=>x.name==="iPhone 17 Pro").pop()||all.filter(x=>x.name.startsWith("iPhone")).pop();
+            const pick=all.filter(x=>x.name==="iPhone 17 Pro Max").pop()||all.filter(x=>x.name.endsWith("Pro Max")).pop()||all.filter(x=>x.name.startsWith("iPhone")).pop();
             console.error("Simulator:",pick.name,pick.r);console.log(pick.udid)')
           echo "UDID=$UDID" >> "$GITHUB_ENV"
           xcrun simctl boot "$UDID"
@@ -167,18 +167,8 @@ jobs:
         continue-on-error: true
         run: |
           export PATH="$RUNNER_TEMP/maestro/bin:$PATH"
-          export MAESTRO_DRIVER_STARTUP_TIMEOUT=300000
-          # The CI Mac is too slow for two simulators: stop the first one (and its recording) before booting the 6.9-inch one.
-          [ -n "$VIDEO_PID" ] && kill -INT "$VIDEO_PID" && sleep 3 || true
-          xcrun simctl shutdown "$UDID" || true
-          MAX=$(xcrun simctl list devices available -j | node -e '
-            const d=JSON.parse(require("fs").readFileSync(0)).devices;
-            const all=Object.keys(d).filter(r=>r.includes("iOS")).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).flatMap(r=>d[r]);
-            const pick=all.filter(x=>x.name==="iPhone 17 Pro Max").pop()||all.filter(x=>x.name.endsWith("Pro Max")).pop();
-            console.error("Store simulator:",pick.name);console.log(pick.udid)')
-          xcrun simctl boot "$MAX"
-          xcrun simctl bootstatus "$MAX" -b
-          xcrun simctl install "$MAX" "$APP_PATH"
+          # The whole job runs on the 6.9-inch simulator, so the store screenshots reuse it as is.
+          MAX="$UDID"
           xcrun simctl status_bar "$MAX" override --time 9:41 --dataNetwork wifi --wifiMode active --wifiBars 3 \
             --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
           shoot() {
