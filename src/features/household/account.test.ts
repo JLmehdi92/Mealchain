@@ -1,3 +1,5 @@
+import { FunctionsHttpError } from '@supabase/supabase-js';
+
 import { getSetting, setSetting } from '@/lib/db/repo';
 import { getState } from '@/lib/store';
 
@@ -13,6 +15,7 @@ let mockMembers: unknown = [];
 let mockProfile: unknown = {};
 let mockUpdateError: Error | null = null;
 const mockInvoke = jest.fn((_name: string, _options?: unknown) => Promise.resolve({ data: null, error: null as Error | null }));
+const mockGetUser = jest.fn(() => Promise.resolve({ data: { user: null as { id: string } | null }, error: new Error('gone') as Error | null }));
 const mockSignOut = jest.fn((_options?: unknown) => Promise.resolve({ error: null as Error | null }));
 
 jest.mock('expo-apple-authentication', () => ({ signInAsync: () => Promise.resolve({ identityToken: 'token', authorizationCode: 'apple-code' }) }));
@@ -26,6 +29,7 @@ jest.mock('@/lib/supabase', () => {
         signInWithIdToken: () => Promise.resolve({ data: { user: { id: 'user-1' } }, error: null }),
         getSession: () => Promise.resolve({ data: { session: {} } }),
         signOut: (options?: unknown) => mockSignOut(options),
+        getUser: () => mockGetUser(),
       },
       from: (table: string) => (table === 'households' ? households : members),
       rpc: (name: string, args?: unknown) => mockRpc(name, args),
@@ -138,6 +142,19 @@ describe('deleteAccount', () => {
   it('keeps local data when the server refuses, so the user can retry', async () => {
     mockInvoke.mockResolvedValueOnce({ data: null, error: new Error('500') });
     await expect(deleteAccount()).rejects.toThrow('500');
+    expect(wipeAll).not.toHaveBeenCalled();
+  });
+
+  it('treats a 401 as an account already deleted when the session is gone too, and wipes the device', async () => {
+    mockInvoke.mockResolvedValueOnce({ data: null, error: new FunctionsHttpError(new Response(null, { status: 401 })) });
+    await deleteAccount();
+    expect(wipeAll).toHaveBeenCalled();
+  });
+
+  it('keeps local data on a 401 while the user still exists', async () => {
+    mockInvoke.mockResolvedValueOnce({ data: null, error: new FunctionsHttpError(new Response(null, { status: 401 })) });
+    mockGetUser.mockResolvedValueOnce({ data: { user: { id: 'user-1' } }, error: null });
+    await expect(deleteAccount()).rejects.toBeInstanceOf(FunctionsHttpError);
     expect(wipeAll).not.toHaveBeenCalled();
   });
 

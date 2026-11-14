@@ -13,6 +13,7 @@ import { SharingSection } from '@/features/household/SharingSection';
 import { loadSamples } from '@/features/recipes/loadSamples';
 import { SubscriptionSection } from '@/features/subscription/SubscriptionSection';
 import { useIsPro } from '@/features/subscription/useIsPro';
+import { setStatsEnabled, statsEnabled } from '@/lib/analytics';
 import { getSetting, setSetting } from '@/lib/db/repo';
 import { fill, language, pick, t } from '@/lib/i18n';
 import { report } from '@/lib/monitoring';
@@ -72,10 +73,12 @@ function SamplesSection() {
 function PrivacySection() {
   const copy = pick(SETTINGS_COPY);
   const [ask, setAsk] = useState(true);
+  const [stats, setStats] = useState(false);
   useEffect(() => {
     getSetting('ai_consent')
       .then((value) => setAsk(value !== 'yes'))
       .catch(report);
+    statsEnabled().then(setStats).catch(report);
   }, []);
   const chevron = <Icon name="chevron.right" size={14} muted />;
   const change = (value: boolean) => {
@@ -87,6 +90,16 @@ function PrivacySection() {
       <SectionLabel>{copy.privacy}</SectionLabel>
       <Group>
         <ToggleRow label={copy.askAi} detail={copy.askAiDetail} value={ask} onChange={change} />
+        <ToggleRow
+          testID="usage-stats"
+          label={copy.stats}
+          detail={copy.statsDetail}
+          value={stats}
+          onChange={(value) => {
+            setStats(value);
+            setStatsEnabled(value).catch(report);
+          }}
+        />
         <Row label={copy.terms} trailing={chevron} onPress={() => router.push('/legal/terms')} />
         <Row testID="privacy-policy" label={copy.privacyPolicy} trailing={chevron} onPress={() => router.push('/legal/privacy')} />
         <Row testID="allergy-notice" label={copy.allergyNotice} trailing={chevron} onPress={() => router.push('/legal/allergies')} />

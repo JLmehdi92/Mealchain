@@ -13,6 +13,7 @@ type RemoteBody = { kind: 'url'; url: string } | { kind: 'text'; text: string; c
 
 const MAX_BYTES = 3_000_000;
 const TIMEOUT_MS = 10_000;
+const MAX_REDIRECTS = 3;
 const line = z.string().max(500);
 
 const responseSchema = z.object({
@@ -51,9 +52,16 @@ async function download(url: URL): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const res = await fetch(url.toString(), { headers: { accept: 'text/html' }, signal: controller.signal });
-    if (!res.ok || !isAllowedUrl(res.url || url.toString())) return null;
-    return await readCapped(res.body);
+    let target: URL | null = url;
+    for (let hop = 0; target && hop <= MAX_REDIRECTS; hop += 1) {
+      const res: Response = await fetch(target.toString(), { headers: { accept: 'text/html' }, redirect: 'manual', signal: controller.signal });
+      if (res.status >= 300 && res.status < 400) {
+        target = isAllowedUrl(new URL(res.headers.get('location') ?? '', target).toString());
+        continue;
+      }
+      return res.ok ? await readCapped(res.body) : null;
+    }
+    return null;
   } catch {
     return null;
   } finally {

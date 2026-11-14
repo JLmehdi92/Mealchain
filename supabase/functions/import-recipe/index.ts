@@ -63,8 +63,9 @@ async function fetchPage(raw: string): Promise<string | null> {
       continue;
     }
     const html = res.ok && res.body ? await readCapped(res.body) : null;
-    // Why: fetch resolves DNS again; a rebinding host could have pointed it at a private address,
-    // so the body is dropped unless the host still resolves only to public addresses afterwards.
+    // Why: fetch resolves DNS itself. This re-check only drops the body of a host that now resolves
+    // to a private address; the request has already been sent, and a host alternating its answers
+    // passes both checks (see docs/shortcuts.md).
     return html !== null && (await resolvesPublic(target.hostname)) ? html : null;
   }
   return null;

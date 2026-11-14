@@ -196,3 +196,19 @@ test('Apple tokens and household release are out of reach of app clients', async
   await assert.rejects(as(db, ALICE, 'select public.release_households($1)', [BOB]), /permission denied/);
   await assert.rejects(as(db, null, 'select public.release_households($1)', [BOB]), /permission denied/);
 });
+
+test('oversized recipe data and household profiles are refused', async () => {
+  const db = await setup();
+  const id = await home(db, ALICE);
+  const big = JSON.stringify({ blob: 'x'.repeat(200_000) });
+  await assert.rejects(as(db, ALICE, `insert into public.recipes (id, household_id, data) values (gen_random_uuid(), $1, $2)`, [id, big]), /check constraint/);
+  await assert.rejects(as(db, ALICE, 'update public.households set profile = $2 where id = $1', [id, big]), /check constraint/);
+  await assert.rejects(as(db, ALICE, 'select public.create_household($1)', [big]), /check constraint/);
+});
+
+test('a user can own at most five households', async () => {
+  const db = await setup();
+  for (let i = 0; i < 5; i += 1) await home(db, ALICE);
+  await assert.rejects(home(db, ALICE), /household limit/);
+  await home(db, BOB);
+});

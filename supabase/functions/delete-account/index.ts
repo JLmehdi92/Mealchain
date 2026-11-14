@@ -7,15 +7,24 @@ const json = (status: number, body: unknown) =>
 
 async function revokeApple(admin: SupabaseClient, userId: string): Promise<boolean> {
   const config = appleConfig((name) => Deno.env.get(name));
-  if (!config) return true;
+  if (!config) {
+    console.error('delete-account: Apple config missing, token not revoked');
+    return true;
+  }
   const { data, error } = await admin.from('apple_tokens').select('refresh_token').eq('user_id', userId).maybeSingle();
   if (error) return false;
-  return !data || (await revokeToken(config, data.refresh_token).catch(() => false));
+  if (!data) return true;
+  if (!(await revokeToken(config, data.refresh_token).catch(() => false))) return false;
+  await admin.from('apple_tokens').delete().eq('user_id', userId);
+  return true;
 }
 
 async function deleteSubscriber(userId: string): Promise<boolean> {
   const key = Deno.env.get('REVENUECAT_SECRET_KEY');
-  if (!key) return true;
+  if (!key) {
+    console.error('delete-account: REVENUECAT_SECRET_KEY missing, subscriber not deleted');
+    return true;
+  }
   const res = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`, {
     method: 'DELETE',
     headers: { authorization: `Bearer ${key}` },

@@ -11,6 +11,7 @@ globalThis.fetch = fetchMock;
 const invoke = jest.mocked(supabase!.functions.invoke);
 const page = (body: string, init: { ok?: boolean; url?: string } = {}) =>
   fetchMock.mockResolvedValue({ ok: init.ok ?? true, url: init.url ?? 'https://example.com/dal', body: new Response(body).body });
+const redirect = (location: string) => ({ ok: false, status: 302, headers: new Headers({ location }) });
 const httpError = (status: number, body: unknown) =>
   new FunctionsHttpError(new Response(JSON.stringify(body), { status }));
 
@@ -27,9 +28,24 @@ describe('readPage', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('refuses a page redirected to a private address', async () => {
-    page(PAGE, { url: 'https://10.0.0.1/dal' });
+  it('refuses a page redirected to a private address without fetching it', async () => {
+    fetchMock.mockResolvedValueOnce(redirect('https://10.0.0.1/dal'));
     expect(await readPage('https://example.com/dal')).toEqual({ error: 'unreachable' });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith('https://example.com/dal', expect.objectContaining({ redirect: 'manual' }));
+  });
+
+  it('follows up to three public redirects, resolving relative locations', async () => {
+    page(PAGE);
+    fetchMock.mockResolvedValueOnce(redirect('/a')).mockResolvedValueOnce(redirect('https://example.org/b')).mockResolvedValueOnce(redirect('/c'));
+    expect(await readPage('https://example.com/dal')).toMatchObject({ recipe: { title: 'Dal' } });
+    expect(fetchMock.mock.calls.map(([u]) => u)).toEqual(['https://example.com/dal', 'https://example.com/a', 'https://example.org/b', 'https://example.org/c']);
+  });
+
+  it('gives up after a fourth redirect', async () => {
+    fetchMock.mockResolvedValue(redirect('/loop'));
+    expect(await readPage('https://example.com/dal')).toEqual({ error: 'unreachable' });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
   it('reports an unreachable page', async () => {

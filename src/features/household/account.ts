@@ -1,3 +1,4 @@
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { z } from 'zod';
 
@@ -102,10 +103,16 @@ export async function joinHousehold(code: string): Promise<void> {
   await adoptRemoteProfile(z.string().parse(data));
 }
 
+async function alreadyDeleted(error: unknown): Promise<boolean> {
+  if (!(error instanceof FunctionsHttpError) || !(error.context instanceof Response) || error.context.status !== 401) return false;
+  const { data, error: userError } = await client().auth.getUser();
+  return !!userError || !data.user;
+}
+
 export async function deleteAccount(): Promise<void> {
   if (await signedIn()) {
     const { error } = await client().functions.invoke('delete-account', { method: 'POST' });
-    if (error) throw error;
+    if (error && !(await alreadyDeleted(error))) throw error;
   }
   try {
     const result = await supabase?.auth.signOut({ scope: 'local' });

@@ -1,9 +1,14 @@
 import PostHog from 'posthog-react-native';
 import Storage from 'expo-sqlite/kv-store';
 
+import type { Market } from '@/features/ingredients/schema';
+
 import { getSetting, setSetting } from './db/repo';
+import { market } from './i18n';
 
 type FunnelEvent = 'app_installed' | 'first_import' | 'first_plan' | 'paywall_viewed' | 'trial_started';
+
+export const statsDefault = (m: Market) => m !== 'fr';
 
 const key = process.env.EXPO_PUBLIC_POSTHOG_KEY;
 const client = key
@@ -13,6 +18,7 @@ const client = key
       captureAppLifecycleEvents: false,
       personProfiles: 'never',
       disableGeoip: true,
+      defaultOptIn: statsDefault(market()),
     })
   : null;
 
@@ -35,4 +41,14 @@ export async function trackOnce(event: 'first_import' | 'first_plan') {
   if (await getSetting(key)) return;
   await setSetting(key, 'yes');
   track(event);
+}
+
+export async function statsEnabled(): Promise<boolean> {
+  const stored = await getSetting('analytics');
+  return stored ? stored === 'on' : statsDefault(market());
+}
+
+export async function setStatsEnabled(on: boolean) {
+  await setSetting('analytics', on ? 'on' : 'off');
+  await (on ? client?.optIn() : client?.optOut());
 }

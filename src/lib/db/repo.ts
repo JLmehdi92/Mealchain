@@ -10,6 +10,7 @@ import { decode, householdSchema, planSchema, recipeSchema } from './schemas';
 
 type SettingKey =
   | 'ai_consent'
+  | 'analytics'
   | 'onboarded'
   | 'first_plan_seen'
   | 'installed'

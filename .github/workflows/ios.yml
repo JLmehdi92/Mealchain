@@ -18,6 +18,8 @@ jobs:
     timeout-minutes: 90
     env:
       MAESTRO_VERSION: 2.0.0
+      # Empty until the SHA-256 of the release zip is pinned (docs/shortcuts.md): the step then only prints it.
+      MAESTRO_SHA256: ""
       # No Sentry auth token in CI: the Sentry Xcode build phase would otherwise fail the build.
       SENTRY_DISABLE_AUTO_UPLOAD: "true"
       APP_NAME: Demidemi
@@ -124,7 +126,11 @@ jobs:
         run: |
           curl -fsSL --retry 5 --retry-all-errors --retry-delay 15 -o "$RUNNER_TEMP/maestro.zip" \
             "https://github.com/mobile-dev-inc/maestro/releases/download/cli-$MAESTRO_VERSION/maestro.zip"
-          shasum -a 256 "$RUNNER_TEMP/maestro.zip"
+          if [ -n "$MAESTRO_SHA256" ]; then
+            echo "$MAESTRO_SHA256  $RUNNER_TEMP/maestro.zip" | shasum -a 256 -c || exit 1
+          else
+            shasum -a 256 "$RUNNER_TEMP/maestro.zip"
+          fi
           unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP"
           export PATH="$RUNNER_TEMP/maestro/bin:$PATH"
           set +e
