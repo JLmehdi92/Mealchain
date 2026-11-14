@@ -24,7 +24,7 @@ If you want to test it, any Apple Account works; no demo credentials are require
 ## Guideline 4.3: what is original
 
 The first screenshot shows the mechanism no other planner has: one opened pack split across several meals
-of the week ("The other 10 cl of cream goes into Wednesday's gratin"). The planner is our own deterministic
+of the week (for example, the rest of an opened pack is used in a later dinner). The planner is our own deterministic
 algorithm that runs on the device. It chooses dinners from the user's own recipes so that what one recipe
 opens, another one finishes, then rounds the shopping list to the pack sizes sold in US or French shops.
 Demidemi ships no recipe catalogue of its own beyond the optional samples (community recipes from Wikibooks,
