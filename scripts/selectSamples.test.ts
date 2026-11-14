@@ -7,9 +7,6 @@ const base: Candidate = {
   ingredients: ['2 chicken breasts', '2 leeks', '1 tbsp olive oil', 'Salt'],
   steps: ['Cook the chicken and leeks in a skillet.'],
   sourceUrl: 'https://en.wikibooks.org/wiki/Cookbook:Test',
-  sourceName: 'Wikibooks',
-  license: 'CC BY-SA 4.0',
-  author: 'Wikibooks contributors',
 };
 const none = new Set<string>();
 const sample = (over: Partial<Candidate>) => eligible({ ...base, ...over }, none) ?? (() => { throw new Error('not eligible'); })();

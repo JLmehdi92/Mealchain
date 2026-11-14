@@ -41,8 +41,8 @@ if (!candidatesDir) throw new Error('usage: npx tsx scripts/buildSamples.mjs <ca
 for (const language of ['en', 'fr']) {
   const candidates = JSON.parse(readFileSync(join(candidatesDir, `candidates-${language}.json`), 'utf8'));
   const samples = selectSamples(candidates, REVIEWED, TARGETS[language]).map(
-    ({ title, servings, totalMinutes, ingredients, steps, sourceUrl, sourceName, license, author, confirmed }) =>
-      ({ title, servings, totalMinutes, ingredients, steps, sourceUrl, sourceName, license, author, confirmed }),
+    ({ title, servings, totalMinutes, ingredients, steps, sourceUrl, confirmed }) =>
+      ({ title, servings, totalMinutes, ingredients, steps, sourceUrl, confirmed }),
   );
   writeFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'data', `samples-${language}.json`), `${JSON.stringify(samples, null, 1)}\n`);
   console.log(language, samples.length, samples.map((s) => s.title).join(' | '));

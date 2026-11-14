@@ -54,7 +54,7 @@ describe('buildRecipe', () => {
   });
 
   it('keeps a seasoning line listing several items for review, so a hidden allergen is never passed', () => {
-    const lines = ['Salt, sesame oil', 'Salt, pepper and fish sauce', 'Sel, poivre et sauce de poisson', 'Black pepper; soy sauce', 'Salt/pepper'];
+    const lines = ['Salt, sesame oil', 'Salt, pepper and fish sauce', 'Sel, poivre et sauce de poisson', 'Black pepper; soy sauce', 'Salt/pepper', 'Salt pepper sesame oil'];
     const recipe = buildRecipe({ ...raw, ingredients: lines }, 'web', 'r5', 0);
     expect(recipe.ingredients.map((i) => i.status)).toEqual(lines.map(() => 'needsReview'));
   });

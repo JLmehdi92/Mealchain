@@ -1,19 +1,10 @@
-import { buildRecipe } from '../src/features/import/buildRecipe';
+import { SEASONING_AISLES } from '../src/features/import/buildRecipe';
 import { ingredientById } from '../src/features/ingredients/catalog';
 import { toBase } from '../src/features/ingredients/units';
+import { buildSample, type SampleSource } from '../src/features/recipes/samples';
 import type { Recipe } from '../src/features/recipes/types';
 
-export type Candidate = {
-  title: string;
-  servings: number | null;
-  totalMinutes: number | null;
-  ingredients: string[];
-  steps: string[];
-  sourceUrl: string;
-  sourceName: string;
-  license: string;
-  author: string;
-};
+export type Candidate = SampleSource;
 export type Sample = Candidate & { confirmed: string[] };
 
 const NOT_A_MAIN =
@@ -21,12 +12,10 @@ const NOT_A_MAIN =
 const RARE_EQUIPMENT = new Set(['air_fryer', 'grill']);
 const LEFTOVER_MARKUP = /&#?\w+;|[{}[\]]/;
 const PERISHABLE_AISLES = new Set(['produce', 'dairy', 'meat', 'fish']);
-const SEASONING_AISLES = new Set(['spices', 'condiments']);
 const MAX_MINUTES = 60;
 const MIN_LINES = 4;
 
-const toRecipe = (c: Candidate): Recipe =>
-  buildRecipe({ ...c, servings: c.servings ?? undefined, totalMinutes: c.totalMinutes ?? undefined }, 'web', c.sourceUrl, 0);
+const toRecipe = buildSample;
 
 function lineIsSafe(line: Recipe['ingredients'][number], reviewed: ReadonlySet<string>): boolean {
   if (line.status === 'matched') return true;
