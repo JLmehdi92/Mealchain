@@ -3,6 +3,7 @@ import { getState } from '@/lib/store';
 import { sharedHousehold } from '@/lib/sync';
 
 import { household } from '../planner/fixtures';
+import type { Household } from '../recipes/types';
 import { adoptMerged, mergeProfiles, pullProfile, pushProfile } from './profileSync';
 import { applyHousehold } from './save';
 
@@ -12,7 +13,7 @@ let mockRemote: unknown = null;
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: () => ({
-      update: (value: unknown) => ({ eq: () => mockUpdate(value) }),
+      update: (value: { profile: unknown }) => ({ eq: () => mockUpdate(value) }),
       select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: { profile: mockRemote }, error: null }) }) }),
     }),
   },
@@ -60,11 +61,12 @@ describe('mergeProfiles', () => {
 });
 
 describe('adoptMerged', () => {
-  it('applies the merged profile and sends the kept allergies back to the household', async () => {
-    const merge = await adoptMerged(household({ allergens: ['milk'] }));
+  it('applies the merged profile and sends allergies added on this device, without its equipment', async () => {
+    const remote = household({ allergens: ['milk'] });
+    const merge = await adoptMerged(remote);
     expect(applyHousehold).toHaveBeenCalledWith(merge.profile);
     expect(merge.profile.allergens).toEqual(['peanuts', 'milk']);
-    expect(mockUpdate).toHaveBeenCalledWith({ profile: merge.profile });
+    expect(mockUpdate).toHaveBeenCalledWith({ profile: { ...merge.profile, equipment: remote.equipment } });
   });
 
   it('adopts the household profile as is on a new device', async () => {
@@ -120,3 +122,49 @@ describe('pullProfile', () => {
     await expect(pullProfile()).resolves.toBeNull();
   });
 });
+
+describe('shared household', () => {
+  const member = (allergens: Household['allergens'], equipment: Household['equipment'] = ['oven']) => household({ allergens, equipment });
+  const serverProfile = () => (mockRemote as Household);
+
+  beforeEach(async () => {
+    mockUpdate.mockImplementation(async ({ profile }: { profile: unknown }) => {
+      mockRemote = profile;
+      return { error: null };
+    });
+    mockRemote = member(['peanuts', 'milk'], ['oven', 'grill']);
+    jest.mocked(getState).mockReturnValue({ household: member(['peanuts', 'milk']) } as never);
+    await pullProfile();
+    jest.clearAllMocks();
+  });
+
+  it('keeps a removal made by another member on the server, keeps the allergy here and exposes it', async () => {
+    mockRemote = member(['milk'], ['oven', 'grill']);
+    const merge = await pullProfile();
+    expect(merge?.removed.allergens).toEqual(['peanuts']);
+    expect(applyHousehold).toHaveBeenCalledWith(expect.objectContaining({ allergens: ['peanuts', 'milk'] }));
+    expect(mockUpdate).not.toHaveBeenCalled();
+
+    mockRemote = { ...member(['milk'], ['oven', 'grill']), people: 3 };
+    settings.set('profile_sync_pending', 'yes');
+    expect((await pullProfile())?.removed.allergens).toEqual(['peanuts']);
+    expect(serverProfile().allergens).toEqual(['milk']);
+  });
+
+  it('sends a real local addition without resurrecting the removed allergy', async () => {
+    jest.mocked(getState).mockReturnValue({ household: member(['peanuts', 'milk', 'sesame']) } as never);
+    mockRemote = member(['milk'], ['oven', 'grill']);
+    await pullProfile();
+    expect(serverProfile().allergens).toEqual(['milk', 'sesame']);
+  });
+
+  it('never overwrites the household equipment and announces a difference only when it changes', async () => {
+    await pushProfile(member(['peanuts', 'milk', 'fish']));
+    expect(serverProfile().equipment).toEqual(['oven', 'grill']);
+    mockRemote = { ...serverProfile(), people: 4 };
+    expect((await pullProfile())?.added.equipment).toEqual([]);
+    mockRemote = { ...serverProfile(), equipment: ['oven', 'microwave'] };
+    expect((await pullProfile())?.added.equipment).toEqual(['microwave']);
+  });
+});
+

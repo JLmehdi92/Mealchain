@@ -96,6 +96,14 @@ describe('importRemotely', () => {
     expect(invoke).toHaveBeenCalledWith('import-recipe', { body });
   });
 
+  it('accepts the long lines the server accepts, and refuses what the server would refuse', async () => {
+    const recipe = { ingredients: ['1 egg'], steps: ['x'.repeat(600)], sourceUrl: '' };
+    invoke.mockResolvedValue({ data: { recipe }, error: null, response: undefined });
+    expect(await importRemotely(body)).toEqual({ recipe });
+    invoke.mockResolvedValue({ data: { recipe: { ...recipe, steps: ['x'.repeat(2001)] } }, error: null, response: undefined });
+    expect(await importRemotely(body)).toEqual({ error: 'no_recipe' });
+  });
+
   it('rejects a malformed response', async () => {
     invoke.mockResolvedValue({ data: { recipe: { ingredients: 'nope' } }, error: null, response: undefined });
     expect(await importRemotely(body)).toEqual({ error: 'no_recipe' });

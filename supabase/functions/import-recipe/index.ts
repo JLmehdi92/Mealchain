@@ -5,9 +5,9 @@ import { z } from 'npm:zod@4';
 
 import { extractRecipe } from '../../../src/features/import/jsonld.ts';
 import { isAllowedUrl, isPrivateAddress, keepVerbatim } from '../_shared/guards.ts';
+import { fitsLimits, readCapped } from '../_shared/limits.ts';
 
 const DAILY_LIMIT = 50;
-const MAX_BYTES = 3_000_000;
 const MAX_REDIRECTS = 3;
 
 const bodySchema = z.discriminatedUnion('kind', [
@@ -32,27 +32,6 @@ async function resolvesPublic(host: string): Promise<boolean> {
   return ips.length > 0 && !ips.some(isPrivateAddress);
 }
 
-async function readCapped(body: ReadableStream<Uint8Array>): Promise<string | null> {
-  const reader = body.getReader();
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  for (let r = await reader.read(); !r.done; r = await reader.read()) {
-    size += r.value.byteLength;
-    if (size > MAX_BYTES) {
-      await reader.cancel();
-      return null;
-    }
-    chunks.push(r.value);
-  }
-  const all = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    all.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return new TextDecoder().decode(all);
-}
-
 async function fetchPage(raw: string): Promise<string | null> {
   let target = isAllowedUrl(raw);
   for (let hop = 0; target && hop <= MAX_REDIRECTS; hop += 1) {
@@ -62,7 +41,7 @@ async function fetchPage(raw: string): Promise<string | null> {
       target = isAllowedUrl(new URL(res.headers.get('location') ?? '', target).toString());
       continue;
     }
-    const html = res.ok && res.body ? await readCapped(res.body) : null;
+    const html = res.ok ? await readCapped(res.body) : null;
     // Why: fetch resolves DNS itself. This re-check only drops the body of a host that now resolves
     // to a private address; the request has already been sent, and a host alternating its answers
     // passes both checks (see docs/shortcuts.md).
@@ -111,10 +90,10 @@ Deno.serve(async (req) => {
     const html = await fetchPage(body.data.url).catch(() => null);
     if (html === null) return json(422, { error: 'unreachable' });
     const recipe = extractSafely(html, body.data.url);
-    return recipe ? json(200, { recipe }) : json(422, { error: 'no_recipe' });
+    return recipe && fitsLimits(recipe) ? json(200, { recipe }) : json(422, { error: 'no_recipe' });
   }
 
   const extracted = await readText(body.data.text).catch(() => null);
-  if (!extracted || extracted.ingredients.length === 0) return json(422, { error: 'no_recipe' });
+  if (!extracted || extracted.ingredients.length === 0 || !fitsLimits(extracted)) return json(422, { error: 'no_recipe' });
   return json(200, { recipe: { ...extracted, sourceUrl: '' } });
 });

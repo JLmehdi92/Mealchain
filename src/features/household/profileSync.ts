@@ -6,7 +6,7 @@ import { getState } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { sharedHousehold } from '@/lib/sync';
 
-import type { Allergen, Diet } from '../ingredients/schema';
+import { ALLERGENS, DIETS, type Allergen, type Diet } from '../ingredients/schema';
 import type { Equipment, Household } from '../recipes/types';
 import { applyHousehold } from './save';
 
@@ -37,12 +37,35 @@ export function mergeProfiles(local: Household, remote: Household): Merge {
   };
 }
 
+type Withdrawn = Pick<ProfileDiff, 'allergens' | 'diets'>;
+type Seen = { profile: Household | null; withdrawn: Withdrawn };
+
+const seenSchema = z.object({
+  profile: householdSchema,
+  withdrawn: z.object({ allergens: z.array(z.enum(ALLERGENS)), diets: z.array(z.enum(DIETS)) }),
+});
+const sameSet = <T>(a: T[], b: T[]) => minus(a, b).length === 0 && minus(b, a).length === 0;
+
+async function readSeen(): Promise<Seen> {
+  const parsed = seenSchema.safeParse(JSON.parse((await getSetting('remote_profile_seen')) ?? 'null'));
+  return parsed.success ? parsed.data : { profile: null, withdrawn: { allergens: [], diets: [] } };
+}
+
+const writeSeen = (seen: Seen) => setSetting('remote_profile_seen', JSON.stringify(seen));
+
 export async function pushProfile(profile: Household): Promise<boolean> {
   const householdId = await sharedHousehold();
   if (!supabase || !householdId) return false;
+  const { profile: remote, withdrawn } = await readSeen();
+  const outgoing: Household = {
+    ...profile,
+    allergens: minus(profile.allergens, withdrawn.allergens),
+    diets: minus(profile.diets, withdrawn.diets),
+    equipment: remote?.equipment ?? profile.equipment,
+  };
   const sent = await supabase
     .from('households')
-    .update({ profile })
+    .update({ profile: outgoing })
     .eq('id', householdId)
     .then(({ error }) => !error, () => false);
   if (!sent) {
@@ -50,17 +73,30 @@ export async function pushProfile(profile: Household): Promise<boolean> {
     return false;
   }
   await setSetting('profile_sync_pending', '');
-  await setSetting('remote_profile_seen', JSON.stringify(profile));
+  await writeSeen({ profile: outgoing, withdrawn });
   return true;
 }
 
 export async function adoptMerged(remote: Household): Promise<Merge> {
   const local = getState().household;
-  const merge = local ? mergeProfiles(local, remote) : mergeProfiles(remote, remote);
+  const merge = mergeProfiles(local ?? remote, remote);
+  const seen = await readSeen();
+  const knewBefore = <T extends Allergen | Diet>(item: T, key: keyof Withdrawn) =>
+    [...(seen.profile?.[key] ?? []), ...seen.withdrawn[key]].includes(item);
+  const withdrawn: Withdrawn = {
+    allergens: merge.removed.allergens.filter((item) => knewBefore(item, 'allergens')),
+    diets: merge.removed.diets.filter((item) => knewBefore(item, 'diets')),
+  };
+  const addedHere = merge.removed.allergens.length + merge.removed.diets.length > withdrawn.allergens.length + withdrawn.diets.length;
+  const equipmentChanged = !seen.profile || !sameSet(seen.profile.equipment, remote.equipment);
   await applyHousehold(merge.profile);
-  await setSetting('remote_profile_seen', JSON.stringify(remote));
-  if (merge.removed.allergens.length > 0 || merge.removed.diets.length > 0) await pushProfile(merge.profile);
-  return merge;
+  await writeSeen({ profile: remote, withdrawn });
+  if (addedHere) await pushProfile(merge.profile);
+  return {
+    profile: merge.profile,
+    added: { ...merge.added, equipment: equipmentChanged ? merge.added.equipment : [] },
+    removed: { ...withdrawn, equipment: equipmentChanged ? merge.removed.equipment : [] },
+  };
 }
 
 async function fetchProfile(householdId: string): Promise<Household | null> {
@@ -75,7 +111,7 @@ export async function pullProfile(): Promise<Merge | null> {
   const householdId = await sharedHousehold();
   const remote = householdId ? await fetchProfile(householdId) : null;
   if (!remote) return null;
-  const changed = JSON.stringify(remote) !== (await getSetting('remote_profile_seen'));
+  const changed = JSON.stringify(remote) !== JSON.stringify((await readSeen()).profile);
   const merge = changed ? await adoptMerged(remote) : null;
   const { household } = getState();
   if (household && (await getSetting('profile_sync_pending')) === 'yes') await pushProfile(household);

@@ -48,18 +48,18 @@ test('a member sees only their own household data', async () => {
   const db = await setup();
   const aliceHome = (await as(db, ALICE, `select public.create_household('{"people":5}') as id`)).rows[0].id;
   await as(db, BOB, `select public.create_household('{"people":1}')`);
-  await as(db, ALICE, `insert into public.recipes (id, household_id, data) values (gen_random_uuid(), $1, '{}')`, [aliceHome]);
+  await as(db, ALICE, `insert into public.shopping_items (id, household_id, week_start, ingredient_id) values ('milk', $1, '2026-11-16', 'milk')`, [aliceHome]);
 
-  assert.equal((await as(db, BOB, 'select * from public.recipes')).rows.length, 0);
+  assert.equal((await as(db, BOB, 'select * from public.shopping_items')).rows.length, 0);
   assert.equal((await as(db, BOB, 'select * from public.households where id = $1', [aliceHome])).rows.length, 0);
-  assert.equal((await as(db, ALICE, 'select * from public.recipes')).rows.length, 1);
+  assert.equal((await as(db, ALICE, 'select * from public.shopping_items')).rows.length, 1);
 });
 
 test('a user cannot write into or join another household without an invite', async () => {
   const db = await setup();
   const aliceHome = (await as(db, ALICE, `select public.create_household('{}') as id`)).rows[0].id;
 
-  await assert.rejects(as(db, BOB, `insert into public.recipes (id, household_id, data) values (gen_random_uuid(), $1, '{}')`, [aliceHome]));
+  await assert.rejects(as(db, BOB, `insert into public.shopping_items (id, household_id, week_start, ingredient_id) values ('milk', $1, '2026-11-16', 'milk')`, [aliceHome]));
   await assert.rejects(as(db, BOB, 'insert into public.household_members (household_id, user_id) values ($1, $2)', [aliceHome, BOB]));
   assert.equal((await as(db, BOB, `select public.join_household('NOPE1234NOPE') as id`)).rows[0].id, null);
   const updated = await as(db, BOB, `update public.households set profile = '{"hacked":true}' where id = $1`, [aliceHome]);
@@ -146,14 +146,14 @@ test('only the owner can revoke an invite', async () => {
   assert.equal((await as(db, ALICE, 'delete from public.household_invites where code = $1', [other])).affectedRows, 1);
 });
 
-test('recipes and households of another household cannot be changed', async () => {
+test('shopping items and households of another household cannot be changed', async () => {
   const db = await setup();
   const aliceHome = await home(db, ALICE);
   const bobHome = await home(db, BOB);
-  const id = (await as(db, ALICE, `insert into public.recipes (id, household_id, data) values (gen_random_uuid(), $1, '{"t":1}') returning id`, [aliceHome])).rows[0].id;
-  assert.equal((await as(db, BOB, `update public.recipes set data = '{"t":2}' where id = $1`, [id])).affectedRows, 0);
-  assert.equal((await as(db, BOB, 'delete from public.recipes where id = $1', [id])).affectedRows, 0);
-  await assert.rejects(as(db, ALICE, 'update public.recipes set household_id = $1 where id = $2', [bobHome, id]));
+  await as(db, ALICE, `insert into public.shopping_items (id, household_id, week_start, ingredient_id) values ('milk', $1, '2026-11-16', 'milk')`, [aliceHome]);
+  assert.equal((await as(db, BOB, `update public.shopping_items set checked = true where id = 'milk'`)).affectedRows, 0);
+  assert.equal((await as(db, BOB, `delete from public.shopping_items where id = 'milk'`)).affectedRows, 0);
+  await assert.rejects(as(db, ALICE, `update public.shopping_items set household_id = $1 where id = 'milk'`, [bobHome]));
   await assert.rejects(as(db, ALICE, 'update public.households set id = $1 where id = $2', [bobHome, aliceHome]));
   assert.equal((await as(db, BOB, `update public.households set profile = '{}' where id = $1`, [aliceHome])).affectedRows, 0);
 });
@@ -197,11 +197,10 @@ test('Apple tokens and household release are out of reach of app clients', async
   await assert.rejects(as(db, null, 'select public.release_households($1)', [BOB]), /permission denied/);
 });
 
-test('oversized recipe data and household profiles are refused', async () => {
+test('oversized household profiles are refused', async () => {
   const db = await setup();
   const id = await home(db, ALICE);
   const big = JSON.stringify({ blob: 'x'.repeat(200_000) });
-  await assert.rejects(as(db, ALICE, `insert into public.recipes (id, household_id, data) values (gen_random_uuid(), $1, $2)`, [id, big]), /check constraint/);
   await assert.rejects(as(db, ALICE, 'update public.households set profile = $2 where id = $1', [id, big]), /check constraint/);
   await assert.rejects(as(db, ALICE, 'select public.create_household($1)', [big]), /check constraint/);
 });
@@ -212,3 +211,38 @@ test('a user can own at most five households', async () => {
   await assert.rejects(home(db, ALICE), /household limit/);
   await home(db, BOB);
 });
+
+test('the recipes table is gone', async () => {
+  const db = await setup();
+  assert.equal((await db.query(`select to_regclass('public.recipes') as t`)).rows[0].t, null);
+});
+
+test('a stale check never overwrites a newer one, and a future timestamp is capped at now', async () => {
+  const db = await setup();
+  const id = await home(db, ALICE);
+  await join(db, BOB, await invite(db, ALICE));
+  const upsert = (user, checked, at) => as(db, user,
+    `insert into public.shopping_items (id, household_id, week_start, ingredient_id, checked, updated_at) values ('w:milk', $1, '2026-11-16', 'milk', $2, $3)
+     on conflict (household_id, id) do update set checked = excluded.checked, updated_at = excluded.updated_at`, [id, checked, at]);
+  const row = async () => (await as(db, ALICE, `select checked, updated_at <= now() as capped from public.shopping_items`)).rows[0];
+
+  await upsert(ALICE, true, '2026-01-01T10:00:00Z');
+  await upsert(BOB, false, '2026-01-01T09:00:00Z');
+  assert.equal((await row()).checked, true);
+  await upsert(BOB, false, '2999-01-01T00:00:00Z');
+  assert.deepEqual(await row(), { checked: false, capped: true });
+  await upsert(ALICE, true, '2026-01-02T00:00:00Z');
+  assert.equal((await row()).checked, false);
+});
+
+test('shopping item ids are bounded and checked_by is always the caller', async () => {
+  const db = await setup();
+  const id = await home(db, ALICE);
+  const insert = (rowId, ingredient, by) => as(db, ALICE,
+    `insert into public.shopping_items (id, household_id, week_start, ingredient_id, checked_by) values ($1, $2, '2026-11-16', $3, $4)`, [rowId, id, ingredient, by]);
+  await assert.rejects(insert('x'.repeat(81), 'milk', null), /check constraint/);
+  await assert.rejects(insert('a', 'x'.repeat(65), null), /check constraint/);
+  await insert('a', 'milk', BOB);
+  assert.equal((await as(db, ALICE, 'select checked_by from public.shopping_items')).rows[0].checked_by, ALICE);
+});
+

@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase';
 
 import type { Household } from '../recipes/types';
 import { linkPurchases, unlinkPurchases } from '../subscription/purchase';
-import { adoptMerged } from './profileSync';
+import { adoptMerged, pushProfile } from './profileSync';
 import { applyHousehold } from './save';
 import { wipeAll } from './wipe';
 
@@ -41,8 +41,7 @@ async function syncProfile(household: Household) {
   if (!(await signedIn())) return;
   const householdId = await getSetting('remote_household');
   if (householdId) {
-    const { error } = await client().from('households').update({ profile: household }).eq('id', householdId);
-    if (error) throw error;
+    if (!(await pushProfile(household))) throw new Error('profile_push_failed');
     return;
   }
   const { data, error } = await client().rpc('create_household', { profile: household });
