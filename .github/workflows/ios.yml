@@ -183,7 +183,7 @@ jobs:
             ( cd "$out" && maestro --device "$MAX" test "$@" "$GITHUB_WORKSPACE/e2e/maestro/store.yaml" --test-output-dir "$out" )
             find "$out/screenshots" -name '*.png' -exec mv -n {} "$out/" \;
           }
-          shoot en-US
+          shoot en-US -e APP_LANG=en -e APP_LOCALE=en_US -e TAB_WEEK=Week -e TAB_RECIPES=Recipes -e TAB_LIST=List
           shoot fr-FR -e APP_LANG=fr -e APP_LOCALE=fr_FR -e TAB_WEEK=Semaine -e TAB_RECIPES=Recettes -e TAB_LIST=Courses
           sips -g pixelWidth -g pixelHeight build/store/*/*.png
 

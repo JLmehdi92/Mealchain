@@ -2,12 +2,6 @@ appId: app.demidemi.ios
 name: App Store screenshots
 tags:
   - store
-env:
-  APP_LANG: en
-  APP_LOCALE: en_US
-  TAB_WEEK: Week
-  TAB_RECIPES: Recipes
-  TAB_LIST: List
 ---
 - launchApp:
     clearState: true

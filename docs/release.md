@@ -127,5 +127,6 @@ La CI les produit à chaque run : étape « App Store screenshots (6.9-inch) »,
 rejoué en en-US puis fr-FR sur un iPhone 17 Pro Max, barre d'état 9:41, recettes d'exemple, allergies
 arachides et fruits à coque. Résultat dans l'artefact, dossier `store/<langue>/`, numérotés dans l'ordre de la
 fiche (01-plan, 02-list, 03-recipes, 04-recipe, 05-allergies, 06-welcome, 07-paywall). Les relire avant de
-les déposer. Aucun texte marketing incrusté qui promette plus que l'app : pas de « sans allergène », pas
+les déposer. Les captures retenues sont dans `store/screenshots/<langue>/` (01 à 06) : la 07 (paywall) montre la
+mention « version de test » tant que RevenueCat n'est pas branché, elle n'est donc pas déposée. Aucun texte marketing incrusté qui promette plus que l'app : pas de « sans allergène », pas
 d'image générée par IA.
