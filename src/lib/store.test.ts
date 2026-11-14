@@ -2,6 +2,8 @@ import { act, renderHook } from '@testing-library/react-native';
 
 import { household, recipe } from '@/features/planner/fixtures';
 
+import { unsafeSlots } from '@/features/planner/swap';
+
 import * as repo from './db/repo';
 import { deleteRecipe, load, refreshWeek, saveHousehold, savePlan, saveRecipe, useHousehold, usePlan, useReady, useRecipes, useWeekStart } from './store';
 
@@ -49,6 +51,13 @@ it('removes a deleted recipe', async () => {
   await act(() => deleteRecipe('a'));
   expect(mocked.deleteRecipe).toHaveBeenCalledWith('a');
   expect(await recipeIds()).toEqual(['b']);
+});
+
+it('keeps a planned slot whose recipe was deleted, flagged for a swap', async () => {
+  await act(() => savePlan(plan));
+  await act(() => deleteRecipe('a'));
+  expect(await current(usePlan)).toEqual(plan);
+  expect(unsafeSlots(plan, await current(useRecipes), household())).toEqual([0]);
 });
 
 it('saves the plan under the current week', async () => {

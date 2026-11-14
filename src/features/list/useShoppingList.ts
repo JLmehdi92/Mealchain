@@ -36,13 +36,16 @@ function useChecks(weekStart: string) {
     };
   }, [weekStart]);
 
-  const toggle = (itemId: string) => {
-    const check = { itemId, checked: !checks[itemId], updatedAt: Date.now() };
-    setChecks((prev) => ({ ...prev, [itemId]: check.checked }));
-    setCheck(weekStart, itemId, check.checked, check.updatedAt)
+  const persist = (check: Check) =>
+    setCheck(weekStart, check.itemId, check.checked, check.updatedAt)
       .then(() => (shared.current ? pushChecks(shared.current, weekStart, [check]) : undefined))
       .catch(report);
-  };
+  const toggle = (itemId: string) =>
+    setChecks((prev) => {
+      const check = { itemId, checked: !prev[itemId], updatedAt: Date.now() };
+      queueMicrotask(() => persist(check));
+      return { ...prev, [itemId]: check.checked };
+    });
   return { checks, toggle, shared: isShared };
 }
 

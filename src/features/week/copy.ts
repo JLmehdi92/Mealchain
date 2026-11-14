@@ -40,6 +40,7 @@ export const weekCopy = {
     allergySafe: 'No ingredient linked to your allergies ({list}) in these {count} meals.',
     allergySafeOne: 'No ingredient linked to your allergies ({list}) in this meal.',
     ready: 'Your week is ready.',
+    deletedRecipe: 'Recipe deleted · tap and hold to swap',
     failed: 'The plan could not be saved. Try again.',
   },
   fr: {
@@ -83,6 +84,7 @@ export const weekCopy = {
     allergySafe: 'Aucun ingrédient lié à vos allergies ({list}) dans ces {count} repas.',
     allergySafeOne: 'Aucun ingrédient lié à vos allergies ({list}) dans ce repas.',
     ready: 'Votre semaine est prête.',
+    deletedRecipe: 'Recette supprimée · appui long pour changer',
     failed: "Le plan n'a pas pu être enregistré. Réessayez.",
   },
 };

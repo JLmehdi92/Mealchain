@@ -88,7 +88,7 @@ export function MealCard({ recipe, pills, label, swapped, unsafe, body, testID, 
         style={[styles.card, { backgroundColor: c.sheet }, flash.border]}
       >
         {label ? <Caption muted>{label}</Caption> : null}
-        <Body testID={testID && `${testID}-title`} style={styles.name}>{recipe?.title ?? ''}</Body>
+        <Body testID={testID && `${testID}-title`} style={styles.name}>{recipe?.title ?? s.deletedRecipe}</Body>
         {recipe?.totalMinutes ? (
           <View style={styles.meta}>
             <Icon name="clock" size={13} muted />

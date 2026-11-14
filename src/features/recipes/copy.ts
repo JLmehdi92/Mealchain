@@ -77,6 +77,10 @@ export const detailCopy = {
     disclaimer: 'Allergens are in bold, as on food labels. Filter based on the ingredients entered; not medical advice.',
     openOriginal: 'Open original recipe',
     missing: 'This recipe is no longer in your box.',
+    delete: 'Delete recipe',
+    deleteTitle: 'Delete this recipe?',
+    deleteBody: 'It will be removed from your box. A planned meal using it can be swapped.',
+    cancel: 'Cancel',
   },
   fr: {
     swap: 'Changer ce repas',
@@ -92,5 +96,9 @@ export const detailCopy = {
     disclaimer: 'Les allergènes sont en gras, comme sur les emballages. Filtre basé sur les ingrédients saisis ; ne remplace pas un avis médical.',
     openOriginal: "Ouvrir la recette d'origine",
     missing: "Cette recette n'est plus dans votre boîte.",
+    delete: 'Supprimer la recette',
+    deleteTitle: 'Supprimer cette recette ?',
+    deleteBody: 'Elle sera retirée de votre boîte. Un repas prévu qui l’utilise pourra être changé.',
+    cancel: 'Annuler',
   },
 };
