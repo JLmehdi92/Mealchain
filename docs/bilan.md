@@ -1,6 +1,6 @@
 # Bilan Demidemi
 
-État au 13 novembre 2026. Détail de la mise en ligne : `docs/release.md`. Raccourcis assumés : `docs/shortcuts.md`.
+État au 14 novembre 2026. Détail de la mise en ligne : `docs/release.md`. Raccourcis assumés : `docs/shortcuts.md`.
 
 ## Ce qui marche sans aucun compte
 
@@ -121,7 +121,7 @@ L'objectif n'est pas atteint : il demandait au moins 8 en facilité, en design e
 1. **Animations (4 à 6).** Les preuves sont des images prises toutes les 0,25 s sur un simulateur de CI très lent : un ressort de moins de 250 ms, l'haptique et la fluidité réelle ne s'y voient pas. Il faut les juger sur un vrai iPhone avant d'investir davantage.
 2. **Payer (2 à 4).** Les testeurs veulent voir des économies chiffrées en euros ou en dollars. Il faudrait de vraies données de prix (V2) : aucun montant n'est inventé. Théo demande aussi un prix étudiant : c'est une décision commerciale.
 3. **Variété.** Avec 2 recettes pour 5 dîners, la répétition est inévitable. L'app le dit avant de composer et propose les recettes d'exemple.
-4. **Recettes d'exemple Wikibooks / Wikilivres.** Les 8 recettes écrites à la main sont remplacées par 7 recettes EN (Wikibooks Cookbook) et 5 FR (Wikilivres, Livre de cuisine), sous licence CC BY-SA 4.0, texte repris mot pour mot. Sélection reproductible : `npx tsx scripts/buildSamples.mjs <dossier des candidates>` (plats principaux, 60 min au plus, sans barbecue ni friteuse, toutes les lignes reconnues ou relues à la main, choix glouton par protéine puis ingrédients frais partagés). Attribution sur chaque fiche (site, auteurs, licence avec lien) et dans Conditions › Crédits des recettes. Les exemples comptent dans les 15 recettes du gratuit ; ils sont chargés dans la limite des places libres (tous pour Pro). **À faire valider juridiquement :** l'ancienne page Wikilivres:Copyright ne mentionne que la GFDL 1.2, alors que l'API siteinfo et le pied de page de fr.wikibooks.org indiquent CC BY-SA 4.0 ; en cas de doute, retirer le jeu FR. Limite : en français, 5 exemples seulement, et le planificateur répète un plat sur 5 dîners.
+4. **Recettes d'exemple Wikibooks / Wikilivres.** Les 8 recettes écrites à la main sont remplacées par 7 recettes EN (Wikibooks Cookbook) et 5 FR (Wikilivres, Livre de cuisine), sous licence CC BY-SA 4.0, texte repris mot pour mot. Sélection reproductible : `npx tsx scripts/buildSamples.mjs <dossier des candidates>` (plats principaux, 60 min au plus, sans barbecue ni friteuse, toutes les lignes reconnues ou relues à la main, choix glouton par protéine puis ingrédients frais partagés). Attribution sur chaque fiche (site, auteurs, licence avec lien) et dans Conditions › Crédits des recettes. Les exemples comptent dans les 15 recettes du gratuit ; ils sont chargés dans la limite des places libres (tous pour Pro). **À faire valider juridiquement :** l'ancienne page Wikilivres:Copyright ne mentionne que la GFDL 1.2, alors que l'API siteinfo et le pied de page de fr.wikibooks.org indiquent CC BY-SA 4.0 ; en cas de doute, retirer le jeu FR. Limite : en français, 5 exemples seulement, et le planificateur répète un plat sur 5 dîners. Revues faites : ECC (une ligne d'assaisonnement à plusieurs éléments, comme « Sel, huile de sésame », repasse « à vérifier » pour ne jamais masquer un allergène) et Ponytail (une seule règle, un seul constructeur, pas de données en double). Les captures CI ont révélé des fiches d'exemple qui ne s'ouvraient pas (identifiant avec « / » ou « % ») : corrigé et testé.
 5. **Sites qui bloquent la lecture** (Taste of Home) : l'app propose de coller le texte. Une extension de partage iOS depuis Safari réglerait le cas (V2).
 
 ## Captures App Store
@@ -155,7 +155,7 @@ La capture du paywall est à refaire avec RevenueCat branché : en version de te
   - table inutilisée retirée ;
   - doublon fusionné ;
   - double toucher sur la liste.
-- **Contrôles :** typecheck 0, lint 0 avertissement, 677 tests, 19 tests RLS, expo-doctor 20/20, 4 parcours Maestro verts sur iPhone 17 Pro Max.
+- **Contrôles :** typecheck 0, lint 0 avertissement, 706 tests, 19 tests RLS, expo-doctor 20/20, 4 parcours Maestro verts sur iPhone 17 Pro Max (run 35, avec les recettes Wikibooks/Wikilivres).
 
 ## Points ouverts
 
