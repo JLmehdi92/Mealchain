@@ -15,6 +15,10 @@ const languages = [
 describe.each(languages)('sampleRecipes($language)', ({ language, market, source, distinctDinners }) => {
   const recipes = sampleRecipes(language);
 
+  it('gives every sample an id that survives a route parameter round trip', () => {
+    for (const { id } of recipes) expect(id).toMatch(/^sample-[a-z]{2}-[A-Za-z0-9-]+$/);
+  });
+
   it('builds every sample with all ingredients matched and nothing to review', () => {
     expect(recipes).toHaveLength(source.length);
     expect(new Set(recipes.map((recipe) => recipe.id)).size).toBe(recipes.length);

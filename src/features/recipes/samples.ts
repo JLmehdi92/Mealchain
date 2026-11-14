@@ -9,7 +9,7 @@ type Sample = (typeof samplesEn)[number];
 
 const SAMPLES: Record<Language, Sample[]> = { en: samplesEn, fr: samplesFr };
 
-const sampleId = (sourceUrl: string) => `sample-${sourceUrl.replace(/^https:\/\/(\w+)\.wikibooks\.org\/wiki\//, '$1-')}`;
+const sampleId = (sourceUrl: string) => `sample-${sourceUrl.replace(/^https:\/\/(\w+)\.wikibooks\.org\/wiki\//, '$1-').replace(/[^A-Za-z0-9-]+/g, '-')}`;
 
 export type SampleSource = Omit<Sample, 'confirmed'>;
 
