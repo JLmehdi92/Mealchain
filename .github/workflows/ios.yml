@@ -167,6 +167,10 @@ jobs:
         continue-on-error: true
         run: |
           export PATH="$RUNNER_TEMP/maestro/bin:$PATH"
+          export MAESTRO_DRIVER_STARTUP_TIMEOUT=300000
+          # The CI Mac is too slow for two simulators: stop the first one (and its recording) before booting the 6.9-inch one.
+          [ -n "$VIDEO_PID" ] && kill -INT "$VIDEO_PID" && sleep 3 || true
+          xcrun simctl shutdown "$UDID" || true
           MAX=$(xcrun simctl list devices available -j | node -e '
             const d=JSON.parse(require("fs").readFileSync(0)).devices;
             const all=Object.keys(d).filter(r=>r.includes("iOS")).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).flatMap(r=>d[r]);
